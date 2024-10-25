@@ -6,11 +6,12 @@
   "author": "miks silis",
   "license": "MIT",
   "dependencies": {
+    "@types/express": "^5.0.0",
     "express": "^4.21.1",
     "nodemon": "^3.1.7"
   },
   "scripts": {
-    "start": "node index.js",
-    "serve": "nodemon index.js"
+    "start": "node index.mjs",
+    "serve": "nodemon index.mjs"
   }
 }
