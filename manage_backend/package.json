@@ -1,0 +1,16 @@
+{
+  "name": "manage_backend",
+  "version": "1.0.0",
+  "description": "backend for manage lauderdale",
+  "main": "index.js",
+  "author": "miks silis",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.1",
+    "nodemon": "^3.1.7"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "serve": "nodemon index.js"
+  }
+}
