@@ -1,14 +1,15 @@
 import express from "express";
 import router from "./routes/routes.mjs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-
-app.get("/", (req, res) => {
-  res.send("Hello world");
-});
+const port = process.env.BACKEND_PORT || 8080;
 
 app.use("/", router);
+app.use(express.json());
 
-app.listen(3000, () => {
-  console.log("listening on 3000");
+app.listen(port, () => {
+  console.log(`Listening on ${port}`);
 });
