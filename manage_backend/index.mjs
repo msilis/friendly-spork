@@ -1,5 +1,5 @@
 import express from "express";
-import router from "./routes/routes.mjs";
+import router from "./routes/routes.mts";
 import dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/libsql";
 import bodyParser from "body-parser";

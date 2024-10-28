@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "tsx index.mjs",
-    "serve": "nodemon - exec 'ts-node' index.mjs",
+    "serve": "tsx watch index.mjs",
     "eslint": "npx eslint"
   }
 }
