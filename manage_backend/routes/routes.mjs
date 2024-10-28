@@ -1,6 +1,11 @@
 import express from "express";
+import { drizzle } from "drizzle-orm/libsql";
+import "dotenv/config";
+import { eq } from "drizzle-orm";
+import { teacherTable, studentTable, familyTable } from "../db/dbSchema.ts";
 
 const router = express.Router();
+const db = drizzle(process.env.DB_FILE_NAME);
 
 router.get("/", (req, res) => {
   res.status(200).send("You are at the right place");
@@ -16,7 +21,21 @@ router.post("/signup", (req, res) => {});
 
 //Student Management
 
-router.post("/students/add", (req, res) => {});
+router.post("/students/add", async (req, res) => {
+  const { first_name, last_name, birthdate, family_id, teacher_id } = req.body;
+  if ((!first_name, !last_name, !birthdate)) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    await db.insert(studentTable).values(studentToAdd);
+    return res.status(200).json({ message: "Student added successfully!" });
+  } catch (error) {
+    console.error("There was an error creating the student record", error);
+    res
+      .status(500)
+      .json({ message: "There was an error creating the student record" });
+  }
+});
 
 router
   .route("/students/:studentId/edit")
@@ -36,7 +55,10 @@ router.delete("/students/:studentId/delete", (req, res) => {
   res.status(200).json({ message: "Student deleted successfully!" });
 });
 
-router.get("/students", (req, res) => {});
+router.get("/students", async (req, res) => {
+  const allStudents = await db.select().from(studentTable);
+  res.status(200).json(allStudents);
+});
 
 //Family Management
 
@@ -62,7 +84,10 @@ router.delete("/families/:familyId/delete", (req, res) => {
   res.status(200).json({ message: "Family deleted successfully!" });
 });
 
-router.get("/families", (req, res) => {});
+router.get("/families", async (req, res) => {
+  const allFamilies = await db.select().from(familyTable);
+  res.status(200).json(allFamilies);
+});
 
 //Teacher Management
 
@@ -85,7 +110,10 @@ router.delete("/teachers/:teacherId/delete", (req, res) => {
   res.status(200).json({ message: "Teacher deleted successfully!" });
 });
 
-router.get("/teachers", (req, res) => {});
+router.get("/teachers", async (req, res) => {
+  const allTeachers = await db.select().from(teacherTable);
+  res.status(200).json(allTeachers);
+});
 
 //Class Management
 
@@ -108,6 +136,6 @@ router.delete("/classes/:classId/delete", (req, res) => {
   res.status(200).json({ message: "Class deleted successfully!" });
 });
 
-router.get("/classes", (req, res) => {});
+router.get("/classes", async (req, res) => {});
 
 export default router;
