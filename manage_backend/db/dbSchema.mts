@@ -24,6 +24,7 @@ export const teacherTable = sqliteTable("teacher_table", {
   teacher_last_name: text("teacher_last_name").notNull(),
   teacher_email: text("teacher_email").notNull(),
   teacher_mobile_phone: int("teacher_mobile_phone"),
+  teacher_address: text("teacher_address"),
 });
 
 export const studentTable = sqliteTable("student_table", {

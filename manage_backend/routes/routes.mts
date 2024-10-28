@@ -155,7 +155,28 @@ router.get("/families", async (req, res) => {
 
 //Teacher Management
 
-router.post("/teachers/add", (req, res) => {});
+router.post("/teachers/add", async (req, res) => {
+  const {
+    teacher_first_name,
+    teacher_last_name,
+    teacher_email,
+    teacher_mobile_phone,
+    teacher_address,
+  } = req.body;
+  try {
+    const teacherToAdd = {
+      teacher_first_name,
+      teacher_last_name,
+      teacher_email,
+      teacher_mobile_phone,
+      teacher_address,
+    };
+    await db.insert(teacherTable).values(teacherToAdd);
+    res.status(200).json({ message: "Teacher added successfully!" });
+  } catch (error) {
+    console.error("There was an error creating the teacher record", error);
+  }
+});
 
 router
   .route("/teachers/:teacherId/edit")
