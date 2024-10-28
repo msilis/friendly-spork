@@ -1,11 +1,16 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { drizzle } from "drizzle-orm/libsql";
 import "dotenv/config";
 import { eq } from "drizzle-orm";
-import { teacherTable, studentTable, familyTable } from "../db/dbSchema.ts";
+import { studentTable, familyTable, teacherTable } from "../db/dbSchema.mts";
 
 const router = express.Router();
-const db = drizzle(process.env.DB_FILE_NAME);
+const dbFile = process.env.DB_FILE_NAME;
+if (!dbFile) {
+  throw new Error("Missing env for database file");
+}
+
+const db = drizzle(dbFile);
 
 router.get("/", (req, res) => {
   res.status(200).send("You are at the right place");
@@ -21,11 +26,26 @@ router.post("/signup", (req, res) => {});
 
 //Student Management
 
-router.post("/students/add", async (req, res) => {
-  const { first_name, last_name, birthdate, family_id, teacher_id } = req.body;
-  if ((!first_name, !last_name, !birthdate)) {
+//@ts-ignore -- ignoring for now
+router.post("/students/add", async (req: Request, res: Response) => {
+  const parsedBody = await req.body;
+
+  if (
+    !parsedBody.first_name ||
+    !parsedBody.last_name ||
+    !parsedBody.birthdate
+  ) {
     return res.status(400).json({ error: "Missing fields" });
   }
+
+  const studentToAdd: typeof studentTable.$inferInsert = {
+    first_name: parsedBody.first_name,
+    last_name: parsedBody.last_name,
+    birthdate: parsedBody.birthdate,
+    family_id: parsedBody.family_id,
+    teacher_id: parsedBody.teacher_id,
+  };
+
   try {
     await db.insert(studentTable).values(studentToAdd);
     return res.status(200).json({ message: "Student added successfully!" });
@@ -62,8 +82,52 @@ router.get("/students", async (req, res) => {
 
 //Family Management
 
-router.post("/families/add", (req, res) => {
-  res.status(200).json({ message: "Family added successfully!" });
+router.post("/families/add", async (req, res) => {
+  const {
+    family_last_name,
+    parent1_first_name,
+    parent1_last_name,
+    parent1_email,
+    parent1_mobile_phone,
+    parent2_first_name,
+    parent2_last_name,
+    parent2_email,
+    parent2_mobile_phone,
+    parent1_address,
+    parent2_address,
+    alternate_contact_name,
+    alternate_contact_email,
+    alternate_contact_mobile_phone,
+  } = req.body;
+
+  if (!family_last_name || !parent1_first_name || !parent1_last_name) {
+    res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    const familyToAdd = {
+      family_last_name,
+      parent1_first_name,
+      parent1_last_name,
+      parent1_email,
+      parent1_mobile_phone,
+      parent2_first_name,
+      parent2_last_name,
+      parent2_email,
+      parent2_mobile_phone,
+      parent1_address,
+      parent2_address,
+      alternate_contact_name,
+      alternate_contact_email,
+      alternate_contact_mobile_phone,
+    };
+    await db.insert(familyTable).values(familyToAdd);
+    res.status(200).json({ message: "Family added successfully!" });
+  } catch (error) {
+    console.error("THere was an error creating the family record", error);
+    res
+      .status(500)
+      .json({ message: "There was an error creating the family record" });
+  }
 });
 
 router

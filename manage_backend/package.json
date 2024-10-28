@@ -8,6 +8,7 @@
   "dependencies": {
     "@libsql/client": "^0.14.0",
     "@types/express": "^5.0.0",
+    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.26.2",
@@ -15,10 +16,15 @@
     "express": "^4.21.1",
     "nodemon": "^3.1.7",
     "sqlite3": "^5.1.7",
-    "tsx": "^4.19.2"
+    "ts-node": "^10.9.2",
+    "tsc": "^2.0.4",
+    "tsc-node": "^0.0.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
   },
   "scripts": {
-    "start": "node index.mjs",
-    "serve": "nodemon index.mjs"
+    "start": "tsx index.mjs",
+    "serve": "nodemon - exec 'ts-node' index.mjs",
+    "eslint": "npx eslint"
   }
 }
