@@ -77,6 +77,22 @@ router
   .put(async (req, res) => {
     const studentId = req.params.studentId;
     const updatedStudentData = req.body;
+    try {
+      const filteredStudentData = Object.fromEntries(
+        Object.entries(updatedStudentData).filter(
+          (_, value) => value !== undefined,
+        ),
+      );
+      const updatedData = await db
+        .update(studentTable)
+        .set(filteredStudentData)
+        .where(eq(studentTable.id, Number(studentId)));
+
+      res.status(200).json(filteredStudentData);
+    } catch (error) {
+      console.error("There was an error updating the student record: ", error);
+      res.status(500).json({ message: "Error updating the student" });
+    }
 
     res.status(200).json({ message: "Student data updated successfully!" });
   });
@@ -92,8 +108,13 @@ router.delete("/students/:studentId/delete", async (req, res) => {
 });
 
 router.get("/students", async (req, res) => {
-  const allStudents = await db.select().from(studentTable);
-  res.status(200).json(allStudents);
+  try {
+    const allStudents = await db.select().from(studentTable);
+    res.status(200).json(allStudents);
+  } catch (error) {
+    console.error("There was an error retreiving the student record: ", error);
+    res.status(500).json({ message: "Error retreiving record" });
+  }
 });
 
 //Family Management
@@ -160,11 +181,26 @@ router
       console.error("There was an error retreiving the family record", error);
     }
   })
-  .put((req, res) => {
+  .put(async (req, res) => {
     const familyId = req.params.familyId;
     const updatedFamilyData = req.body;
-
-    res.status(200).json({ message: "Family updated successfully!" });
+    try {
+      const filteredFamilyData = Object.fromEntries(
+        Object.entries(updatedFamilyData).filter(
+          (_, value) => value !== undefined,
+        ),
+      );
+      await db
+        .update(familyTable)
+        .set(filteredFamilyData)
+        .where(eq(familyTable.id, Number(familyId)));
+      res.status(200).json(filteredFamilyData);
+    } catch (error) {
+      console.error("There was an error updating the record: ", error);
+      res
+        .status(500)
+        .json({ message: "There was an error updating the record" });
+    }
   });
 
 router.delete("/families/:familyId/delete", async (req, res) => {
@@ -178,8 +214,13 @@ router.delete("/families/:familyId/delete", async (req, res) => {
 });
 
 router.get("/families", async (req, res) => {
-  const allFamilies = await db.select().from(familyTable);
-  res.status(200).json(allFamilies);
+  try {
+    const allFamilies = await db.select().from(familyTable);
+    res.status(200).json(allFamilies);
+  } catch (error) {
+    console.error("There was an error geting the family record: ", error);
+    res.status(500).json("There was an error getting the family record");
+  }
 });
 
 //Teacher Management
@@ -209,14 +250,42 @@ router.post("/teachers/add", async (req, res) => {
 
 router
   .route("/teachers/:teacherId/edit")
-  .get((req, res) => {
+  .get(async (req, res) => {
     const teacherId = req.params.teacherId;
+    try {
+      const teacherData = await db
+        .select()
+        .from(teacherTable)
+        .where(eq(teacherTable.id, Number(teacherId)));
+      res.status(200).json(teacherData);
+    } catch (error) {
+      console.error("There was an error retreiving the record: ", error);
+      res
+        .status(500)
+        .json({ message: "There was an error retreiving the record" });
+    }
   })
-  .put((req, res) => {
+  .put(async (req, res) => {
     const teacherId = req.params.teacherId;
     const updatedTeacherData = req.body;
+    try {
+      const filteredTeacherData = Object.fromEntries(
+        Object.entries(updatedTeacherData).filter(
+          (_, value) => value !== undefined,
+        ),
+      );
+      await db
+        .update(teacherTable)
+        .set(filteredTeacherData)
+        .where(eq(teacherTable.id, Number(teacherId)));
 
-    res.status(200).json({ message: "Teacher updated successfully!" });
+      res.status(200).json(filteredTeacherData);
+    } catch (error) {
+      console.error("There was an error updating the teacher record: ", error);
+      res
+        .status(500)
+        .json({ message: "There was an error updating the teacher record" });
+    }
   });
 
 router.delete("/teachers/:teacherId/delete", async (req, res) => {
@@ -230,8 +299,15 @@ router.delete("/teachers/:teacherId/delete", async (req, res) => {
 });
 
 router.get("/teachers", async (req, res) => {
-  const allTeachers = await db.select().from(teacherTable);
-  res.status(200).json(allTeachers);
+  try {
+    const allTeachers = await db.select().from(teacherTable);
+    res.status(200).json(allTeachers);
+  } catch (error) {
+    console.error("There was an error getting the teacher record: ", error);
+    res
+      .status(500)
+      .json({ message: "There was an error getting the teacher record" });
+  }
 });
 
 //Class Management
