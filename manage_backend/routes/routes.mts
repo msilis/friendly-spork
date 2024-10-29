@@ -26,7 +26,6 @@ router.post("/signup", (req, res) => {});
 
 //Student Management
 
-//@ts-ignore -- ignoring for now
 router.post("/students/add", async (req: Request, res: Response) => {
   const parsedBody = await req.body;
 
@@ -35,7 +34,7 @@ router.post("/students/add", async (req: Request, res: Response) => {
     !parsedBody.last_name ||
     !parsedBody.birthdate
   ) {
-    return res.status(400).json({ error: "Missing fields" });
+    res.status(400).json({ error: "Missing fields" });
   }
 
   const studentToAdd: typeof studentTable.$inferInsert = {
@@ -48,7 +47,7 @@ router.post("/students/add", async (req: Request, res: Response) => {
 
   try {
     await db.insert(studentTable).values(studentToAdd);
-    return res.status(200).json({ message: "Student added successfully!" });
+    res.status(200).json({ message: "Student added successfully!" });
   } catch (error) {
     console.error("There was an error creating the student record", error);
     res
