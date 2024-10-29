@@ -59,10 +59,22 @@ router.post("/students/add", async (req: Request, res: Response) => {
 
 router
   .route("/students/:studentId/edit")
-  .get((req, res) => {
+  .get(async (req, res) => {
     const studentId = req.params.studentId;
+    try {
+      const studentData = await db
+        .select()
+        .from(studentTable)
+        .where(eq(studentTable.id, Number(studentId)));
+      res.status(200).json(studentData);
+    } catch (error) {
+      console.error(
+        "There wan an error retreiving the student record: ",
+        error,
+      );
+    }
   })
-  .put((req, res) => {
+  .put(async (req, res) => {
     const studentId = req.params.studentId;
     const updatedStudentData = req.body;
 
@@ -132,8 +144,17 @@ router.post("/families/add", async (req, res) => {
 
 router
   .route("/families/:familyId/edit")
-  .get((req, res) => {
+  .get(async (req, res) => {
     const familyId = req.params.familyId;
+    try {
+      const familyData = await db
+        .select()
+        .from(familyTable)
+        .where(eq(familyTable.id, Number(familyId)));
+      res.status(200).json(familyData);
+    } catch (error) {
+      console.error("There was an error retreiving the family record", error);
+    }
   })
   .put((req, res) => {
     const familyId = req.params.familyId;
