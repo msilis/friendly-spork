@@ -100,8 +100,18 @@ router
 router.delete("/students/:studentId/delete", async (req, res) => {
   const studentId = req.params.studentId;
   try {
-    await db.delete(studentTable).where(eq(studentTable.id, Number(studentId)));
-    res.status(200).json({ message: "Record deleted successfully!" });
+    const studentExists = await db
+      .select()
+      .from(studentTable)
+      .where(eq(studentTable.id, Number(studentId)));
+    if (studentExists.length === 0) {
+      res.status(404).json({ message: "Student not found" });
+    } else {
+      await db
+        .delete(studentTable)
+        .where(eq(studentTable.id, Number(studentId)));
+      res.status(200).json({ message: "Record deleted successfully!" });
+    }
   } catch (error) {
     console.error("There was an error deleting the record: ", error);
   }
