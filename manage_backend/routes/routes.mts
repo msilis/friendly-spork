@@ -77,17 +77,25 @@ router
     const studentId = req.params.studentId;
     const updatedStudentData = req.body;
     try {
-      const filteredStudentData = Object.fromEntries(
-        Object.entries(updatedStudentData).filter(
-          (_, value) => value !== undefined,
-        ),
-      );
-      const updatedData = await db
-        .update(studentTable)
-        .set(filteredStudentData)
+      const studentExists = await db
+        .select()
+        .from(studentTable)
         .where(eq(studentTable.id, Number(studentId)));
+      if (studentExists.length === 0) {
+        res.status(404).json({ message: "Student not found" });
+      } else {
+        const filteredStudentData = Object.fromEntries(
+          Object.entries(updatedStudentData).filter(
+            (_, value) => value !== undefined,
+          ),
+        );
+        const updatedData = await db
+          .update(studentTable)
+          .set(filteredStudentData)
+          .where(eq(studentTable.id, Number(studentId)));
 
-      res.status(200).json(filteredStudentData);
+        res.status(200).json(filteredStudentData);
+      }
     } catch (error) {
       console.error("There was an error updating the student record: ", error);
       res.status(500).json({ message: "Error updating the student" });
@@ -194,16 +202,24 @@ router
     const familyId = req.params.familyId;
     const updatedFamilyData = req.body;
     try {
-      const filteredFamilyData = Object.fromEntries(
-        Object.entries(updatedFamilyData).filter(
-          (_, value) => value !== undefined,
-        ),
-      );
-      await db
-        .update(familyTable)
-        .set(filteredFamilyData)
+      const familyExists = await db
+        .select()
+        .from(familyTable)
         .where(eq(familyTable.id, Number(familyId)));
-      res.status(200).json(filteredFamilyData);
+      if (familyExists.length === 0) {
+        res.status(500).json({ message: "Family not found" });
+      } else {
+        const filteredFamilyData = Object.fromEntries(
+          Object.entries(updatedFamilyData).filter(
+            (_, value) => value !== undefined,
+          ),
+        );
+        await db
+          .update(familyTable)
+          .set(filteredFamilyData)
+          .where(eq(familyTable.id, Number(familyId)));
+        res.status(200).json(filteredFamilyData);
+      }
     } catch (error) {
       console.error("There was an error updating the record: ", error);
       res
@@ -215,8 +231,16 @@ router
 router.delete("/families/:familyId/delete", async (req, res) => {
   const familyId = req.params.familyId;
   try {
-    await db.delete(familyTable).where(eq(familyTable.id, Number(familyId)));
-    res.status(200).json({ message: "Record deleted successfully!" });
+    const familyExists = await db
+      .select()
+      .from(familyTable)
+      .where(eq(familyTable.id, Number(familyId)));
+    if (familyExists.length === 0) {
+      res.status(500).json({ message: "Family not found" });
+    } else {
+      await db.delete(familyTable).where(eq(familyTable.id, Number(familyId)));
+      res.status(200).json({ message: "Record deleted successfully!" });
+    }
   } catch (error) {
     console.error("There was an error deleting the record: ", error);
   }
@@ -262,11 +286,19 @@ router
   .get(async (req, res) => {
     const teacherId = req.params.teacherId;
     try {
-      const teacherData = await db
+      const teacherExists = await db
         .select()
         .from(teacherTable)
         .where(eq(teacherTable.id, Number(teacherId)));
-      res.status(200).json(teacherData);
+      if (teacherExists.length === 0) {
+        res.status(500).json({ message: "Teache record not found" });
+      } else {
+        const teacherData = await db
+          .select()
+          .from(teacherTable)
+          .where(eq(teacherTable.id, Number(teacherId)));
+        res.status(200).json(teacherData);
+      }
     } catch (error) {
       console.error("There was an error retreiving the record: ", error);
       res
@@ -278,17 +310,25 @@ router
     const teacherId = req.params.teacherId;
     const updatedTeacherData = req.body;
     try {
-      const filteredTeacherData = Object.fromEntries(
-        Object.entries(updatedTeacherData).filter(
-          (_, value) => value !== undefined,
-        ),
-      );
-      await db
-        .update(teacherTable)
-        .set(filteredTeacherData)
+      const teacherExists = await db
+        .select()
+        .from(teacherTable)
         .where(eq(teacherTable.id, Number(teacherId)));
+      if (teacherExists.length === 0) {
+        res.status(500).json({ message: "Teache record not found" });
+      } else {
+        const filteredTeacherData = Object.fromEntries(
+          Object.entries(updatedTeacherData).filter(
+            (_, value) => value !== undefined,
+          ),
+        );
+        await db
+          .update(teacherTable)
+          .set(filteredTeacherData)
+          .where(eq(teacherTable.id, Number(teacherId)));
 
-      res.status(200).json(filteredTeacherData);
+        res.status(200).json(filteredTeacherData);
+      }
     } catch (error) {
       console.error("There was an error updating the teacher record: ", error);
       res
@@ -300,8 +340,18 @@ router
 router.delete("/teachers/:teacherId/delete", async (req, res) => {
   const teacherId = req.params.teacherId;
   try {
-    await db.delete(teacherTable).where(eq(teacherTable.id, Number(teacherId)));
-    res.status(200).json({ message: "Teacher deleted successfully!" });
+    const teacherExists = await db
+      .select()
+      .from(teacherTable)
+      .where(eq(teacherTable.id, Number(teacherId)));
+    if (teacherExists.length === 0) {
+      res.status(500).json({ message: "Teache record not found" });
+    } else {
+      await db
+        .delete(teacherTable)
+        .where(eq(teacherTable.id, Number(teacherId)));
+      res.status(200).json({ message: "Teacher deleted successfully!" });
+    }
   } catch (error) {
     console.error("There was an error deleting the record: ", error);
   }
