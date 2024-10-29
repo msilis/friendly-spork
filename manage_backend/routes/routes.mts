@@ -81,10 +81,14 @@ router
     res.status(200).json({ message: "Student data updated successfully!" });
   });
 
-router.delete("/students/:studentId/delete", (req, res) => {
+router.delete("/students/:studentId/delete", async (req, res) => {
   const studentId = req.params.studentId;
-
-  res.status(200).json({ message: "Student deleted successfully!" });
+  try {
+    await db.delete(studentTable).where(eq(studentTable.id, Number(studentId)));
+    res.status(200).json({ message: "Record deleted successfully!" });
+  } catch (error) {
+    console.error("There was an error deleting the record: ", error);
+  }
 });
 
 router.get("/students", async (req, res) => {
@@ -163,10 +167,14 @@ router
     res.status(200).json({ message: "Family updated successfully!" });
   });
 
-router.delete("/families/:familyId/delete", (req, res) => {
+router.delete("/families/:familyId/delete", async (req, res) => {
   const familyId = req.params.familyId;
-
-  res.status(200).json({ message: "Family deleted successfully!" });
+  try {
+    await db.delete(familyTable).where(eq(familyTable.id, Number(familyId)));
+    res.status(200).json({ message: "Record deleted successfully!" });
+  } catch (error) {
+    console.error("There was an error deleting the record: ", error);
+  }
 });
 
 router.get("/families", async (req, res) => {
@@ -211,9 +219,14 @@ router
     res.status(200).json({ message: "Teacher updated successfully!" });
   });
 
-router.delete("/teachers/:teacherId/delete", (req, res) => {
+router.delete("/teachers/:teacherId/delete", async (req, res) => {
   const teacherId = req.params.teacherId;
-  res.status(200).json({ message: "Teacher deleted successfully!" });
+  try {
+    await db.delete(teacherTable).where(eq(teacherTable.id, Number(teacherId)));
+    res.status(200).json({ message: "Teacher deleted successfully!" });
+  } catch (error) {
+    console.error("There was an error deleting the record: ", error);
+  }
 });
 
 router.get("/teachers", async (req, res) => {
