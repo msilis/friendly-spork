@@ -29,6 +29,7 @@ const Students = () => {
                 <td>{student.first_name}</td>
                 <td>{student.last_name}</td>
                 <td>{student.birthdate}</td>
+                <td>{student.teacher_id ? student.teacher_id : "None"}</td>
               </tr>
             );
           })}
