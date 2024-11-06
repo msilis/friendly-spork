@@ -1,5 +1,5 @@
 export type StudentRecord = {
-  id: number;
+  id?: number;
   first_name: string;
   last_name: string;
   birthdate: string;

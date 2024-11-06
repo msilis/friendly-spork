@@ -9,6 +9,7 @@ export const getStudents = async () => {
 };
 
 export const addStudent = async (data: StudentRecord) => {
+  console.log(data, "data");
   try {
     const addStudent = await fetch(
       `${process.env.MANAGE_BACKEND}/students/add`,
