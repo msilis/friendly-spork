@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { addStudent } from "~/data/data";
@@ -29,7 +29,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 const AddStudent = () => {
   return (
     <div>
-      <div>Add Student Route</div>
+      <Link to={"/students"}>
+        <button className="btn-link">Back</button>
+      </Link>
       <Form className="flex flex-col gap-3" method="POST">
         <h2>Add Student</h2>
         <input
