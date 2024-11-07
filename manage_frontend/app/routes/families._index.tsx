@@ -1,6 +1,7 @@
 import { useLoaderData } from "@remix-run/react";
 import { getFamilies } from "~/data/data";
 import { FamilyRecord } from "~/types/types";
+import { Link } from "@remix-run/react";
 
 export const loader = async () => {
   return await getFamilies();
@@ -10,7 +11,9 @@ const Families = () => {
   const families = useLoaderData<typeof loader>();
   return (
     <div>
-      <h1>Family Route</h1>
+      <Link to={"/families/add"}>
+        <button className="btn-link">Add Family</button>
+      </Link>
       <div className={"overflow-x-auto"}>
         <h1 className="text-xl">Families</h1>
         <table className="table table-xs">
