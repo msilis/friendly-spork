@@ -32,7 +32,7 @@ const AddStudent = () => {
       <Link to={"/students"}>
         <button className="btn-link">Back</button>
       </Link>
-      <Form className="flex flex-col gap-3" method="POST">
+      <Form className="flex flex-col gap-3 ml-8" method="POST">
         <h2>Add Student</h2>
         <input
           name="first_name"
