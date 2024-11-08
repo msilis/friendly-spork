@@ -50,3 +50,10 @@ export const addFamily = async (data: FamilyRecord) => {
     console.error(error, "Error adding family");
   }
 };
+
+export const getTeachers = async () => {
+  const allTeachers = await fetch(
+    `${process.env.MANAGE_BACKEND}/teachers`
+  ).then((response) => response.json());
+  return json(allTeachers);
+};

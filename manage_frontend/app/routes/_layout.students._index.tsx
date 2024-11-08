@@ -1,7 +1,7 @@
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, Link } from "@remix-run/react";
+import Navigation from "~/components/Navigation";
 import { getStudents } from "~/data/data";
 import { StudentRecord } from "~/types/types";
-import { Link } from "@remix-run/react";
 
 export const loader = async () => {
   return await getStudents();

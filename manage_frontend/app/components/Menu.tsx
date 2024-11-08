@@ -9,7 +9,10 @@ const Menu = ({ setMenuOpen }: MenuProps) => {
   };
 
   return (
-    <ul className="menu bg-base-200 rounded-box w-56">
+    <ul
+      className="menu bg-base-200 rounded-box w-56"
+      onMouseLeave={handleMenuClick}
+    >
       <li>
         <Link to={"/families"} onClick={handleMenuClick}>
           Families
@@ -18,6 +21,11 @@ const Menu = ({ setMenuOpen }: MenuProps) => {
       <li>
         <Link to={"/students"} onClick={handleMenuClick}>
           Students
+        </Link>
+      </li>
+      <li>
+        <Link to={"/teachers"} onClick={handleMenuClick}>
+          Teachers
         </Link>
       </li>
     </ul>

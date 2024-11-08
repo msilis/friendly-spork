@@ -33,7 +33,7 @@ const Navigation = () => {
         ) : null}
       </div>
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl" href="/">
+        <a className="btn btn-ghost text-xl" href="/dashboard">
           Manage
         </a>
       </div>

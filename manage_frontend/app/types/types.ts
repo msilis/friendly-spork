@@ -24,3 +24,12 @@ export interface FamilyRecord {
   alternate_contact_email?: string;
   alternate_contact_mobile_phone?: string;
 }
+
+export interface TeacherRecord {
+  id?: number;
+  teacher_first_name: string;
+  teacher_last_name: string;
+  teacher_email: string;
+  teacher_mobile_phone: string;
+  teacher_address: string;
+}

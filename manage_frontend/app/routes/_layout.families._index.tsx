@@ -1,7 +1,6 @@
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, Link } from "@remix-run/react";
 import { getFamilies } from "~/data/data";
 import { FamilyRecord } from "~/types/types";
-import { Link } from "@remix-run/react";
 
 export const loader = async () => {
   return await getFamilies();
