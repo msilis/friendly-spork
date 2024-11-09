@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { drizzle } from "drizzle-orm/libsql";
+import { sql } from "drizzle-orm";
 import "dotenv/config";
 import { eq } from "drizzle-orm";
 import { studentTable, familyTable, teacherTable } from "../db/dbSchema.mts";
@@ -186,11 +187,12 @@ router.post("/families/add", async (req, res) => {
 
 router.get("/families/:family", async (req, res) => {
   const familyLastName = req.params.family;
+
   try {
     const familyData = await db
       .select()
       .from(familyTable)
-      .where(eq(familyTable.family_last_name, familyLastName));
+      .where(sql`LOWER(${familyTable.family_last_name}) = ${familyLastName}`);
     res.status(200).json(familyData);
   } catch (error) {
     console.error("There was an error retreiving the family record", error);
