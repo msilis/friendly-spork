@@ -184,6 +184,19 @@ router.post("/families/add", async (req, res) => {
   }
 });
 
+router.get("/families/:family", async (req, res) => {
+  const familyLastName = req.params.family;
+  try {
+    const familyData = await db
+      .select()
+      .from(familyTable)
+      .where(eq(familyTable.family_last_name, familyLastName));
+    res.status(200).json(familyData);
+  } catch (error) {
+    console.error("There was an error retreiving the family record", error);
+  }
+});
+
 router
   .route("/families/:familyId/edit")
   .get(async (req, res) => {
