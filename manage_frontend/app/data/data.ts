@@ -1,11 +1,6 @@
 import { json } from "@remix-run/react";
-import Families from "~/routes/_layout.families._index";
-import {
-  FamilyParams,
-  FamilyRecord,
-  StudentRecord,
-  TeacherRecord,
-} from "~/types/types";
+
+import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
 
 export const getStudents = async () => {
   const allStudents = await fetch(
@@ -39,8 +34,7 @@ export const getFamilies = async () => {
   return json(allFamilies);
 };
 
-export const getFamily = async (params) => {
-  console.log(params, "FAMILY LAST NAME FROM FETCH FUNCTION");
+export const getFamily = async (params: string | undefined) => {
   const family = await fetch(
     `${process.env.MANAGE_BACKEND}/families/${params}`
   ).then((response) => response.json());
@@ -48,6 +42,7 @@ export const getFamily = async (params) => {
 };
 
 export const addFamily = async (data: FamilyRecord) => {
+  console.log(data, "data");
   try {
     const addFamily = await fetch(
       `${process.env.MANAGE_BACKEND}/families/add`,

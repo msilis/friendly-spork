@@ -12,6 +12,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const parent1Email = body.get("parent1_email");
   const parent1MobilePhone = body.get("parent1_mobile_phone");
   const parent1Address = body.get("parent1_address");
+  const parent2FirstName = body.get("parent2_first_name");
+  const parent2LastName = body.get("parent2_last_name");
+  const parent2Email = body.get("parent2_email");
+  const parent2MobilePhone = body.get("parent2_mobile_phone");
+  const parent2Address = body.get("parent2_address");
 
   if (
     typeof familyLastName !== "string" ||
@@ -19,7 +24,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     typeof parent1LastName !== "string" ||
     typeof parent1Email !== "string" ||
     typeof parent1MobilePhone !== "string" ||
-    typeof parent1Address !== "string"
+    typeof parent2FirstName !== "string" ||
+    typeof parent2LastName !== "string" ||
+    typeof parent2Email !== "string" ||
+    typeof parent2MobilePhone !== "string"
   ) {
     throw new Error("Invalid form data");
   }
@@ -31,6 +39,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     parent1_email: parent1Email,
     parent1_mobile_phone: parent1MobilePhone,
     parent1_address: parent1Address,
+    parent2_first_name: parent2FirstName,
+    parent2_last_name: parent2LastName,
+    parent2_email: parent2Email,
+    parent2_mobile_phone: parent2MobilePhone,
+    parent2_address: parent2Address,
   });
 
   return redirect("/families");
