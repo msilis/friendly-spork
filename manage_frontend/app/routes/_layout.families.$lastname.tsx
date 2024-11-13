@@ -39,22 +39,22 @@ const Family = () => {
           </p>
         </div>
         <div className="ml-8 mt-14">
-          {family[0].parent1_first_name ? (
+          {family[1]?.parent1_first_name ? (
             <>
-              <h2 className="font-light mb-2">Parent 1 First Name</h2>
-              <p className="pb-4">{family[0].parent1_first_name}</p>
+              <h2 className="font-light mb-2">Parent 2 First Name</h2>
+              <p className="pb-4">{family[0].parent2_first_name}</p>
 
-              <h2 className="font-light mb-2">Parent 1 Last Name</h2>
-              <p className="pb-4">{family[0].parent1_last_name}</p>
+              <h2 className="font-light mb-2">Parent 2 Last Name</h2>
+              <p className="pb-4">{family[0].parent2_last_name}</p>
 
-              <h2 className="font-light mb-2">Parent 1 Email</h2>
-              <p className="pb-4">{family[0].parent1_email}</p>
+              <h2 className="font-light mb-2">Parent 2 Email</h2>
+              <p className="pb-4">{family[0].parent2_email}</p>
 
-              <h2 className="font-light mb-2">Parent 1 Mobile Phone</h2>
-              <p className="pb-4">{family[0].parent1_mobile_phone}</p>
+              <h2 className="font-light mb-2">Parent 2 Mobile Phone</h2>
+              <p className="pb-4">{family[0].parent2_mobile_phone}</p>
 
-              <h2 className="font-light mb-2">Parent 1 Address</h2>
-              <p className="pb-4">{family[0].parent1_address}</p>
+              <h2 className="font-light mb-2">Parent 2 Address</h2>
+              <p className="pb-4">{family[0].parent2_address}</p>
             </>
           ) : null}
         </div>

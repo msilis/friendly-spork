@@ -31,11 +31,15 @@ const Families = () => {
               return (
                 <tr key={family.id}>
                   <td>{family.id}</td>
-                  <Link
-                    to={`/families/${family.family_last_name.toLowerCase()}`}
-                  >
-                    <td>{family.family_last_name}</td>
-                  </Link>
+
+                  <td>
+                    <Link
+                      to={`/families/${family.family_last_name.toLowerCase()}`}
+                    >
+                      {family.family_last_name}
+                    </Link>
+                  </td>
+
                   <td>{family.parent1_first_name}</td>
                   <td>{family.parent1_last_name}</td>
                   <td>{family.parent2_first_name}</td>
