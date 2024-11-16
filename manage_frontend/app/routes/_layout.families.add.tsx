@@ -24,10 +24,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     typeof parent1LastName !== "string" ||
     typeof parent1Email !== "string" ||
     typeof parent1MobilePhone !== "string" ||
+    typeof parent1Address !== "string" ||
     typeof parent2FirstName !== "string" ||
     typeof parent2LastName !== "string" ||
     typeof parent2Email !== "string" ||
-    typeof parent2MobilePhone !== "string"
+    typeof parent2MobilePhone !== "string" ||
+    typeof parent2Address !== "string"
   ) {
     throw new Error("Invalid form data");
   }

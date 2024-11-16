@@ -95,7 +95,7 @@ router
           .set(filteredStudentData)
           .where(eq(studentTable.id, Number(studentId)));
 
-        res.status(200).json(filteredStudentData);
+        res.status(200).json(updatedData);
       }
     } catch (error) {
       console.error("There was an error updating the student record: ", error);

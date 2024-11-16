@@ -38,7 +38,7 @@ export const getFamily = async (params: string | undefined) => {
   const family = await fetch(
     `${process.env.MANAGE_BACKEND}/families/${params}`
   ).then((response) => response.json());
-  return json(family);
+  return family;
 };
 
 export const addFamily = async (data: FamilyRecord) => {
@@ -64,7 +64,7 @@ export const getTeachers = async () => {
   const allTeachers = await fetch(
     `${process.env.MANAGE_BACKEND}/teachers`
   ).then((response) => response.json());
-  return json(allTeachers);
+  return allTeachers;
 };
 
 export const addTeacher = async (data: TeacherRecord) => {
