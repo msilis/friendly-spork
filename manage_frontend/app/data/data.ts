@@ -6,7 +6,7 @@ export const getStudents = async () => {
   const allStudents = await fetch(
     `${process.env.MANAGE_BACKEND}/students`
   ).then((response) => response.json());
-  return json(allStudents);
+  return allStudents;
 };
 
 export const addStudent = async (data: StudentRecord) => {
@@ -31,7 +31,7 @@ export const getFamilies = async () => {
   const allFamilies = await fetch(
     `${process.env.MANAGE_BACKEND}/families`
   ).then((response) => response.json());
-  return json(allFamilies);
+  return allFamilies;
 };
 
 export const getFamily = async (params: string | undefined) => {

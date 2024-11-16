@@ -9,7 +9,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const firstName = body.get("first_name");
   const lastName = body.get("last_name");
   const birthDate = body.get("birthdate");
-  const family = body.get("family");
+  const family = Number(body.get("family"));
 
   if (
     typeof firstName !== "string" ||
@@ -69,9 +69,8 @@ const AddStudent = () => {
         >
           <option value="">Choose a family</option>
           {familyLastNames.map((family: FamilyRecord) => {
-            console.log(family.family_id);
             return (
-              <option value={family.family_id} key={family.family_last_name}>
+              <option value={family.id} key={family.family_last_name}>
                 {family.family_last_name}
               </option>
             );

@@ -8,7 +8,7 @@ export interface StudentRecord {
 }
 
 export interface FamilyRecord {
-  family_id?: number;
+  id?: number;
   family_last_name: string;
   parent1_first_name: string;
   parent1_last_name: string;
