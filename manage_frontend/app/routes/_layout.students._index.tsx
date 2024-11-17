@@ -43,7 +43,11 @@ const Students = () => {
               return (
                 <tr key={student.id}>
                   <td>{student.id}</td>
-                  <td>{student.first_name}</td>
+                  <td>
+                    <Link to={`/students/${student.id?.toString()}`}>
+                      {student.first_name}
+                    </Link>
+                  </td>
                   <td>{student.last_name}</td>
                   <td>{student.birthdate}</td>
                   <td>{getFamilyLastName(student)}</td>

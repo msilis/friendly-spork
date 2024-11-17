@@ -9,6 +9,13 @@ export const getStudents = async () => {
   return allStudents;
 };
 
+export const getStudent = async (params: string | undefined) => {
+  const getStudent = await fetch(
+    `${process.env.MANAGE_BACKEND}/students/${params}/edit`
+  ).then((response) => response.json());
+  return getStudent;
+};
+
 export const addStudent = async (data: StudentRecord) => {
   try {
     const addStudent = await fetch(
