@@ -34,6 +34,27 @@ export const addStudent = async (data: StudentRecord) => {
   }
 };
 
+export const updateStudent = async (
+  data: StudentRecord,
+  params: string | undefined
+) => {
+  try {
+    const updateStudent = await fetch(
+      `${process.env.MANAGE_BACKEND}/students/${params}/edit`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return updateStudent;
+  } catch (error) {
+    console.error(error, "Error updating student");
+  }
+};
+
 export const getFamilies = async () => {
   const allFamilies = await fetch(
     `${process.env.MANAGE_BACKEND}/families`
