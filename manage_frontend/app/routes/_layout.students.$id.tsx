@@ -1,7 +1,12 @@
-import { json, Link, useLoaderData } from "@remix-run/react";
-import { useRef } from "react";
+import { json, Link, useLoaderData, Form } from "@remix-run/react";
+import { useRef, useState } from "react";
 import { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
-import { getStudent, getTeachers, getFamilies } from "~/data/data";
+import {
+  getStudent,
+  getTeachers,
+  getFamilies,
+  updateStudent,
+} from "~/data/data";
 import { FamilyRecord, TeacherRecord } from "~/types/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -16,6 +21,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const body = await request.formData();
+  const id = body.get("id");
   const firstName = body.get("first_name");
   const lastName = body.get("last_name");
   const birthDate = body.get("birthdate");
@@ -23,6 +29,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const teacher = Number(body.get("teacher"));
 
   if (
+    typeof id !== "number" ||
     typeof firstName !== "string" ||
     typeof lastName !== "string" ||
     typeof birthDate !== "string" ||
@@ -31,13 +38,29 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   ) {
     throw new Error("Invalid form data");
   }
+
+  await updateStudent({
+    id: id,
+    first_name: firstName,
+    last_name: lastName,
+    birthdate: birthDate,
+    family_id: family,
+    teacher_id: teacher,
+  });
 };
 
 const Student = () => {
   const { studentData, families, teachers } = useLoaderData<typeof loader>();
   const student = studentData?.[0];
   const modalRef = useRef<HTMLDialogElement>(null);
-  console.log(student);
+  const [formState, setFormState] = useState({
+    id: student.id,
+    first_name: student.first_name,
+    last_name: student.last_name,
+    birthdate: student.birthdate,
+    family_id: student.family_id,
+    teacher_id: student.teacher_id,
+  });
 
   const handleOpenModal = () => {
     modalRef.current?.showModal();
@@ -50,6 +73,13 @@ const Student = () => {
   const handleSave = () => {
     handleModalClose();
   };
+
+  const handleChange = (event) => {
+    setFormState({ ...formState, [event.target.name]: event.target.value });
+  };
+
+  const isFormDirty =
+    JSON.stringify(formState) !== JSON.stringify(student) ? true : false;
 
   return (
     <>
@@ -91,12 +121,14 @@ const Student = () => {
             <input
               name="first_name"
               placeholder={student.first_name}
+              onChange={handleChange}
               type="text"
               className="input input-bordered w-full max-w-xs"
             />
             <input
               name="last_name"
-              placeholder="Last Name"
+              placeholder={student.last_name}
+              onChange={handleChange}
               type="text"
               className="input input-bordered w-full max-w-xs"
             />
@@ -104,6 +136,7 @@ const Student = () => {
             <input
               name="birthdate"
               defaultValue={student.birthdate}
+              onChange={handleChange}
               type="date"
               className="input input-bordered w-full max-w-xs"
             />
@@ -111,6 +144,7 @@ const Student = () => {
             <select
               name="family"
               className="select select-bordered w-full max-w-xs"
+              onChange={handleChange}
             >
               <option value="">Choose a family</option>
               {families.map((family: FamilyRecord) => {
@@ -125,6 +159,7 @@ const Student = () => {
             <select
               name="teacher"
               className="select select-bordered w-full max-w-xs"
+              onChange={handleChange}
             >
               <option value="">Choose a teacher</option>
               {teachers.map((teacher: TeacherRecord) => {
@@ -137,7 +172,9 @@ const Student = () => {
             </select>
           </div>
           <button
-            className="btn btn-success mt-6"
+            className={
+              isFormDirty ? "btn btn-success mt-6" : "btn btn-disabled mt-6"
+            }
             type="submit"
             onClick={() => handleSave()}
           >
