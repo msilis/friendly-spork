@@ -60,6 +60,7 @@ router.post("/students/add", async (req: Request, res: Response) => {
 router
   .route("/students/:studentId/edit")
   .get(async (req, res) => {
+    console.log(req.params, "req params for get");
     const studentId = req.params.studentId;
     try {
       const studentData = await db
@@ -74,7 +75,9 @@ router
       );
     }
   })
-  .put(async (req, res) => {
+  .post(async (req, res) => {
+    console.log(req.params, "params for update");
+    console.log(req.body, "body for update");
     const studentId = req.params.studentId;
     const updatedStudentData = req.body;
     try {
@@ -95,7 +98,7 @@ router
           .set(filteredStudentData)
           .where(eq(studentTable.id, Number(studentId)));
 
-        res.status(200).json(updatedData);
+        // res.status(200).json(updatedData);
       }
     } catch (error) {
       console.error("There was an error updating the student record: ", error);

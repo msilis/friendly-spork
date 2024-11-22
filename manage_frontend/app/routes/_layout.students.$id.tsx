@@ -1,6 +1,6 @@
-import { json, Link, useLoaderData, Form } from "@remix-run/react";
+import { json, Link, useLoaderData, useParams } from "@remix-run/react";
 import { useRef, useState } from "react";
-import { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs } from "@remix-run/node";
 import {
   getStudent,
   getTeachers,
@@ -19,35 +19,35 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return json({ studentData, families, teachers });
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const body = await request.formData();
-  const id = body.get("id");
-  const firstName = body.get("first_name");
-  const lastName = body.get("last_name");
-  const birthDate = body.get("birthdate");
-  const family = Number(body.get("family"));
-  const teacher = Number(body.get("teacher"));
+// export const action = async ({ request }: ActionFunctionArgs) => {
+//   const body = await request.formData();
+//   const id = body.get("id");
+//   const firstName = body.get("first_name");
+//   const lastName = body.get("last_name");
+//   const birthDate = body.get("birthdate");
+//   const family = Number(body.get("family"));
+//   const teacher = Number(body.get("teacher"));
 
-  if (
-    typeof id !== "number" ||
-    typeof firstName !== "string" ||
-    typeof lastName !== "string" ||
-    typeof birthDate !== "string" ||
-    typeof family !== "number" ||
-    typeof teacher !== "number"
-  ) {
-    throw new Error("Invalid form data");
-  }
+//   if (
+//     typeof id !== "number" ||
+//     typeof firstName !== "string" ||
+//     typeof lastName !== "string" ||
+//     typeof birthDate !== "string" ||
+//     typeof family !== "number" ||
+//     typeof teacher !== "number"
+//   ) {
+//     throw new Error("Invalid form data");
+//   }
 
-  await updateStudent({
-    id: id,
-    first_name: firstName,
-    last_name: lastName,
-    birthdate: birthDate,
-    family_id: family,
-    teacher_id: teacher,
-  });
-};
+//   await updateStudent({
+//     id: id,
+//     first_name: firstName,
+//     last_name: lastName,
+//     birthdate: birthDate,
+//     family_id: family,
+//     teacher_id: teacher,
+//   });
+// };
 
 const Student = () => {
   const { studentData, families, teachers } = useLoaderData<typeof loader>();
@@ -62,6 +62,10 @@ const Student = () => {
     teacher_id: student.teacher_id,
   });
 
+  const params = useParams();
+
+  console.log(formState, "formState");
+
   const handleOpenModal = () => {
     modalRef.current?.showModal();
   };
@@ -71,11 +75,46 @@ const Student = () => {
   };
 
   const handleSave = () => {
+    let family = formState.family_id;
+    let teacher = formState.teacher_id;
+    if (formState.family_id) {
+      family = Number(formState.family_id);
+    }
+    if (formState.teacher_id) {
+      teacher = Number(formState.teacher_id);
+    }
+    if (
+      typeof formState.id !== "number" ||
+      typeof formState.first_name !== "string" ||
+      typeof formState.last_name !== "string" ||
+      typeof formState.birthdate !== "string" ||
+      typeof family !== "number" ||
+      typeof teacher !== "number"
+    ) {
+      throw new Error("Invalid form data");
+    }
+    updateStudent(
+      {
+        id: formState.id,
+        first_name: formState.first_name,
+        last_name: formState.last_name,
+        birthdate: formState.birthdate,
+        family_id: family,
+        teacher_id: teacher,
+      },
+      params.id
+    );
     handleModalClose();
   };
 
   const handleChange = (event) => {
-    setFormState({ ...formState, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    let newValue = value;
+    if (name === "family_id" || name === "teacher_id") {
+      newValue = Number(value);
+    }
+
+    setFormState({ ...formState, [name]: newValue });
   };
 
   const isFormDirty =
@@ -140,9 +179,9 @@ const Student = () => {
               type="date"
               className="input input-bordered w-full max-w-xs"
             />
-            <label htmlFor="family">Family</label>
+            <label htmlFor="family_id">Family</label>
             <select
-              name="family"
+              name="family_id"
               className="select select-bordered w-full max-w-xs"
               onChange={handleChange}
             >
@@ -155,9 +194,9 @@ const Student = () => {
                 );
               })}
             </select>
-            <label htmlFor="teacher">Teacher</label>
+            <label htmlFor="teacher_id">Teacher</label>
             <select
-              name="teacher"
+              name="teacher_id"
               className="select select-bordered w-full max-w-xs"
               onChange={handleChange}
             >

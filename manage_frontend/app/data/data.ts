@@ -38,9 +38,11 @@ export const updateStudent = async (
   data: StudentRecord,
   params: string | undefined
 ) => {
+  console.log(data, "data");
+  console.log(params, "params");
   try {
     const updateStudent = await fetch(
-      `${process.env.MANAGE_BACKEND}/students/${params}/edit`,
+      `http://localhost:3000/students/${params}/edit`,
       {
         method: "POST",
         headers: {
