@@ -1,4 +1,10 @@
-import { json, Link, useLoaderData, useParams } from "@remix-run/react";
+import {
+  json,
+  Link,
+  useLoaderData,
+  useParams,
+  useRevalidator,
+} from "@remix-run/react";
 import { useRef, useState } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import {
@@ -19,36 +25,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return json({ studentData, families, teachers });
 };
 
-// export const action = async ({ request }: ActionFunctionArgs) => {
-//   const body = await request.formData();
-//   const id = body.get("id");
-//   const firstName = body.get("first_name");
-//   const lastName = body.get("last_name");
-//   const birthDate = body.get("birthdate");
-//   const family = Number(body.get("family"));
-//   const teacher = Number(body.get("teacher"));
-
-//   if (
-//     typeof id !== "number" ||
-//     typeof firstName !== "string" ||
-//     typeof lastName !== "string" ||
-//     typeof birthDate !== "string" ||
-//     typeof family !== "number" ||
-//     typeof teacher !== "number"
-//   ) {
-//     throw new Error("Invalid form data");
-//   }
-
-//   await updateStudent({
-//     id: id,
-//     first_name: firstName,
-//     last_name: lastName,
-//     birthdate: birthDate,
-//     family_id: family,
-//     teacher_id: teacher,
-//   });
-// };
-
 const Student = () => {
   const { studentData, families, teachers } = useLoaderData<typeof loader>();
   const student = studentData?.[0];
@@ -63,6 +39,7 @@ const Student = () => {
   });
 
   const params = useParams();
+  const revalidator = useRevalidator();
 
   console.log(formState, "formState");
 
@@ -104,6 +81,7 @@ const Student = () => {
       },
       params.id
     );
+    revalidator.revalidate();
     handleModalClose();
   };
 
