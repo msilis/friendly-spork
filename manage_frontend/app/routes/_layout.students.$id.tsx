@@ -16,7 +16,6 @@ import {
 import { FamilyRecord, TeacherRecord } from "~/types/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  // return await getStudent(params.id);
   const [studentData, families, teachers] = await Promise.all([
     getStudent(params.id),
     getFamilies(),
@@ -40,8 +39,6 @@ const Student = () => {
 
   const params = useParams();
   const revalidator = useRevalidator();
-
-  console.log(formState, "formState");
 
   const handleOpenModal = () => {
     modalRef.current?.showModal();
@@ -163,14 +160,27 @@ const Student = () => {
               className="select select-bordered w-full max-w-xs"
               onChange={handleChange}
             >
-              <option value="">Choose a family</option>
-              {families.map((family: FamilyRecord) => {
-                return (
-                  <option value={family.id} key={family.family_last_name}>
-                    {family.family_last_name}
-                  </option>
-                );
-              })}
+              {student.family_id ? (
+                <option value={student.family_id}>
+                  {families.filter(
+                    (family: FamilyRecord) => family.id === student.family_id
+                  )[0]?.family_last_name || "Family not found"}
+                </option>
+              ) : (
+                <option value="">Choose a family</option>
+              )}
+
+              {families
+                .filter(
+                  (family: FamilyRecord) => family.id !== student.family_id
+                )
+                .map((family: FamilyRecord) => {
+                  return (
+                    <option value={family.id} key={family.family_last_name}>
+                      {family.family_last_name}
+                    </option>
+                  );
+                })}
             </select>
             <label htmlFor="teacher_id">Teacher</label>
             <select
@@ -178,14 +188,30 @@ const Student = () => {
               className="select select-bordered w-full max-w-xs"
               onChange={handleChange}
             >
-              <option value="">Choose a teacher</option>
-              {teachers.map((teacher: TeacherRecord) => {
-                return (
-                  <option value={teacher.id} key={teacher.teacher_last_name}>
-                    {teacher.teacher_last_name}
-                  </option>
-                );
-              })}
+              {student.teacher_id ? (
+                <option value={student.teacher_id}>
+                  {
+                    teachers.filter(
+                      (teacher: TeacherRecord) =>
+                        teacher.id === student.teacher_id
+                    )?.[0].teacher_last_name
+                  }
+                </option>
+              ) : (
+                <option value="">Choose a teacher</option>
+              )}
+
+              {teachers
+                .filter(
+                  (teacher: TeacherRecord) => teacher.id !== student.teacher_id
+                )
+                .map((teacher: TeacherRecord) => {
+                  return (
+                    <option value={teacher.id} key={teacher.teacher_last_name}>
+                      {teacher.teacher_last_name}
+                    </option>
+                  );
+                })}
             </select>
           </div>
           <button
