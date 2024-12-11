@@ -111,11 +111,19 @@ const Student = () => {
           <p className="pb-4">{student.birthdate}</p>
           <h2 className="font-light mb-2">Family</h2>
           <p className="pb-4">
-            {student.family_id ? student.family_id : "Not assigned"}
+            {student.family_id
+              ? families.filter(
+                  (family: FamilyRecord) => family.id === student.family_id
+                )?.[0].family_last_name
+              : "Not assigned"}
           </p>
           <h2 className="font-light mb-2">Teacher</h2>
           <p className="pb-4">
-            {student.teacher_id ? student.teacher_id : "Not assigned"}
+            {student.teacher_id
+              ? teachers.filter(
+                  (teacher: TeacherRecord) => teacher.id === student.teacher_id
+                )?.[0].teacher_last_name
+              : "Not assigned"}
           </p>
           <button className="btn" onClick={() => handleOpenModal()}>
             Edit

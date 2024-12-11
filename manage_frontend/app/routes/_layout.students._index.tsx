@@ -1,22 +1,31 @@
 import { useLoaderData, Link, json } from "@remix-run/react";
-import { getFamilies, getStudents } from "~/data/data";
-import { FamilyRecord, StudentRecord } from "~/types/types";
+import { getFamilies, getStudents, getTeachers } from "~/data/data";
+import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
 
 export const loader = async () => {
-  const [students, families] = await Promise.all([
+  const [students, families, teachers] = await Promise.all([
     getStudents(),
     getFamilies(),
+    getTeachers(),
   ]);
-  return json({ students, families });
+  return json({ students, families, teachers });
 };
 
 const Students = () => {
-  const { students, families } = useLoaderData<typeof loader>();
+  const { students, families, teachers } = useLoaderData<typeof loader>();
   const getFamilyLastName = (student: StudentRecord) => {
     const name =
       families.find((family: FamilyRecord) => family.id === student.family_id)
         ?.family_last_name || "Not assigned";
 
+    return name;
+  };
+
+  const getTeacherLastName = (student: StudentRecord) => {
+    const name =
+      teachers.find(
+        (teacher: TeacherRecord) => teacher.id === student.teacher_id
+      )?.teacher_last_name || "Not assigned";
     return name;
   };
 
@@ -51,7 +60,7 @@ const Students = () => {
                   <td>{student.last_name}</td>
                   <td>{student.birthdate}</td>
                   <td>{getFamilyLastName(student)}</td>
-                  <td>{student.teacher_id ? student.teacher_id : "None"}</td>
+                  <td>{getTeacherLastName(student)}</td>
                 </tr>
               );
             })}
