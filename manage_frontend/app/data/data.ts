@@ -38,8 +38,6 @@ export const updateStudent = async (
   data: StudentRecord,
   params: string | undefined
 ) => {
-  console.log(data, "data");
-  console.log(params, "params");
   try {
     const updateStudent = await fetch(
       `http://localhost:3000/students/${params}/edit`,
@@ -112,5 +110,26 @@ export const addTeacher = async (data: TeacherRecord) => {
     return json(addTeacher);
   } catch (error) {
     console.error(error, "Error adding teacher");
+  }
+};
+
+export const updateTeacher = async (
+  data: TeacherRecord,
+  params: string | undefined
+) => {
+  try {
+    const updateTeacher = await fetch(
+      `http://localhost:3000/teachers/${params}/edit`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return updateTeacher;
+  } catch (error) {
+    console.error(error, "Error updating teacher");
   }
 };
