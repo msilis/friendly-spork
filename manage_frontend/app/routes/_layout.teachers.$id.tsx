@@ -41,8 +41,6 @@ const Teacher = () => {
 
   const isFormDirty =
     JSON.stringify(formState) !== JSON.stringify(teacherData) ? true : false;
-  console.log(teacherData, "teacherData");
-  console.log(formState, "formState");
 
   const handleSave = () => {
     let teacherId = formState.id;
