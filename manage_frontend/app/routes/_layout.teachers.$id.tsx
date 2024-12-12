@@ -73,9 +73,9 @@ const Teacher = () => {
     handleModalClose();
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    let newValue = value;
+    let newValue: string | number = value;
     if (name === "id" || name === "teacher_mobile_phone") {
       newValue = Number(value);
     }
