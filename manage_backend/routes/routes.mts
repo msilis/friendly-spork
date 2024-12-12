@@ -60,7 +60,6 @@ router.post("/students/add", async (req: Request, res: Response) => {
 router
   .route("/students/:studentId/edit")
   .get(async (req, res) => {
-    console.log(req.params, "req params for get");
     const studentId = req.params.studentId;
     try {
       const studentData = await db
@@ -76,8 +75,6 @@ router
     }
   })
   .post(async (req, res) => {
-    console.log(req.params, "params for update");
-    console.log(req.body, "body for update");
     const studentId = req.params.studentId;
     const updatedStudentData = req.body;
     try {
@@ -190,7 +187,6 @@ router.post("/families/add", async (req, res) => {
 
 router.get("/families/:family", async (req, res) => {
   const familyLastName = req.params.family;
-
   try {
     const familyData = await db
       .select()
@@ -216,7 +212,7 @@ router
       console.error("There was an error retreiving the family record", error);
     }
   })
-  .put(async (req, res) => {
+  .post(async (req, res) => {
     const familyId = req.params.familyId;
     const updatedFamilyData = req.body;
     try {
@@ -309,7 +305,7 @@ router
         .from(teacherTable)
         .where(eq(teacherTable.id, Number(teacherId)));
       if (teacherExists.length === 0) {
-        res.status(500).json({ message: "Teache record not found" });
+        res.status(500).json({ message: "Teacher record not found" });
       } else {
         const teacherData = await db
           .select()
@@ -324,7 +320,7 @@ router
         .json({ message: "There was an error retreiving the record" });
     }
   })
-  .put(async (req, res) => {
+  .post(async (req, res) => {
     const teacherId = req.params.teacherId;
     const updatedTeacherData = req.body;
     try {
@@ -396,7 +392,7 @@ router
   .get((req, res) => {
     const classId = req.params.classId;
   })
-  .put((req, res) => {
+  .post((req, res) => {
     const classId = req.params.classId;
     const updatedClassData = req.body;
 

@@ -95,6 +95,13 @@ export const getTeachers = async () => {
   return allTeachers;
 };
 
+export const getTeacher = async (params: string | undefined) => {
+  const teacher = await fetch(
+    `${process.env.MANAGE_BACKEND}/teachers/${params}/edit`
+  ).then((response) => response.json());
+  return teacher;
+};
+
 export const addTeacher = async (data: TeacherRecord) => {
   try {
     const addTeacher = await fetch(
@@ -117,6 +124,7 @@ export const updateTeacher = async (
   data: TeacherRecord,
   params: string | undefined
 ) => {
+  console.log(data, "data");
   try {
     const updateTeacher = await fetch(
       `http://localhost:3000/teachers/${params}/edit`,

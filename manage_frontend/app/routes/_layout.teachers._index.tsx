@@ -31,7 +31,11 @@ const Teachers = () => {
               return (
                 <tr key={teacher.id}>
                   <td>{teacher.id}</td>
-                  <td>{teacher.teacher_first_name}</td>
+                  <td>
+                    <Link to={`/teachers/${teacher.id?.toString()}`}>
+                      {teacher.teacher_first_name}
+                    </Link>
+                  </td>
                   <td>{teacher.teacher_last_name}</td>
                   <td>{teacher.teacher_email}</td>
                   <td>{teacher.teacher_mobile_phone}</td>
