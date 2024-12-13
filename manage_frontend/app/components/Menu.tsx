@@ -28,6 +28,11 @@ const Menu = ({ setMenuOpen }: MenuProps) => {
           Teachers
         </Link>
       </li>
+      <li>
+        <Link to={"/classes"} onClick={handleMenuClick}>
+          Classes
+        </Link>
+      </li>
     </ul>
   );
 };
