@@ -70,7 +70,6 @@ export const getFamily = async (params: string | undefined) => {
 };
 
 export const addFamily = async (data: FamilyRecord) => {
-  console.log(data, "data");
   try {
     const addFamily = await fetch(
       `${process.env.MANAGE_BACKEND}/families/add`,
@@ -85,6 +84,27 @@ export const addFamily = async (data: FamilyRecord) => {
     return json(addFamily);
   } catch (error) {
     console.error(error, "Error adding family");
+  }
+};
+
+export const updateFamily = async (
+  data: FamilyRecord,
+  id: string | undefined
+) => {
+  try {
+    const updateTeacher = await fetch(
+      `http://localhost:3000/families/${id}/edit`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return updateTeacher;
+  } catch (error) {
+    console.error(error, "There was an error updating the family record.");
   }
 };
 
@@ -124,7 +144,6 @@ export const updateTeacher = async (
   data: TeacherRecord,
   params: string | undefined
 ) => {
-  console.log(data, "data");
   try {
     const updateTeacher = await fetch(
       `http://localhost:3000/teachers/${params}/edit`,

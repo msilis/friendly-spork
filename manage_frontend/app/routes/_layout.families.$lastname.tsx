@@ -1,14 +1,111 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
-import { getFamily } from "~/data/data";
+import { useLoaderData, Link, json, useRevalidator } from "@remix-run/react";
+import { getFamily, updateFamily } from "~/data/data";
+import React, { useRef, useState } from "react";
+import { FamilyRecord } from "~/types/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  return await getFamily(params.lastname);
+  const families = await getFamily(params.lastname);
+
+  return json(families);
 };
 
 const Family = () => {
-  const familyData = useLoaderData<typeof loader>();
-  const family = familyData[0];
+  const families = useLoaderData<typeof loader>();
+  const family: FamilyRecord = families[0];
+
+  const revalidator = useRevalidator();
+  const [formState, setFormState] = useState<FamilyRecord>({
+    id: family.id,
+    family_last_name: family.family_last_name,
+    parent1_first_name: family.parent1_first_name,
+    parent1_last_name: family.parent1_last_name,
+    parent1_email: family.parent1_email,
+    parent1_mobile_phone: family.parent1_mobile_phone,
+    // parent1_address: family.parent1_address,
+    parent2_first_name: family.parent2_first_name,
+    parent2_last_name: family.parent2_last_name,
+    parent2_email: family.parent2_email,
+    parent2_mobile_phone: family.parent2_mobile_phone,
+    // parent2_address: family.parent2_address,
+  });
+
+  const modalRef = useRef<HTMLDialogElement>(null);
+
+  const handleOpenModal = () => {
+    modalRef.current?.showModal();
+  };
+
+  const handleModalClose = () => {
+    modalRef.current?.close();
+  };
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    let newValue: string | number = value;
+    if (name === "id") {
+      newValue = Number(value);
+    }
+
+    setFormState({ ...formState, [name]: newValue });
+  };
+
+  const isFormDirty =
+    JSON.stringify(formState) !== JSON.stringify(family) ? true : false;
+
+  const handleSave = () => {
+    let familyId = formState.id;
+    if (formState.id) {
+      familyId = Number(formState.id);
+    }
+    // if (
+    //   typeof formState.id !== "number" ||
+    //   typeof formState.family_last_name !== "string" ||
+    //   typeof formState.parent1_first_name !== "string" ||
+    //   typeof formState.parent1_last_name !== "string" ||
+    //   typeof formState.parent1_email !== "string" ||
+    //   typeof formState.parent1_mobile_phone !== "number" ||
+    //   typeof formState.parent1_address !== "string" ||
+    //   (formState.parent2_first_name &&
+    //     typeof formState.parent2_first_name !== "string") ||
+    //   (formState.parent2_last_name &&
+    //     typeof formState.parent2_last_name !== "string") ||
+    //   (formState.parent2_email &&
+    //     typeof formState.parent2_email !== "string") ||
+    //   (formState.parent2_mobile_phone &&
+    //     formState.parent2_mobile_phone !== "number") ||
+    //   (formState.parent2_address && formState.parent2_address !== "string")
+    // ) {
+    //   throw new Error("Invalid form data");
+    // }
+    const updatedData: FamilyRecord = {
+      id: familyId,
+      family_last_name: formState.family_last_name,
+      parent1_first_name: formState.parent1_first_name,
+      parent1_last_name: formState.parent1_last_name,
+      parent1_email: formState.parent1_email,
+      parent1_mobile_phone: formState.parent1_mobile_phone,
+      parent1_address: formState.parent1_address,
+    };
+    if (formState.parent2_mobile_phone) {
+      updatedData.parent2_mobile_phone = Number(formState.parent2_mobile_phone);
+    }
+    if (formState.parent2_first_name) {
+      updatedData.parent2_first_name = formState.parent2_first_name;
+    }
+    if (formState.parent2_last_name) {
+      updatedData.parent2_last_name = formState.parent2_last_name;
+    }
+    if (formState.parent2_email) {
+      updatedData.parent2_email = formState.parent2_email;
+    }
+    if (formState.parent2_address) {
+      updatedData.parent2_address = formState.parent2_address;
+    }
+
+    updateFamily(updatedData, family.id?.toString());
+    revalidator.revalidate();
+    handleModalClose();
+  };
 
   return (
     <>
@@ -36,6 +133,9 @@ const Family = () => {
           <p className="pb-4">
             {family.parent1_address ? family.parent1_address : "None on file"}
           </p>
+          <button className="btn" onClick={() => handleOpenModal()}>
+            Edit
+          </button>
         </div>
         <div className="ml-8 mt-14">
           {family.parent2_first_name ? (
@@ -58,6 +158,110 @@ const Family = () => {
           ) : null}
         </div>
       </section>
+
+      <dialog id="family-edit-modal" className="modal" ref={modalRef}>
+        <div className="modal-box">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <h3 className="font-bold text-lg mb-6">Edit</h3>
+          <div className="flex flex-col gap-3 ml-8">
+            <input
+              name="parent1_first_name"
+              placeholder={family.parent1_first_name}
+              onChange={handleChange}
+              type="text"
+              className="input input-bordered w-full max-w-xs"
+            />
+            <input
+              name="parent1_last_name"
+              placeholder={family.parent1_last_name}
+              onChange={handleChange}
+              type="text"
+              className="input input-bordered w-full max-w-xs"
+            />
+            <label htmlFor="parent1_email">Email</label>
+            <input
+              name="parent1_email"
+              placeholder={family.parent1_email}
+              onChange={handleChange}
+              type="email"
+              className="input input-bordered w-full max-w-xs"
+            />
+            <label htmlFor="parent1_mobile_phone">Mobile Phone</label>
+            <input
+              name="parent1_mobile_phone"
+              placeholder={family.parent1_mobile_phone?.toString()}
+              onChange={handleChange}
+              type="tel"
+              className="input input-bordered w-full max-w-xs"
+            />
+            <label htmlFor="parent1_address">Parent 1 Address</label>
+            <input
+              name="parent1_address"
+              placeholder={family.parent1_address}
+              onChange={handleChange}
+              type="text"
+              className="input input-bordered w-full max-w-xs"
+            />
+
+            {family.parent2_first_name ? (
+              <>
+                <input
+                  name="parent2_first_name"
+                  placeholder={family.parent2_first_name}
+                  onChange={handleChange}
+                  type="text"
+                  className="input input-bordered w-full max-w-xs"
+                />
+                <input
+                  name="parent2_last_name"
+                  placeholder={family.parent2_last_name}
+                  onChange={handleChange}
+                  type="text"
+                  className="input input-bordered w-full max-w-xs"
+                />
+                <label htmlFor="parent1_email">Email</label>
+                <input
+                  name="parent2_email"
+                  placeholder={family.parent2_email}
+                  onChange={handleChange}
+                  type="email"
+                  className="input input-bordered w-full max-w-xs"
+                />
+                <label htmlFor="parent2_mobile_phone">Mobile Phone</label>
+                <input
+                  name="parent1_mobile_phone"
+                  placeholder={family.parent2_mobile_phone?.toString()}
+                  onChange={handleChange}
+                  type="tel"
+                  className="input input-bordered w-full max-w-xs"
+                />
+                <label htmlFor="parent2_address">Parent 2 Address</label>
+                <input
+                  name="parent2_address"
+                  placeholder={family.parent1_address}
+                  onChange={handleChange}
+                  type="text"
+                  className="input input-bordered w-full max-w-xs"
+                />
+              </>
+            ) : null}
+
+            <button
+              className={
+                isFormDirty ? "btn btn-success mt-6" : "btn btn-disabled mt-6"
+              }
+              type="submit"
+              onClick={() => handleSave()}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </dialog>
     </>
   );
 };
