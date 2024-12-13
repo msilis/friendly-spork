@@ -22,12 +22,12 @@ const Family = () => {
     parent1_last_name: family.parent1_last_name,
     parent1_email: family.parent1_email,
     parent1_mobile_phone: family.parent1_mobile_phone,
-    // parent1_address: family.parent1_address,
+    parent1_address: family.parent1_address,
     parent2_first_name: family.parent2_first_name,
     parent2_last_name: family.parent2_last_name,
     parent2_email: family.parent2_email,
     parent2_mobile_phone: family.parent2_mobile_phone,
-    // parent2_address: family.parent2_address,
+    parent2_address: family.parent2_address,
   });
 
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -49,6 +49,8 @@ const Family = () => {
     setFormState({ ...formState, [name]: newValue });
   };
 
+  console.log(family, "family");
+
   const isFormDirty =
     JSON.stringify(formState) !== JSON.stringify(family) ? true : false;
 
@@ -57,26 +59,26 @@ const Family = () => {
     if (formState.id) {
       familyId = Number(formState.id);
     }
-    // if (
-    //   typeof formState.id !== "number" ||
-    //   typeof formState.family_last_name !== "string" ||
-    //   typeof formState.parent1_first_name !== "string" ||
-    //   typeof formState.parent1_last_name !== "string" ||
-    //   typeof formState.parent1_email !== "string" ||
-    //   typeof formState.parent1_mobile_phone !== "number" ||
-    //   typeof formState.parent1_address !== "string" ||
-    //   (formState.parent2_first_name &&
-    //     typeof formState.parent2_first_name !== "string") ||
-    //   (formState.parent2_last_name &&
-    //     typeof formState.parent2_last_name !== "string") ||
-    //   (formState.parent2_email &&
-    //     typeof formState.parent2_email !== "string") ||
-    //   (formState.parent2_mobile_phone &&
-    //     formState.parent2_mobile_phone !== "number") ||
-    //   (formState.parent2_address && formState.parent2_address !== "string")
-    // ) {
-    //   throw new Error("Invalid form data");
-    // }
+
+    if (
+      typeof formState.id !== "number" ||
+      typeof formState.family_last_name !== "string" ||
+      typeof formState.parent1_first_name !== "string" ||
+      typeof formState.parent1_last_name !== "string" ||
+      typeof formState.parent1_email !== "string" ||
+      typeof formState.parent1_mobile_phone !== "number" ||
+      typeof formState.parent1_address !== "string" ||
+      (formState.parent2_first_name &&
+        typeof formState.parent2_first_name !== "string") ||
+      (formState.parent2_last_name &&
+        typeof formState.parent2_last_name !== "string") ||
+      (formState.parent2_email && typeof formState.parent2_email !== "string")
+    ) {
+      throw new Error("Invalid form data");
+    }
+
+    //TODO Fix validation
+
     const updatedData: FamilyRecord = {
       id: familyId,
       family_last_name: formState.family_last_name,
@@ -242,7 +244,7 @@ const Family = () => {
                 <label htmlFor="parent2_address">Parent 2 Address</label>
                 <input
                   name="parent2_address"
-                  placeholder={family.parent1_address}
+                  placeholder={family.parent2_address}
                   onChange={handleChange}
                   type="text"
                   className="input input-bordered w-full max-w-xs"
