@@ -1,6 +1,11 @@
 import { json } from "@remix-run/react";
 
-import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
+import {
+  ClassRecord,
+  FamilyRecord,
+  StudentRecord,
+  TeacherRecord,
+} from "~/types/types";
 
 export const getStudents = async () => {
   const allStudents = await fetch(
@@ -158,5 +163,20 @@ export const updateTeacher = async (
     return updateTeacher;
   } catch (error) {
     console.error(error, "Error updating teacher");
+  }
+};
+
+export const addClass = async (data: ClassRecord) => {
+  try {
+    const addClass = await fetch(`${process.env.MANAGE_BACKEND}/classes/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((response) => response.json());
+    return addClass;
+  } catch (error) {
+    console.error(error, "Error adding class");
   }
 };

@@ -33,3 +33,14 @@ export interface TeacherRecord {
   teacher_mobile_phone: string;
   teacher_address: string;
 }
+
+export interface ClassRecord {
+  id?: number;
+  class_name: string;
+  class_location: string;
+  class_start_time: string;
+  class_end_time: string;
+  class_strudents: string[];
+  class_teacher: string;
+  class_accompanist: string;
+}
