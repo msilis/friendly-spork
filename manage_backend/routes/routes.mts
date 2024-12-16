@@ -3,7 +3,12 @@ import { drizzle } from "drizzle-orm/libsql";
 import { sql } from "drizzle-orm";
 import "dotenv/config";
 import { eq } from "drizzle-orm";
-import { studentTable, familyTable, teacherTable } from "../db/dbSchema.mts";
+import {
+  studentTable,
+  familyTable,
+  teacherTable,
+  classesTable,
+} from "../db/dbSchema.mts";
 
 const router = express.Router();
 const dbFile = process.env.DB_FILE_NAME;
@@ -385,7 +390,33 @@ router.get("/teachers", async (req, res) => {
 
 //Class Management
 
-router.post("/classes/add", (req, res) => {});
+router.post("/classes/add", async (req, res) => {
+  const {
+    class_name,
+    class_location,
+    class_start_time,
+    class_end_time,
+    class_students,
+    class_teacher,
+    class_accompanist,
+  } = req.body;
+
+  try {
+    const classToAdd = {
+      class_name,
+      class_location,
+      class_start_time,
+      class_end_time,
+      class_students,
+      class_teacher,
+      class_accompanist,
+    };
+    await db.insert(classesTable).values(classToAdd);
+    res.status(200).json({ message: "Class added successfully!" });
+  } catch (error) {
+    console.error(error, "There was an error adding class");
+  }
+});
 
 router
   .route("/classes/:classId/edit")

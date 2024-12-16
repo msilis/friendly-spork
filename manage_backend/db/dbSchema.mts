@@ -43,4 +43,6 @@ export const classesTable = sqliteTable("classes_table", {
   class_start_time: text("class_start_time"),
   class_end_time: text("class_end_time"),
   class_students: blob("class_students", { mode: "json" }),
+  class_teacher: text("class_teacher"),
+  class_accompanist: text("class_accompanist"),
 });
