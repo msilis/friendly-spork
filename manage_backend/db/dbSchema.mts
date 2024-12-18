@@ -25,6 +25,7 @@ export const teacherTable = sqliteTable("teacher_table", {
   teacher_email: text("teacher_email").notNull(),
   teacher_mobile_phone: int("teacher_mobile_phone"),
   teacher_address: text("teacher_address"),
+  is_teacher_accompanist: text("is_teacher_accompanist"),
 });
 
 export const studentTable = sqliteTable("student_table", {
@@ -44,5 +45,5 @@ export const classesTable = sqliteTable("classes_table", {
   class_end_time: text("class_end_time"),
   class_students: blob("class_students", { mode: "json" }),
   class_teacher: text("class_teacher"),
-  class_accompanist: text("class_accompanist"),
+  class_accompanist: int("class_accompanist"),
 });
