@@ -120,6 +120,13 @@ export const getTeachers = async () => {
   return allTeachers;
 };
 
+export const getAccompanists = async () => {
+  const accompanists = await fetch(
+    `${process.env.MANAGE_BACKEND}/accompanists`
+  ).then((response) => response.json());
+  return accompanists;
+};
+
 export const getTeacher = async (params: string | undefined) => {
   const teacher = await fetch(
     `${process.env.MANAGE_BACKEND}/teachers/${params}/edit`

@@ -15,6 +15,48 @@
       "when": 1730132033925,
       "tag": "0001_puzzling_luckman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1734562912668,
+      "tag": "0002_even_morg",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1734642247353,
+      "tag": "0003_dizzy_nuke",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1734642826601,
+      "tag": "0004_flawless_punisher",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1734642898708,
+      "tag": "0005_sweet_jigsaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1734643274373,
+      "tag": "0006_nostalgic_cardiac",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1734643327390,
+      "tag": "0007_condemned_scarecrow",
+      "breakpoints": true
     }
   ]
 }

@@ -32,6 +32,7 @@ export interface TeacherRecord {
   teacher_email: string;
   teacher_mobile_phone: string;
   teacher_address: string;
+  is_teacher_accompanist?: string | number;
 }
 
 export interface ClassRecord {

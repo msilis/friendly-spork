@@ -26,6 +26,7 @@ const Teacher = () => {
     teacher_email: teacherData.teacher_email,
     teacher_mobile_phone: teacherData.teacher_mobile_phone,
     teacher_address: teacherData.teacher_address,
+    is_teacher_accompanist: teacherData.is_teacher_accompanist,
   });
 
   const params = useParams();
@@ -47,6 +48,12 @@ const Teacher = () => {
     if (formState.id) {
       teacherId = Number(formState.id);
     }
+    let isAccompanist = formState.is_teacher_accompanist;
+    if (formState.is_teacher_accompanist === "on") {
+      isAccompanist = 1;
+    } else if (formState.is_teacher_accompanist === "off") {
+      isAccompanist = 0;
+    }
     if (
       typeof formState.id !== "number" ||
       typeof formState.teacher_first_name !== "string" ||
@@ -66,6 +73,7 @@ const Teacher = () => {
         teacher_email: formState.teacher_email,
         teacher_mobile_phone: formState.teacher_mobile_phone,
         teacher_address: formState.teacher_address,
+        is_teacher_accompanist: isAccompanist,
       },
       params.id
     );
@@ -78,6 +86,12 @@ const Teacher = () => {
     let newValue: string | number = value;
     if (name === "id" || name === "teacher_mobile_phone") {
       newValue = Number(value);
+    }
+    if (event.target.checked) {
+      newValue = 1;
+    }
+    if (!event.target.checked) {
+      newValue = 0;
     }
     setFormState({ ...formState, [name]: newValue });
   };
@@ -100,6 +114,10 @@ const Teacher = () => {
           <p className="pb-4">{teacherData.teacher_mobile_phone}</p>
           <h2 className="font-light mb-2">Teacher Address</h2>
           <p className="pb-4">{teacherData.teacher_address}</p>
+          <h2 className="font-light mb-2">Accompanist?</h2>
+          <p className="pb-4">
+            {teacherData.is_teacher_accompanist ? "Yes" : "No"}
+          </p>
           <button className="btn" onClick={() => handleModalOpen()}>
             Edit
           </button>
@@ -152,6 +170,13 @@ const Teacher = () => {
               onChange={handleChange}
               type="email"
               className="input input-bordered w-full max-w-xs"
+            />
+            <label htmlFor="is_teacher_accompanist">Accompanist?</label>
+            <input
+              name="is_teacher_accompanist"
+              className="checkbox checkbox-accent"
+              type="checkbox"
+              onChange={handleChange}
             />
           </div>
           <button

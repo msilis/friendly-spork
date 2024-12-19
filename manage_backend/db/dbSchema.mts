@@ -1,4 +1,4 @@
-import { int, sqliteTable, text, blob } from "drizzle-orm/sqlite-core";
+import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const familyTable = sqliteTable("family_table", {
   id: int("id").primaryKey({ autoIncrement: true }),
@@ -43,7 +43,7 @@ export const classesTable = sqliteTable("classes_table", {
   class_location: text("class_location"),
   class_start_time: text("class_start_time"),
   class_end_time: text("class_end_time"),
-  class_students: blob("class_students", { mode: "json" }),
-  class_teacher: text("class_teacher"),
-  class_accompanist: int("class_accompanist"),
+  class_students: text("class_students", { mode: "json" }),
+  class_teacher: text("class_teacher", { mode: "json" }),
+  class_accompanist: int("class_accompanist").references(() => teacherTable.id),
 });

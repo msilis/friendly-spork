@@ -1,6 +1,11 @@
 import { Form, json, Link, useLoaderData } from "@remix-run/react";
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
-import { addClass, getTeachers, getStudents } from "~/data/data";
+import {
+  addClass,
+  getTeachers,
+  getStudents,
+  getAccompanists,
+} from "~/data/data";
 import Select from "react-select";
 import { StudentRecord, TeacherRecord } from "~/types/types";
 
@@ -14,6 +19,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const classTeacher = body.get("class_teacher");
   const classAccompanist = body.get("class_accompanist");
 
+  console.log(classStudents, "classStudents");
+  console.log(classTeacher, "classTeacher");
+  console.log(classAccompanist, "classAccompanist");
+
   if (
     typeof className !== "string" ||
     typeof classLocation !== "string" ||
@@ -26,7 +35,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   ) {
     throw new Error("Invalid form data");
   }
-
+  console.log("should be adding students");
   if (classStudents) {
     await addClass({
       class_name: className,
@@ -42,15 +51,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export const loader = async () => {
-  const [studentData, teacherData] = await Promise.all([
+  const [studentData, teacherData, accompanistData] = await Promise.all([
     getStudents(),
     getTeachers(),
+    getAccompanists(),
   ]);
-  return json({ studentData, teacherData });
+  return json({ studentData, teacherData, accompanistData });
 };
 
 const AddClass = () => {
-  const { studentData, teacherData } = useLoaderData<typeof loader>();
+  const { studentData, teacherData, accompanistData } =
+    useLoaderData<typeof loader>();
 
   const studentOptions = studentData.map((student: StudentRecord) => ({
     value: student.id,
@@ -62,10 +73,17 @@ const AddClass = () => {
     label: `${teacher.teacher_last_name}, ${teacher.teacher_first_name}`,
   }));
 
+  const accompanistOptions = accompanistData.map(
+    (accompanist: TeacherRecord) => ({
+      value: accompanist.id,
+      label: `${accompanist.teacher_last_name}, ${accompanist.teacher_first_name}`,
+    })
+  );
+
   return (
     <div>
       <Link to={"/classes"}>
-        <button className="btn-link">Back</button>p
+        <button className="btn-link">Back</button>
       </Link>
       <Form className="flex flex-col gap-3 ml-8 w-4/12" method="POST">
         <h2>Add Class</h2>
@@ -96,13 +114,19 @@ const AddClass = () => {
         <label htmlFor="class_students">Students</label>
         <Select
           id="class_students"
+          name="class_students"
           options={studentOptions}
           isMulti={true}
           closeMenuOnSelect={false}
           hideSelectedOptions={false}
         />
         <label htmlFor="class_teacher">Class Teacher</label>
-        <Select options={teacherOptions} />
+        <Select options={teacherOptions} name="class_teacher" />
+        <label htmlFor="class_accompanist">Accompanist</label>
+        <Select options={accompanistOptions} name="class_accompanist" />
+        <button type="submit" className="btn-neutral btn-active w-fit p-3">
+          Add Student
+        </button>
       </Form>
     </div>
   );

@@ -388,6 +388,21 @@ router.get("/teachers", async (req, res) => {
   }
 });
 
+router.get("/accompanists", async (req, res) => {
+  try {
+    const accompanists = await db
+      .select()
+      .from(teacherTable)
+      .where(eq(teacherTable.is_teacher_accompanist, "1"));
+    res.status(200).json(accompanists);
+  } catch (error) {
+    console.error(error, "There was an error getting the list of accompanists");
+    res
+      .status(500)
+      .json({ message: "There was an error getting the list of accompanists" });
+  }
+});
+
 //Class Management
 
 router.post("/classes/add", async (req, res) => {
