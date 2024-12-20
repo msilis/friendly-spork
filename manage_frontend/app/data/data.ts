@@ -175,7 +175,7 @@ export const updateTeacher = async (
 
 export const addClass = async (data: ClassRecord) => {
   try {
-    const addClass = await fetch(`${process.env.MANAGE_BACKEND}/classes/add`, {
+    const addClass = await fetch(`http://localhost:3000/classes/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

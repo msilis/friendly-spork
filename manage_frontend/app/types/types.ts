@@ -41,7 +41,12 @@ export interface ClassRecord {
   class_location: string;
   class_start_time: string;
   class_end_time: string;
-  class_strudents: string[];
-  class_teacher: string;
+  class_students: string[];
+  class_teacher: number;
   class_accompanist: string;
+}
+
+export interface SelectOption {
+  value: number | string;
+  name: string;
 }
