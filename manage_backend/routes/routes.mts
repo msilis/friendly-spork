@@ -405,6 +405,18 @@ router.get("/accompanists", async (req, res) => {
 
 //Class Management
 
+router.get("/classes", async (req, res) => {
+  try {
+    const allClasses = await db.select().from(classesTable);
+    res.status(200).json(allClasses);
+  } catch (error) {
+    console.error("There was an error getting the classes record: ", error);
+    res
+      .status(500)
+      .json({ message: "There was an error getting the classes record" });
+  }
+});
+
 router.post("/classes/add", async (req, res) => {
   const {
     class_name,

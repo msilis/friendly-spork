@@ -173,6 +173,13 @@ export const updateTeacher = async (
   }
 };
 
+export const getClasses = async () => {
+  const allClasses = await fetch(`${process.env.MANAGE_BACKEND}/classes`).then(
+    (response) => response.json()
+  );
+  return allClasses;
+};
+
 export const addClass = async (data: ClassRecord) => {
   try {
     const addClass = await fetch(`http://localhost:3000/classes/add`, {
