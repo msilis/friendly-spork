@@ -43,7 +43,7 @@ export interface ClassRecord {
   class_end_time: string;
   class_students: string[];
   class_teacher: number;
-  class_accompanist: string;
+  class_accompanist: number;
 }
 
 export interface SelectOption {

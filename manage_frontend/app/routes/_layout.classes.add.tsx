@@ -59,7 +59,7 @@ const AddClass = () => {
       typeof formState.class_start_time !== "string" ||
       typeof formState.class_end_time !== "string" ||
       typeof formState.class_teacher !== "number" ||
-      typeof formState.class_accompanist !== "string"
+      typeof formState.class_accompanist !== "number"
     ) {
       throw new Error("Invalid form data");
     }

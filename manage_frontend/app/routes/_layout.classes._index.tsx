@@ -68,7 +68,6 @@ const Classes = () => {
           </thead>
           <tbody>
             {classData.map((laud_class: ClassRecord) => {
-              console.log(currentClassStudents, "length");
               return (
                 <tr key={laud_class.id}>
                   <td>{laud_class.id}</td>
@@ -92,7 +91,11 @@ const Classes = () => {
                       ? teacherName(laud_class.class_teacher)
                       : "None assigned"}
                   </td>
-                  <td>{laud_class.class_accompanist}</td>
+                  <td>
+                    {laud_class.class_teacher
+                      ? teacherName(laud_class.class_accompanist)
+                      : "None assigned"}
+                  </td>
                 </tr>
               );
             })}
