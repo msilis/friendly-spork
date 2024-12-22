@@ -203,7 +203,7 @@ const Student = () => {
                   {
                     teachers.filter(
                       (teacher: TeacherRecord) =>
-                        teacher.id === student.teacher_id
+                        teacher.id === Number(student.teacher_id)
                     )?.[0].teacher_last_name
                   }
                 </option>

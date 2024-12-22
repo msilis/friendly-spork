@@ -34,7 +34,7 @@ export const studentTable = sqliteTable("student_table", {
   last_name: text("last_name").notNull(),
   birthdate: text("birthdate"),
   family_id: int("family_id").references(() => familyTable.id),
-  teacher_id: text("teacher_id").references(() => teacherTable.id),
+  teacher_id: int("teacher_id").references(() => teacherTable.id),
 });
 
 export const classesTable = sqliteTable("classes_table", {
