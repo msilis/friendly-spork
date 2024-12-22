@@ -1,6 +1,6 @@
 import { Link, useLoaderData, json } from "@remix-run/react";
 import { getClasses, getTeachers, getStudents } from "~/data/data";
-import { ClassRecord, StudentRecord } from "~/types/types";
+import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useRef, useState } from "react";
 
 export const loader = async () => {
@@ -21,13 +21,11 @@ const Classes = () => {
     []
   );
 
-  const handleModalShow = (currentStudents: []) => {
+  const handleModalShow = (currentStudents: string[]) => {
     setCurrentClassStudents([]);
     const studentsWithNames = currentStudents.map((currentStudent) => {
-      console.log(currentStudent, "currentStudent");
-      return studentData.find((student) => {
-        console.log(student);
-        return student.id === currentStudent;
+      return studentData.find((student: StudentRecord) => {
+        return student.id === Number(currentStudent);
       });
     });
 
@@ -35,8 +33,17 @@ const Classes = () => {
     studentRef.current?.showModal();
   };
 
-  console.log(currentClassStudents, "currentClassStudents");
-  console.log(currentClassStudents.length, "length");
+  const teacherName = (id: number) => {
+    const teacherName = teacherData.find((teacher: TeacherRecord) => {
+      return teacher.id === id;
+    });
+    let name;
+    if (teacherName !== undefined) {
+      name = `${teacherName?.teacher_first_name} ${teacherName?.teacher_last_name}`;
+    } else name = "None assigned";
+
+    return name;
+  };
 
   return (
     <div>
@@ -61,6 +68,7 @@ const Classes = () => {
           </thead>
           <tbody>
             {classData.map((laud_class: ClassRecord) => {
+              console.log(currentClassStudents, "length");
               return (
                 <tr key={laud_class.id}>
                   <td>{laud_class.id}</td>
@@ -68,14 +76,22 @@ const Classes = () => {
                   <td>{laud_class.class_location}</td>
                   <td>{laud_class.class_start_time}</td>
                   <td>{laud_class.class_end_time}</td>
-                  <td
-                    onClick={() => handleModalShow(laud_class.class_students)}
-                    className="hover:cursor-pointer"
-                  >
-                    Click to see students
-                  </td>
+                  {laud_class.class_students ? (
+                    <td
+                      onClick={() => handleModalShow(laud_class.class_students)}
+                      className="hover:cursor-pointer"
+                    >
+                      Click to see students
+                    </td>
+                  ) : (
+                    <td> None assigned</td>
+                  )}
                   <td>{laud_class.class_students?.length}</td>
-                  <td>{laud_class.class_teacher}</td>
+                  <td>
+                    {laud_class.class_teacher
+                      ? teacherName(laud_class.class_teacher)
+                      : "None assigned"}
+                  </td>
                   <td>{laud_class.class_accompanist}</td>
                 </tr>
               );
@@ -90,17 +106,13 @@ const Classes = () => {
             >
               ✕
             </button>
-            {currentClassStudents.length > 0 ? (
-              currentClassStudents.map((student: StudentRecord) => {
-                return (
-                  <p
-                    key={student.id}
-                  >{`${student.first_name} ${student.last_name}`}</p>
-                );
-              })
-            ) : (
-              <p>No students assigned to this class.</p>
-            )}
+            {currentClassStudents.map((student: StudentRecord) => {
+              return (
+                <p
+                  key={student.id}
+                >{`${student.first_name} ${student.last_name}`}</p>
+              );
+            })}
           </div>
         </dialog>
       </div>

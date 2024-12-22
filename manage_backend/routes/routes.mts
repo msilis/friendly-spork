@@ -284,6 +284,7 @@ router.post("/teachers/add", async (req, res) => {
     teacher_email,
     teacher_mobile_phone,
     teacher_address,
+    is_teacher_accompanist,
   } = req.body;
   try {
     const teacherToAdd = {
@@ -292,6 +293,7 @@ router.post("/teachers/add", async (req, res) => {
       teacher_email,
       teacher_mobile_phone,
       teacher_address,
+      is_teacher_accompanist,
     };
     await db.insert(teacherTable).values(teacherToAdd);
     res.status(200).json({ message: "Teacher added successfully!" });
@@ -393,7 +395,7 @@ router.get("/accompanists", async (req, res) => {
     const accompanists = await db
       .select()
       .from(teacherTable)
-      .where(eq(teacherTable.is_teacher_accompanist, "1"));
+      .where(eq(teacherTable.is_teacher_accompanist, "1.0"));
     res.status(200).json(accompanists);
   } catch (error) {
     console.error(error, "There was an error getting the list of accompanists");

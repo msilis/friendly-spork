@@ -11,27 +11,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const parent1LastName = body.get("parent1_last_name");
   const parent1Email = body.get("parent1_email");
   const parent1MobilePhone = body.get("parent1_mobile_phone");
-  const parent1Address = body.get("parent1_address");
-  const parent2FirstName = body.get("parent2_first_name");
-  const parent2LastName = body.get("parent2_last_name");
-  const parent2Email = body.get("parent2_email");
-  const parent2MobilePhone = body.get("parent2_mobile_phone");
-  const parent2Address = body.get("parent2_address");
+  const parent1Address = body.get("parent1_address") as string | null;
+  const parent2FirstName = body.get("parent2_first_name") as string | null;
+  const parent2LastName = body.get("parent2_last_name") as string | null;
+  const parent2Email = body.get("parent2_email") as string | null;
+  const parent2MobilePhone = body.get("parent2_mobile_phone") as string | null;
+  const parent2Address = body.get("parent2_address") as string | null;
 
   if (
     typeof familyLastName !== "string" ||
     typeof parent1FirstName !== "string" ||
     typeof parent1LastName !== "string" ||
     typeof parent1Email !== "string" ||
-    typeof parent1MobilePhone !== "string" ||
-    typeof parent1Address !== "string" ||
-    typeof parent2FirstName !== "string" ||
-    typeof parent2LastName !== "string" ||
-    typeof parent2Email !== "string" ||
-    typeof parent2MobilePhone !== "string" ||
-    typeof parent2Address !== "string"
+    typeof parent1MobilePhone !== "string"
   ) {
-    throw new Error("Invalid form data");
+    throw new Error("Missing required fields!");
   }
 
   await addFamily({

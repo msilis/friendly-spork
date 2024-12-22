@@ -13,7 +13,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 const Family = () => {
   const families = useLoaderData<typeof loader>();
   const family: FamilyRecord = families[0];
-
+  const [showSecondParent, setShowSecondParent] = useState(false);
   const revalidator = useRevalidator();
   const [formState, setFormState] = useState<FamilyRecord>({
     id: family.id,
@@ -49,12 +49,11 @@ const Family = () => {
     setFormState({ ...formState, [name]: newValue });
   };
 
-  console.log(family, "family");
-
   const isFormDirty =
     JSON.stringify(formState) !== JSON.stringify(family) ? true : false;
 
   const handleSave = () => {
+    console.log(formState, "formState");
     let familyId = formState.id;
     if (formState.id) {
       familyId = Number(formState.id);
@@ -66,7 +65,7 @@ const Family = () => {
       typeof formState.parent1_first_name !== "string" ||
       typeof formState.parent1_last_name !== "string" ||
       typeof formState.parent1_email !== "string" ||
-      typeof formState.parent1_mobile_phone !== "number" ||
+      typeof formState.parent1_mobile_phone !== "string" ||
       typeof formState.parent1_address !== "string" ||
       (formState.parent2_first_name &&
         typeof formState.parent2_first_name !== "string") ||
@@ -89,7 +88,7 @@ const Family = () => {
       parent1_address: formState.parent1_address,
     };
     if (formState.parent2_mobile_phone) {
-      updatedData.parent2_mobile_phone = Number(formState.parent2_mobile_phone);
+      updatedData.parent2_mobile_phone = formState.parent2_mobile_phone;
     }
     if (formState.parent2_first_name) {
       updatedData.parent2_first_name = formState.parent2_first_name;
@@ -108,6 +107,8 @@ const Family = () => {
     revalidator.revalidate();
     handleModalClose();
   };
+
+  const shouldShowSecondParent = showSecondParent || family.parent2_first_name;
 
   return (
     <>
@@ -195,7 +196,7 @@ const Family = () => {
             <label htmlFor="parent1_mobile_phone">Mobile Phone</label>
             <input
               name="parent1_mobile_phone"
-              placeholder={family.parent1_mobile_phone?.toString()}
+              placeholder={family.parent1_mobile_phone}
               onChange={handleChange}
               type="tel"
               className="input input-bordered w-full max-w-xs"
@@ -203,40 +204,48 @@ const Family = () => {
             <label htmlFor="parent1_address">Parent 1 Address</label>
             <input
               name="parent1_address"
-              placeholder={family.parent1_address}
+              placeholder={family.parent1_address ?? ""}
               onChange={handleChange}
               type="text"
               className="input input-bordered w-full max-w-xs"
             />
+            <button
+              className={showSecondParent ? "hidden" : "button mt-4"}
+              onClick={() => setShowSecondParent(true)}
+            >
+              Add Second Parent?
+            </button>
 
-            {family.parent2_first_name ? (
+            {shouldShowSecondParent ? (
               <>
+                <label htmlFor="parent2_first_name">Parent 2 First Name</label>
                 <input
                   name="parent2_first_name"
-                  placeholder={family.parent2_first_name}
+                  placeholder={family.parent2_first_name ?? ""}
                   onChange={handleChange}
                   type="text"
                   className="input input-bordered w-full max-w-xs"
                 />
+                <label htmlFor="parent2_last_name">Parent 2 Last Name</label>
                 <input
                   name="parent2_last_name"
-                  placeholder={family.parent2_last_name}
+                  placeholder={family.parent2_last_name ?? ""}
                   onChange={handleChange}
                   type="text"
                   className="input input-bordered w-full max-w-xs"
                 />
-                <label htmlFor="parent1_email">Email</label>
+                <label htmlFor="parent2_email">Email</label>
                 <input
                   name="parent2_email"
-                  placeholder={family.parent2_email}
+                  placeholder={family.parent2_email ?? ""}
                   onChange={handleChange}
                   type="email"
                   className="input input-bordered w-full max-w-xs"
                 />
                 <label htmlFor="parent2_mobile_phone">Mobile Phone</label>
                 <input
-                  name="parent1_mobile_phone"
-                  placeholder={family.parent2_mobile_phone?.toString()}
+                  name="parent2_mobile_phone"
+                  placeholder={family.parent2_mobile_phone ?? ""}
                   onChange={handleChange}
                   type="tel"
                   className="input input-bordered w-full max-w-xs"
@@ -244,7 +253,7 @@ const Family = () => {
                 <label htmlFor="parent2_address">Parent 2 Address</label>
                 <input
                   name="parent2_address"
-                  placeholder={family.parent2_address}
+                  placeholder={family.parent2_address ?? ""}
                   onChange={handleChange}
                   type="text"
                   className="input input-bordered w-full max-w-xs"

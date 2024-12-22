@@ -6,11 +6,11 @@ export const familyTable = sqliteTable("family_table", {
   parent1_first_name: text("parent1_first_name").notNull(),
   parent1_last_name: text("parent1_last_name").notNull(),
   parent1_email: text("parent1_email").notNull(),
-  parent1_mobile_phone: int("parent1_mobile_phone").notNull(),
+  parent1_mobile_phone: text("parent1_mobile_phone").notNull(),
   parent2_first_name: text("parent2_first_name"),
   parent2_last_name: text("parent2_last_name"),
   parent2_email: text("parent2_email"),
-  parent2_mobile_phone: int("parent2_mobile_phone"),
+  parent2_mobile_phone: text("parent2_mobile_phone"),
   parent1_address: text("parent1_address"),
   parent2_address: text("parent2_address"),
   alternate_contact_name: text("alternate_contact_name"),
@@ -23,9 +23,9 @@ export const teacherTable = sqliteTable("teacher_table", {
   teacher_first_name: text("teacher_first_name").notNull(),
   teacher_last_name: text("teacher_last_name").notNull(),
   teacher_email: text("teacher_email").notNull(),
-  teacher_mobile_phone: int("teacher_mobile_phone"),
+  teacher_mobile_phone: text("teacher_mobile_phone"),
   teacher_address: text("teacher_address"),
-  is_teacher_accompanist: text("is_teacher_accompanist"),
+  is_teacher_accompanist: int("is_teacher_accompanist"),
 });
 
 export const studentTable = sqliteTable("student_table", {
@@ -34,7 +34,7 @@ export const studentTable = sqliteTable("student_table", {
   last_name: text("last_name").notNull(),
   birthdate: text("birthdate"),
   family_id: int("family_id").references(() => familyTable.id),
-  teacher_id: int("teacher_id").references(() => teacherTable.id),
+  teacher_id: text("teacher_id").references(() => teacherTable.id),
 });
 
 export const classesTable = sqliteTable("classes_table", {

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1bb0d511-d84f-45dc-92f5-7883cdfd97da",
+  "id": "33d2d68f-3276-4c38-bebd-e71fb7a7686b",
   "prevId": "681fa0e1-7507-47cb-9f55-0c164d72d9a0",
   "tables": {
     "classes_table": {
@@ -55,10 +55,31 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "class_accompanist": {
+          "name": "class_accompanist",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "classes_table_class_accompanist_teacher_table_id_fk": {
+          "name": "classes_table_class_accompanist_teacher_table_id_fk",
+          "tableFrom": "classes_table",
+          "tableTo": "teacher_table",
+          "columnsFrom": [
+            "class_accompanist"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -218,7 +239,7 @@
         },
         "teacher_id": {
           "name": "teacher_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

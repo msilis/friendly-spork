@@ -50,9 +50,9 @@ const Teacher = () => {
     }
     let isAccompanist = formState.is_teacher_accompanist;
     if (formState.is_teacher_accompanist === "on") {
-      isAccompanist = 1;
+      isAccompanist = Number(1);
     } else if (formState.is_teacher_accompanist === "off") {
-      isAccompanist = 0;
+      isAccompanist = Number(0);
     }
     if (
       typeof formState.id !== "number" ||

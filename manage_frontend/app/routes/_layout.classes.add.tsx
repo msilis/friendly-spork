@@ -86,6 +86,8 @@ const AddClass = () => {
 
     setFormState({ ...formState, [name]: value });
   };
+
+  console.log(accompanistData, "accompanistData");
   const handleSelectChange = (
     value: SelectOption,
     event: { action: string; name: string; option: string }
@@ -98,8 +100,6 @@ const AddClass = () => {
         setFormState({ ...formState, [eventName]: newStudents });
       }
     } else if (eventName === "class_teacher") {
-      console.log(value, "value from classTeacher");
-
       setFormState({ ...formState, [eventName]: value.value });
     } else if (eventName === "class_accompanist") {
       setFormState({ ...formState, [eventName]: value.value });
