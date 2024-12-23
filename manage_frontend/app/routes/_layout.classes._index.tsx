@@ -17,9 +17,9 @@ const Classes = () => {
     useLoaderData<typeof loader>();
 
   const studentRef = useRef<HTMLDialogElement>(null);
-  const [currentClassStudents, setCurrentClassStudents] = useState<string[]>(
-    []
-  );
+  const [currentClassStudents, setCurrentClassStudents] = useState<
+    StudentRecord[]
+  >([]);
 
   const handleModalShow = (currentStudents: string[]) => {
     setCurrentClassStudents([]);
@@ -109,13 +109,12 @@ const Classes = () => {
             >
               ✕
             </button>
-            {currentClassStudents.map((student: StudentRecord) => {
-              return (
-                <p
-                  key={student.id}
-                >{`${student.first_name} ${student.last_name}`}</p>
-              );
-            })}
+
+            {currentClassStudents?.map((record: StudentRecord) => (
+              <p key={record.id}>
+                {record.first_name} {record.last_name}
+              </p>
+            ))}
           </div>
         </dialog>
       </div>
