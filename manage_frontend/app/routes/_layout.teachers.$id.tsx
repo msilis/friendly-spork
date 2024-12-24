@@ -176,6 +176,7 @@ const Teacher = () => {
               name="is_teacher_accompanist"
               className="checkbox checkbox-accent"
               type="checkbox"
+              checked={formState.is_teacher_accompanist === 1 ? true : false}
               onChange={handleChange}
             />
           </div>
