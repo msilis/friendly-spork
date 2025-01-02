@@ -449,8 +449,28 @@ router.post("/classes/add", async (req, res) => {
 
 router
   .route("/classes/:classId/edit")
-  .get((req, res) => {
+  .get(async (req, res) => {
     const classId = req.params.classId;
+    try {
+      const classExists = await db
+        .select()
+        .from(classesTable)
+        .where(eq(classesTable.id, Number(classId)));
+      if (classExists.length === 0) {
+        res.status(500).json({ message: "Class record not found" });
+      } else {
+        const classData = await db
+          .select()
+          .from(classesTable)
+          .where(eq(classesTable.id, Number(classId)));
+        res.status(200).json(classData);
+      }
+    } catch (error) {
+      console.error("There was an error retreiving the record: ", error);
+      res
+        .status(500)
+        .json({ message: "There was an error retreiving the record" });
+    }
   })
   .post((req, res) => {
     const classId = req.params.classId;

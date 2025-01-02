@@ -87,7 +87,6 @@ const AddClass = () => {
     setFormState({ ...formState, [name]: value });
   };
 
-  console.log(accompanistData, "accompanistData");
   const handleSelectChange = (
     value: SelectOption,
     event: { action: string; name: string; option: string }

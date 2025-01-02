@@ -71,7 +71,11 @@ const Classes = () => {
               return (
                 <tr key={laud_class.id}>
                   <td>{laud_class.id}</td>
-                  <td>{laud_class.class_name}</td>
+                  <td>
+                    <Link to={`/classes/${laud_class.id?.toString()}`}>
+                      {laud_class.class_name}
+                    </Link>
+                  </td>
                   <td>{laud_class.class_location}</td>
                   <td>{laud_class.class_start_time}</td>
                   <td>{laud_class.class_end_time}</td>

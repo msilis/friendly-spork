@@ -180,6 +180,13 @@ export const getClasses = async () => {
   return allClasses;
 };
 
+export const getClass = async (params: string | undefined) => {
+  const getClass = await fetch(
+    `${process.env.MANAGE_BACKEND}/classes/${params}/edit`
+  ).then((response) => response.json());
+  return getClass;
+};
+
 export const addClass = async (data: ClassRecord) => {
   try {
     const addClass = await fetch(`http://localhost:3000/classes/add`, {
