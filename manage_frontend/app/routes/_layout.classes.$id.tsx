@@ -58,10 +58,23 @@ const LauderdaleClass = () => {
     modalRef.current?.showModal();
   };
 
-  // TODO: sort out these options
-  // const selectOptions = lauderdaleClass.class_students.map((student) => ({
-  //   value = { student },
-  // }));
+  const defaultOptions = lauderdaleClass.class_students.map((student) => ({
+    value: student,
+    label: `${
+      studentData.filter(
+        (studentRecord: StudentRecord) => studentRecord.id === Number(student)
+      )[0].first_name
+    } ${
+      studentData.filter(
+        (studentRecord: StudentRecord) => studentRecord.id === Number(student)
+      )[0].last_name
+    }`,
+  }));
+
+  const selectOptions = studentData.map((student: StudentRecord) => ({
+    value: student.id,
+    label: `${student.first_name} ${student.last_name}`,
+  }));
 
   return (
     <>
@@ -213,7 +226,14 @@ const LauderdaleClass = () => {
               )}
             </select>
             <label htmlFor="class_students">Class Students</label>
-            {/* <Select /> */}
+            <Select
+              id="class_students"
+              name="class_students"
+              options={selectOptions}
+              isMulti
+              defaultValue={defaultOptions}
+              instanceId="class_student_select"
+            />
           </div>
         </div>
       </dialog>
