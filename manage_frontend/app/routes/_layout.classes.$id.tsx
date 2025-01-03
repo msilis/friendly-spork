@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { getClass, getStudents, getTeachers } from "~/data/data";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
-import Select from "node_modules/react-select/dist/declarations/src/Select";
+import Select from "react-select";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [classData, studentData, teacherData] = await Promise.all([
@@ -154,14 +154,30 @@ const LauderdaleClass = () => {
               name="class_teacher"
               className="select select-bordered w-full max-w-xs"
             >
+              <option>
+                {
+                  teacherData.filter(
+                    (teacher: TeacherRecord) =>
+                      teacher.id === lauderdaleClass.class_teacher
+                  )[0]?.teacher_last_name
+                }
+              </option>
               {lauderdaleClass.class_teacher ? (
-                teacherData.map((teacher: TeacherRecord) => {
-                  return (
-                    <option value={teacher.teacher_last_name} key={teacher.id}>
-                      {teacher.teacher_last_name}
-                    </option>
-                  );
-                })
+                teacherData
+                  .filter(
+                    (teacher: TeacherRecord) =>
+                      teacher.id !== lauderdaleClass.class_teacher
+                  )
+                  .map((teacher: TeacherRecord) => {
+                    return (
+                      <option
+                        value={teacher.id}
+                        key={teacher.teacher_last_name}
+                      >
+                        {teacher.teacher_last_name}
+                      </option>
+                    );
+                  })
               ) : (
                 <option value="">Choose a teacher</option>
               )}
@@ -171,26 +187,33 @@ const LauderdaleClass = () => {
               name="class_accompanist"
               className="select select-bordered w-full max-w-xs"
             >
+              <option>
+                {
+                  teacherData.filter(
+                    (teacher: TeacherRecord) =>
+                      teacher.id === lauderdaleClass.class_accompanist
+                  )[0]?.teacher_last_name
+                }
+              </option>
               {lauderdaleClass.class_accompanist ? (
-                teacherData.map((teacher: TeacherRecord) => {
-                  return (
-                    <option
-                      value={teacher.teacher_last_name}
-                      key={teacher.id}
-                      selected={
-                        teacher.id === lauderdaleClass.class_accompanist
-                      }
-                    >
-                      {teacher.teacher_last_name}
-                    </option>
-                  );
-                })
+                teacherData
+                  .filter(
+                    (teacher: TeacherRecord) =>
+                      teacher.id !== lauderdaleClass.class_accompanist
+                  )
+                  .map((teacher: TeacherRecord) => {
+                    return (
+                      <option value={teacher.id} key={teacher.id}>
+                        {teacher.teacher_last_name}
+                      </option>
+                    );
+                  })
               ) : (
                 <option value="">Choose an accompanist</option>
               )}
             </select>
             <label htmlFor="class_students">Class Students</label>
-            <Select />
+            {/* <Select /> */}
           </div>
         </div>
       </dialog>
