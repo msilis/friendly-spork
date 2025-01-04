@@ -201,3 +201,24 @@ export const addClass = async (data: ClassRecord) => {
     console.error(error, "Error adding class");
   }
 };
+
+export const updateClass = async (
+  data: ClassRecord,
+  params: string | undefined
+) => {
+  try {
+    const updateClass = await fetch(
+      `http://localhost:3000/classes/${params}/edit`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return updateClass;
+  } catch (error) {
+    console.error(error, "Error updating class");
+  }
+};

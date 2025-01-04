@@ -7,9 +7,9 @@ import {
 } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { getClass, getStudents, getTeachers } from "~/data/data";
+import { getClass, getStudents, getTeachers, updateClass } from "~/data/data";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [classData, studentData, teacherData] = await Promise.all([
@@ -26,7 +26,48 @@ const LauderdaleClass = () => {
     useLoaderData<typeof loader>();
   const lauderdaleClass: ClassRecord = classData?.[0];
   const [classStudents, setClassStudents] = useState<StudentRecord[]>();
+  const [formState, setFormState] = useState({
+    id: lauderdaleClass.id,
+    class_name: lauderdaleClass.class_name,
+    class_location: lauderdaleClass.class_location,
+    class_start_time: lauderdaleClass.class_start_time,
+    class_end_time: lauderdaleClass.class_end_time,
+    class_students: lauderdaleClass.class_students,
+    class_teacher: lauderdaleClass.class_teacher,
+    class_accompanist: lauderdaleClass.class_accompanist,
+  });
   const modalRef = useRef<HTMLDialogElement>(null);
+  const params = useParams();
+  const revalidator = useRevalidator();
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = event.target;
+
+    let newValue: string | number = value;
+    if (
+      name === "id" ||
+      name === "class_teacher" ||
+      name === "class_accompanist"
+    ) {
+      newValue = Number(value);
+    }
+    if (name === "class_start_time" || name === "class_end_time") {
+      newValue = value.toString();
+    }
+
+    setFormState({ ...formState, [name]: newValue });
+  };
+
+  const handleSelectChange =
+    (name: string) =>
+    (newValue: MultiValue<{ value: string; label: string }>) => {
+      const selectedOptions = newValue
+        ? newValue.map((option) => option.value)
+        : [];
+      setFormState({ ...formState, [name]: selectedOptions });
+    };
 
   const teacherName = (id: number) => {
     const teacherName = teacherData.find((teacher: TeacherRecord) => {
@@ -58,6 +99,10 @@ const LauderdaleClass = () => {
     modalRef.current?.showModal();
   };
 
+  const handleCloseModal = () => {
+    modalRef.current?.close();
+  };
+
   const defaultOptions = lauderdaleClass.class_students.map((student) => ({
     value: student,
     label: `${
@@ -75,6 +120,49 @@ const LauderdaleClass = () => {
     value: student.id,
     label: `${student.first_name} ${student.last_name}`,
   }));
+
+  const isFormDirty =
+    JSON.stringify(formState) !== JSON.stringify(lauderdaleClass)
+      ? true
+      : false;
+
+  const handleSave = () => {
+    console.log("handle save fired");
+    let classTeacher = formState.class_teacher;
+    let classAccompanist = formState.class_accompanist;
+    if (formState.class_teacher) {
+      classTeacher = Number(formState.class_teacher);
+    }
+    if (formState.class_accompanist) {
+      classAccompanist = Number(formState.class_accompanist);
+    }
+    if (
+      typeof formState.id !== "number" ||
+      typeof formState.class_name !== "string" ||
+      typeof formState.class_location !== "string" ||
+      typeof formState.class_start_time !== "string" ||
+      typeof formState.class_end_time !== "string" ||
+      typeof formState.class_teacher !== "number" ||
+      typeof formState.class_accompanist !== "number"
+    ) {
+      throw new Error("Invalid form data");
+    }
+    updateClass(
+      {
+        id: formState.id,
+        class_name: formState.class_name,
+        class_location: formState.class_location,
+        class_start_time: formState.class_start_time,
+        class_end_time: formState.class_end_time,
+        class_teacher: classTeacher,
+        class_accompanist: classAccompanist,
+        class_students: formState.class_students,
+      },
+      params.id
+    );
+    revalidator.revalidate();
+    handleCloseModal();
+  };
 
   return (
     <>
@@ -142,29 +230,36 @@ const LauderdaleClass = () => {
               name="class_name"
               placeholder={lauderdaleClass.class_name}
               type="text"
+              onChange={handleChange}
               className="input input-bordered w-full max-w-xs"
             />
             <input
               name="class_location"
               placeholder={lauderdaleClass.class_location}
               type="text"
+              onChange={handleChange}
               className="input input-bordered w-full max-w-xs"
             />
             <label htmlFor="class_start_time">Start time</label>
             <input
               className="w-full max-w-xs"
+              name="class_start_time"
               type="time"
+              onChange={handleChange}
               defaultValue={lauderdaleClass.class_start_time}
             />
             <label htmlFor="class_end_time">End time</label>
             <input
               type="time"
+              name="class_end_time"
               defaultValue={lauderdaleClass.class_end_time}
+              onChange={handleChange}
               className="w-full max-w-xs"
             />
             <label htmlFor="class_teacher">Class Teacher</label>
             <select
               name="class_teacher"
+              onChange={handleChange}
               className="select select-bordered w-full max-w-xs"
             >
               <option>
@@ -199,6 +294,7 @@ const LauderdaleClass = () => {
             <select
               name="class_accompanist"
               className="select select-bordered w-full max-w-xs"
+              onChange={handleChange}
             >
               <option>
                 {
@@ -231,9 +327,19 @@ const LauderdaleClass = () => {
               name="class_students"
               options={selectOptions}
               isMulti
+              onChange={handleSelectChange("class_students")}
               defaultValue={defaultOptions}
               instanceId="class_student_select"
             />
+            <button
+              className={
+                isFormDirty ? "btn btn-success mt-6" : "btn btn-disabled mt-6"
+              }
+              type="submit"
+              onClick={() => handleSave()}
+            >
+              Save
+            </button>
           </div>
         </div>
       </dialog>

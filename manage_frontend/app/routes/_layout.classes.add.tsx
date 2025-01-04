@@ -7,7 +7,7 @@ import {
   getStudents,
   getAccompanists,
 } from "~/data/data";
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 import { SelectOption, StudentRecord, TeacherRecord } from "~/types/types";
 
 export const loader = async () => {
@@ -148,7 +148,9 @@ const AddClass = () => {
           isMulti={true}
           closeMenuOnSelect={false}
           hideSelectedOptions={false}
-          onChange={(event, value) => handleSelectChange(event, value)}
+          onChange={(event: MultiValue<unknown>, value) =>
+            handleSelectChange(event, value)
+          }
         />
         <label htmlFor="class_teacher">Class Teacher</label>
         <Select
@@ -162,10 +164,7 @@ const AddClass = () => {
           name="class_accompanist"
           onChange={(event, value) => handleSelectChange(event, value)}
         />
-        <button
-          onClick={handleSubmit}
-          className="btn-neutral btn-active w-fit p-3"
-        >
+        <button type="submit" className="btn-neutral btn-active w-fit p-3">
           Add Class
         </button>
       </form>

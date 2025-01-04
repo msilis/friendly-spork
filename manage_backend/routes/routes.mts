@@ -472,11 +472,35 @@ router
         .json({ message: "There was an error retreiving the record" });
     }
   })
-  .post((req, res) => {
+  .post(async (req, res) => {
     const classId = req.params.classId;
     const updatedClassData = req.body;
+    try {
+      const classExists = await db
+        .select()
+        .from(classesTable)
+        .where(eq(classesTable.id, Number(classId)));
+      if (classExists.length === 0) {
+        res.status(500).json({ message: "Class record not found" });
+      } else {
+        const filteredClassData = Object.fromEntries(
+          Object.entries(updatedClassData).filter(
+            (_, value) => value !== undefined,
+          ),
+        );
+        await db
+          .update(classesTable)
+          .set(updatedClassData)
+          .where(eq(classesTable.id, Number(classId)));
 
-    res.status(200).json({ message: "Class updated successfully!" });
+        res.status(200).json(filteredClassData);
+      }
+    } catch (error) {
+      console.error("There was an error updating the class record", error);
+      res
+        .status(500)
+        .json({ message: "There was an error updating the class record." });
+    }
   });
 
 router.delete("/classes/:classId/delete", (req, res) => {
