@@ -60,6 +60,23 @@ export const updateStudent = async (
   }
 };
 
+export const deleteStudent = async (studentId: number | undefined) => {
+  if (studentId) {
+    const deleteStudent = await fetch(
+      `http://localhost:3000/students/${studentId}/delete`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return deleteStudent;
+  } else {
+    console.error("Nothing to delete, no id provided");
+  }
+};
+
 export const getFamilies = async () => {
   const allFamilies = await fetch(
     `${process.env.MANAGE_BACKEND}/families`

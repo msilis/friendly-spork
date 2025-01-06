@@ -37,6 +37,7 @@ const LauderdaleClass = () => {
     class_accompanist: lauderdaleClass.class_accompanist,
   });
   const modalRef = useRef<HTMLDialogElement>(null);
+  const classNameRef = useRef<HTMLInputElement>(null);
   const params = useParams();
   const revalidator = useRevalidator();
 
@@ -96,6 +97,17 @@ const LauderdaleClass = () => {
   }, [studentData, lauderdaleClass?.class_students]);
 
   const handleOpenModal = () => {
+    setFormState({
+      id: lauderdaleClass.id,
+      class_name: lauderdaleClass.class_name,
+      class_location: lauderdaleClass.class_location,
+      class_start_time: lauderdaleClass.class_start_time,
+      class_end_time: lauderdaleClass.class_end_time,
+      class_students: lauderdaleClass.class_students,
+      class_teacher: lauderdaleClass.class_teacher,
+      class_accompanist: lauderdaleClass.class_accompanist,
+    });
+    console.log(formState, "formState from modal open");
     modalRef.current?.showModal();
   };
 
@@ -103,7 +115,22 @@ const LauderdaleClass = () => {
     modalRef.current?.close();
   };
 
-  const defaultOptions = lauderdaleClass.class_students.map((student) => ({
+  const handleCloseWithoutSave = () => {
+    modalRef.current?.close();
+
+    setFormState({
+      id: lauderdaleClass.id,
+      class_name: lauderdaleClass.class_name,
+      class_location: lauderdaleClass.class_location,
+      class_start_time: lauderdaleClass.class_start_time,
+      class_end_time: lauderdaleClass.class_end_time,
+      class_students: lauderdaleClass.class_students,
+      class_teacher: lauderdaleClass.class_teacher,
+      class_accompanist: lauderdaleClass.class_accompanist,
+    });
+  };
+
+  const defaultOptions = formState.class_students.map((student) => ({
     value: student,
     label: `${
       studentData.filter(
@@ -127,7 +154,6 @@ const LauderdaleClass = () => {
       : false;
 
   const handleSave = () => {
-    console.log("handle save fired");
     let classTeacher = formState.class_teacher;
     let classAccompanist = formState.class_accompanist;
     if (formState.class_teacher) {
@@ -221,21 +247,21 @@ const LauderdaleClass = () => {
         <div className="modal-box">
           <button
             className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-            onClick={() => modalRef.current?.close()}
+            onClick={handleCloseWithoutSave}
           >
             ✕
           </button>
           <div className="flex flex-col gap-3 ml-8">
             <input
               name="class_name"
-              placeholder={lauderdaleClass.class_name}
+              defaultValue={formState.class_name}
               type="text"
               onChange={handleChange}
               className="input input-bordered w-full max-w-xs"
             />
             <input
               name="class_location"
-              placeholder={lauderdaleClass.class_location}
+              defaultValue={formState.class_location}
               type="text"
               onChange={handleChange}
               className="input input-bordered w-full max-w-xs"
@@ -246,13 +272,13 @@ const LauderdaleClass = () => {
               name="class_start_time"
               type="time"
               onChange={handleChange}
-              defaultValue={lauderdaleClass.class_start_time}
+              defaultValue={formState.class_start_time}
             />
             <label htmlFor="class_end_time">End time</label>
             <input
               type="time"
               name="class_end_time"
-              defaultValue={lauderdaleClass.class_end_time}
+              defaultValue={formState.class_end_time}
               onChange={handleChange}
               className="w-full max-w-xs"
             />
@@ -274,7 +300,7 @@ const LauderdaleClass = () => {
                 teacherData
                   .filter(
                     (teacher: TeacherRecord) =>
-                      teacher.id !== lauderdaleClass.class_teacher
+                      teacher.id !== formState.class_teacher
                   )
                   .map((teacher: TeacherRecord) => {
                     return (
@@ -300,7 +326,7 @@ const LauderdaleClass = () => {
                 {
                   teacherData.filter(
                     (teacher: TeacherRecord) =>
-                      teacher.id === lauderdaleClass.class_accompanist
+                      teacher.id === formState.class_accompanist
                   )[0]?.teacher_last_name
                 }
               </option>

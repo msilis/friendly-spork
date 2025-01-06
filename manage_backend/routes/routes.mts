@@ -112,6 +112,7 @@ router
 
 router.delete("/students/:studentId/delete", async (req, res) => {
   const studentId = req.params.studentId;
+  console.log(studentId, "studentId from params in routes");
   try {
     const studentExists = await db
       .select()

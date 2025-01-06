@@ -1,5 +1,11 @@
-import { useLoaderData, Link, json } from "@remix-run/react";
-import { getFamilies, getStudents, getTeachers } from "~/data/data";
+import { useLoaderData, Link, json, useRevalidator } from "@remix-run/react";
+import {
+  deleteStudent,
+  getFamilies,
+  getStudents,
+  getTeachers,
+} from "~/data/data";
+import { useRef } from "react";
 import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
 
 export const loader = async () => {
@@ -29,6 +35,22 @@ const Students = () => {
     return name;
   };
 
+  const revalidate = useRevalidator();
+  const confirmationRef = useRef<HTMLDialogElement>(null);
+  let studentIdToDelete: number | undefined;
+
+  const handleDeleteClick = (id: number | undefined) => {
+    confirmationRef.current?.showModal();
+    studentIdToDelete = id;
+  };
+
+  const handleDeleteConfirmation = () => {
+    deleteStudent(studentIdToDelete);
+    revalidate.revalidate();
+    studentIdToDelete = undefined;
+    confirmationRef.current?.close();
+  };
+
   return (
     <div>
       <Link to={"/students/add"}>
@@ -45,6 +67,7 @@ const Students = () => {
               <th>Birthdate</th>
               <th>Family</th>
               <th>Teacher</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -61,11 +84,45 @@ const Students = () => {
                   <td>{student.birthdate}</td>
                   <td>{getFamilyLastName(student)}</td>
                   <td>{getTeacherLastName(student)}</td>
+                  <td>
+                    <button onClick={() => handleDeleteClick(student.id)}>
+                      <img
+                        src="icons8-delete.svg"
+                        alt="delete student"
+                        className="hover:cursor-pointer"
+                      />
+                    </button>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+        <dialog ref={confirmationRef} className="modal">
+          <div className="modal-box">
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => confirmationRef.current?.close()}
+            >
+              ✕
+            </button>
+            <p>Are you sure you want to delete this student?</p>
+            <div className="flex gap-4 mt-4">
+              <button
+                className="btn btn-secondary"
+                onClick={() => confirmationRef.current?.close()}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-accent"
+                onClick={handleDeleteConfirmation}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </dialog>
       </div>
     </div>
   );
