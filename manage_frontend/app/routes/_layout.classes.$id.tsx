@@ -2,8 +2,8 @@ import {
   json,
   Link,
   useLoaderData,
-  useParams,
   useRevalidator,
+  useNavigate,
 } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -24,6 +24,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 const LauderdaleClass = () => {
   const { classData, studentData, teacherData } =
     useLoaderData<typeof loader>();
+  const navigate = useNavigate();
   const lauderdaleClass: ClassRecord = classData?.[0];
   const [classStudents, setClassStudents] = useState<StudentRecord[]>();
   const [formState, setFormState] = useState({
@@ -37,8 +38,6 @@ const LauderdaleClass = () => {
     class_accompanist: lauderdaleClass.class_accompanist,
   });
   const modalRef = useRef<HTMLDialogElement>(null);
-  const classNameRef = useRef<HTMLInputElement>(null);
-  const params = useParams();
   const revalidator = useRevalidator();
 
   const handleChange = (
@@ -107,7 +106,7 @@ const LauderdaleClass = () => {
       class_teacher: lauderdaleClass.class_teacher,
       class_accompanist: lauderdaleClass.class_accompanist,
     });
-    console.log(formState, "formState from modal open");
+
     modalRef.current?.showModal();
   };
 
@@ -135,11 +134,11 @@ const LauderdaleClass = () => {
     label: `${
       studentData.filter(
         (studentRecord: StudentRecord) => studentRecord.id === Number(student)
-      )[0].first_name
+      )[0]?.first_name
     } ${
       studentData.filter(
         (studentRecord: StudentRecord) => studentRecord.id === Number(student)
-      )[0].last_name
+      )[0]?.last_name
     }`,
   }));
 
@@ -190,6 +189,10 @@ const LauderdaleClass = () => {
     handleCloseModal();
   };
 
+  const handleRegisterClick = () => {
+    navigate(`/classes/register/${lauderdaleClass.id}`);
+  };
+
   return (
     <>
       <Link to={"/classes"}>
@@ -213,9 +216,12 @@ const LauderdaleClass = () => {
             {teacherName(lauderdaleClass.class_accompanist)}
           </p>
 
-          <div className="mt-6">
+          <div className="flex gap-6 mt-6">
             <button className="btn" onClick={() => handleOpenModal()}>
               Edit Class Info
+            </button>
+            <button className="btn" onClick={handleRegisterClick}>
+              View Register
             </button>
           </div>
         </div>
@@ -231,10 +237,10 @@ const LauderdaleClass = () => {
             <tbody>
               {classStudents?.map((student, index) => {
                 return (
-                  <tr key={student.id}>
+                  <tr key={student?.id}>
                     <td>{index + 1}</td>
                     <td>
-                      {student.first_name} {student.last_name}
+                      {student?.first_name} {student?.last_name}
                     </td>
                   </tr>
                 );
@@ -305,10 +311,10 @@ const LauderdaleClass = () => {
                   .map((teacher: TeacherRecord) => {
                     return (
                       <option
-                        value={teacher.id}
-                        key={teacher.teacher_last_name}
+                        value={teacher?.id}
+                        key={`${teacher?.id}-${teacher?.teacher_last_name}`}
                       >
-                        {teacher.teacher_last_name}
+                        {teacher?.teacher_last_name}
                       </option>
                     );
                   })
