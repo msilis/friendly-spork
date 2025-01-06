@@ -4,6 +4,7 @@ import {
   useLoaderData,
   useRevalidator,
   useNavigate,
+  useParams,
 } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -38,6 +39,7 @@ const LauderdaleClass = () => {
     class_accompanist: lauderdaleClass.class_accompanist,
   });
   const modalRef = useRef<HTMLDialogElement>(null);
+  const params = useParams();
   const revalidator = useRevalidator();
 
   const handleChange = (
