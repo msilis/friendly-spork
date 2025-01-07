@@ -1,11 +1,17 @@
 import { useState } from "react";
 import Menu from "./Menu";
+import ButtonMenu from "./ButtonMenu";
 
 const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [buttonMenuOpen, setButtonMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  const toggleButtonMenu = () => {
+    setButtonMenuOpen(!buttonMenuOpen);
   };
 
   return (
@@ -38,7 +44,7 @@ const Navigation = () => {
         </a>
       </div>
       <div className="flex-none">
-        <button className="btn btn-square btn-ghost">
+        <button className="btn btn-square btn-ghost" onClick={toggleButtonMenu}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -53,6 +59,11 @@ const Navigation = () => {
             ></path>
           </svg>
         </button>
+        {buttonMenuOpen ? (
+          <div className="absolute top-full right-0 z-50 mt-1">
+            <ButtonMenu setButtonMenuOpen={setButtonMenuOpen} />
+          </div>
+        ) : null}
       </div>
     </div>
   );
