@@ -11,6 +11,7 @@ import { LoaderFunctionArgs } from "@remix-run/node";
 import { getClass, getStudents, getTeachers, updateClass } from "~/data/data";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import Select, { MultiValue } from "react-select";
+import { useClassContext } from "~/contexts/classContext";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [classData, studentData, teacherData] = await Promise.all([
@@ -26,6 +27,8 @@ const LauderdaleClass = () => {
   const { classData, studentData, teacherData } =
     useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const { setClassInformation, setStudentInformation, setTeacherInformation } =
+    useClassContext();
   const lauderdaleClass: ClassRecord = classData?.[0];
   const [classStudents, setClassStudents] = useState<StudentRecord[]>();
   const [formState, setFormState] = useState({
@@ -84,6 +87,9 @@ const LauderdaleClass = () => {
   };
 
   useEffect(() => {
+    setClassInformation(lauderdaleClass);
+    setStudentInformation(studentData);
+    setTeacherInformation(teacherData);
     const classStudentNames = () => {
       const studentsWithNames = lauderdaleClass?.class_students.map(
         (student) => {
