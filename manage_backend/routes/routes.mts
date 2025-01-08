@@ -8,6 +8,7 @@ import {
   familyTable,
   teacherTable,
   classesTable,
+  settingsTable,
 } from "../db/dbSchema.mts";
 
 const router = express.Router();
@@ -509,6 +510,40 @@ router.delete("/classes/:classId/delete", (req, res) => {
   res.status(200).json({ message: "Class deleted successfully!" });
 });
 
-router.get("/classes", async (req, res) => {});
+interface SettingsPayload {
+  [key: string]: string;
+}
+
+router
+  .route("/settings")
+  .get(async (req, res) => {
+    try {
+      const allSettings = await db.select().from(settingsTable);
+      res.status(200).json(allSettings);
+    } catch (error) {
+      console.error("Error getting settings", error);
+      res.status(500).json({ message: "Error getting settings." });
+    }
+  })
+  .post(async (req, res) => {
+    const settings = req.body as SettingsPayload;
+
+    const settingsArray = Object.entries(settings).map(([key, value]) => ({
+      settings_key: key,
+      settings_value: value,
+    }));
+
+    await Promise.all(
+      settingsArray.map(async (setting) =>
+        db
+          .insert(settingsTable)
+          .values(setting)
+          .onConflictDoUpdate({
+            target: settingsTable.settings_key,
+            set: { settings_value: setting.settings_value },
+          }),
+      ),
+    );
+  });
 
 export default router;

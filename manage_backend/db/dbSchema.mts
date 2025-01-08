@@ -47,3 +47,8 @@ export const classesTable = sqliteTable("classes_table", {
   class_teacher: text("class_teacher", { mode: "json" }),
   class_accompanist: int("class_accompanist").references(() => teacherTable.id),
 });
+
+export const settingsTable = sqliteTable("settings_table", {
+  settings_key: text("settings_key").primaryKey().notNull(),
+  settings_value: text("settings_value").notNull(),
+});
