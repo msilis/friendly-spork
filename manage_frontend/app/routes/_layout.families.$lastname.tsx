@@ -6,7 +6,6 @@ import { FamilyRecord } from "~/types/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const families = await getFamily(params.lastname);
-
   return json(families);
 };
 

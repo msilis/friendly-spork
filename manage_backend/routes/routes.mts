@@ -517,8 +517,10 @@ interface SettingsPayload {
 router
   .route("/settings")
   .get(async (req, res) => {
+    console.log(req, "request from route");
     try {
       const allSettings = await db.select().from(settingsTable);
+      console.log(allSettings, "allSettings");
       res.status(200).json(allSettings);
     } catch (error) {
       console.error("Error getting settings", error);
@@ -526,15 +528,10 @@ router
     }
   })
   .post(async (req, res) => {
-    const settings = req.body as SettingsPayload;
-
-    const settingsArray = Object.entries(settings).map(([key, value]) => ({
-      settings_key: key,
-      settings_value: value,
-    }));
+    const settings = req.body as SettingsPayload[];
 
     await Promise.all(
-      settingsArray.map(async (setting) =>
+      settings.map(async (setting) =>
         db
           .insert(settingsTable)
           .values(setting)

@@ -239,3 +239,25 @@ export const updateClass = async (
     console.error(error, "Error updating class");
   }
 };
+
+export const getSettings = async () => {
+  const settings = await fetch("http://localhost:3000/settings").then(
+    (response) => response.json()
+  );
+  return settings;
+};
+
+export const saveSettings = async (data: unknown) => {
+  try {
+    const saveSettings = await fetch("http://localhost:3000/settings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((response) => response.json());
+    return saveSettings;
+  } catch (error) {
+    console.error("There was an error saving your settings: ", error);
+  }
+};
