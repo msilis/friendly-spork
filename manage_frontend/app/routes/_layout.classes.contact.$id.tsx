@@ -107,58 +107,107 @@ const ContactSheet = () => {
           <h2>{classInformation?.class_location}</h2>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="table-xs">
+        <div className="overflow-x-auto mr-6">
+          <table className="table-xs border border-1 border-gray-800">
             <thead>
-              <tr>
-                <th>First name</th>
-                <th>Last Name</th>
-                <th>Birthday</th>
-                <th>Teacher</th>
-                <th>Parent 1 First Name</th>
-                <th>Parent 1 Last Name</th>
-                <th>Parent 1 Email</th>
-                <th>Parent 1 Mobile</th>
-                <th>Parent 2 First Name</th>
-                <th>Parent 2 Last Name</th>
-                <th>Parent 2 Email</th>
-                <th>Parent 2 Mobile</th>
+              <tr className="border border-1 border-gray-800 bg-gray-300">
+                <th className="border border-1 border-gray-800">First name</th>
+                <th className="border border-1 border-gray-800">Last Name</th>
+                <th
+                  className="border border-1 border-gray-800"
+                  style={{ width: "100px" }}
+                >
+                  Birthday
+                </th>
+                <th className="border border-1 border-gray-800">Teacher</th>
+                <th className="border border-1 border-gray-800">
+                  Parent 1 First Name
+                </th>
+                <th className="border border-1 border-gray-800">
+                  Parent 1 Last Name
+                </th>
+                <th className="border border-1 border-gray-800">
+                  Parent 1 Email
+                </th>
+                <th className="border border-1 border-gray-800">
+                  Parent 1 Mobile
+                </th>
+                <th className="border border-1 border-gray-800">
+                  Parent 2 First Name
+                </th>
+                <th className="border border-1 border-gray-800">
+                  Parent 2 Last Name
+                </th>
+                <th className="border border-1 border-gray-800">
+                  Parent 2 Email
+                </th>
+                <th className="border border-1 border-gray-800">
+                  Parent 2 Mobile
+                </th>
               </tr>
             </thead>
             <tbody>
-              {classInformation?.class_students?.map((student) => {
-                const studentInfo: StudentRecord = findStudent(Number(student));
-                return (
-                  <tr key={student}>
-                    <td>{studentInfo.first_name}</td>
-                    <td>{studentInfo.last_name}</td>
-                    <td>{studentInfo.birthdate}</td>
-                    <td>
-                      {findTeacher(studentInfo?.teacher_id)?.teacher_last_name}
-                    </td>
-                    <td>
-                      {findFamily(studentInfo?.family_id)?.parent1_first_name}
-                    </td>
-                    <td>
-                      {findFamily(studentInfo?.family_id)?.parent1_last_name}
-                    </td>
-                    <td>{findFamily(studentInfo?.family_id)?.parent1_email}</td>
-                    <td>
-                      {findFamily(studentInfo?.family_id)?.parent1_mobile_phone}
-                    </td>
-                    <td>
-                      {findFamily(studentInfo?.family_id)?.parent2_first_name}
-                    </td>
-                    <td>
-                      {findFamily(studentInfo?.family_id)?.parent2_last_name}
-                    </td>
-                    <td>{findFamily(studentInfo?.family_id)?.parent2_email}</td>
-                    <td>
-                      {findFamily(studentInfo?.family_id)?.parent2_mobile_phone}
-                    </td>
-                  </tr>
-                );
-              })}
+              {classInformation?.class_students
+                ?.map((student) => findStudent(Number(student)))
+                .filter(
+                  (studentInfo): studentInfo is StudentRecord =>
+                    studentInfo !== undefined
+                )
+                .sort((a, b) => a.last_name.localeCompare(b.last_name))
+                .map((studentInfo) => {
+                  return (
+                    <tr
+                      key={studentInfo.id}
+                      className="text-center border border-1 border-gray-800"
+                    >
+                      <td className="border border-1 border-gray-800 bg-gray-100">
+                        {studentInfo?.first_name || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {studentInfo?.last_name || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {studentInfo?.birthdate || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findTeacher(studentInfo?.teacher_id)
+                          ?.teacher_last_name || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findFamily(studentInfo?.family_id)
+                          ?.parent1_first_name || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findFamily(studentInfo?.family_id)
+                          ?.parent1_last_name || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findFamily(studentInfo?.family_id)?.parent1_email ||
+                          ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findFamily(studentInfo?.family_id)
+                          ?.parent1_mobile_phone || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findFamily(studentInfo?.family_id)
+                          ?.parent2_first_name || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findFamily(studentInfo?.family_id)
+                          ?.parent2_last_name || ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findFamily(studentInfo?.family_id)?.parent2_email ||
+                          ""}
+                      </td>
+                      <td className="border border-1 border-gray-800">
+                        {findFamily(studentInfo?.family_id)
+                          ?.parent2_mobile_phone || ""}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
