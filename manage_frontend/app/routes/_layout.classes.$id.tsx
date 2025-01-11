@@ -201,6 +201,10 @@ const LauderdaleClass = () => {
     navigate(`/classes/register/${lauderdaleClass.id}`);
   };
 
+  const handleContactSheetClick = () => {
+    navigate(`/classes/contact/${lauderdaleClass.id}`);
+  };
+
   return (
     <>
       <Link to={"/classes"}>
@@ -230,6 +234,9 @@ const LauderdaleClass = () => {
             </button>
             <button className="btn" onClick={handleRegisterClick}>
               View Register
+            </button>
+            <button className="btn" onClick={handleContactSheetClick}>
+              View Contact Sheet
             </button>
           </div>
         </div>
