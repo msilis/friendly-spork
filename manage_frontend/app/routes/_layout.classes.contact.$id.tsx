@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { useClassContext } from "~/contexts/classContext";
 import { getFamilies } from "~/data/data";
 import { TeacherRecord, StudentRecord, FamilyRecord } from "~/types/types";
+import { jsPDF } from "jspdf";
+import styles from "../styles.module.css";
 
 export const loader = async () => {
   const families = await getFamilies();
@@ -79,13 +81,25 @@ const ContactSheet = () => {
 
   if (!classInformation) return <div>Loading</div>;
 
+  const handlePrintClick = () => {
+    const contactSheet = document.getElementById("class_contact_sheet");
+    console.log(contactSheet);
+    const pdf = new jsPDF("p", "px", "a4");
+    pdf
+      .html(contactSheet)
+      .then(() => pdf.save(`${classInformation.class_name}.pdf`));
+  };
+
   return (
     <div>
       <h2>Contact Sheet</h2>
       <button className="btn btn-link" onClick={handleBackClick}>
         Back
       </button>
-      <div>
+      <button className="btn btn-sm" onClick={handlePrintClick}>
+        Print
+      </button>
+      <div id="class_contact_sheet">
         <div className="flex mb-4 text-lg gap-2 justify-center">
           <h2>
             {classInformation?.class_name}
@@ -108,7 +122,7 @@ const ContactSheet = () => {
         </div>
 
         <div className="overflow-x-auto mr-6">
-          <table className="table-xs border border-1 border-gray-800">
+          <table className="table table-xs border border-1 border-gray-800">
             <thead>
               <tr className="border border-1 border-gray-800 bg-gray-300">
                 <th className="border border-1 border-gray-800">First name</th>
