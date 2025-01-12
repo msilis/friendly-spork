@@ -1,5 +1,4 @@
 import {
-  json,
   Link,
   useLoaderData,
   useRevalidator,
@@ -20,7 +19,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     getTeachers(),
   ]);
 
-  return json({ classData, studentData, teacherData });
+  return Response.json({ classData, studentData, teacherData });
 };
 
 const LauderdaleClass = () => {

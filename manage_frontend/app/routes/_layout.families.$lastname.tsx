@@ -1,12 +1,12 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, Link, json, useRevalidator } from "@remix-run/react";
+import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
 import { getFamily, updateFamily } from "~/data/data";
 import React, { useRef, useState } from "react";
 import { FamilyRecord } from "~/types/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const families = await getFamily(params.lastname);
-  return json(families);
+  return Response.json(families);
 };
 
 const Family = () => {

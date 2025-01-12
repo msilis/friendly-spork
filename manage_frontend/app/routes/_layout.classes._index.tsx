@@ -1,4 +1,4 @@
-import { Link, useLoaderData, json } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { getClasses, getTeachers, getStudents } from "~/data/data";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useRef, useState } from "react";
@@ -9,7 +9,7 @@ export const loader = async () => {
     getTeachers(),
     getStudents(),
   ]);
-  return json({ classData, teacherData, studentData });
+  return Response.json({ classData, teacherData, studentData });
 };
 
 const Classes = () => {

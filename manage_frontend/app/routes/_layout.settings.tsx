@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useLoaderData, json, useRevalidator } from "@remix-run/react";
+import { useLoaderData, useRevalidator } from "@remix-run/react";
 import { getSettings, saveSettings } from "~/data/data";
 
 export const loader = async () => {
   const settings = await getSettings();
-  return json(settings);
+  return Response.json(settings);
 };
 
 type SettingsType = {

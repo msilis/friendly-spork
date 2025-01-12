@@ -1,4 +1,4 @@
-import { useLoaderData, Link, json, useRevalidator } from "@remix-run/react";
+import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
 import {
   deleteStudent,
   getFamilies,
@@ -14,7 +14,7 @@ export const loader = async () => {
     getFamilies(),
     getTeachers(),
   ]);
-  return json({ students, families, teachers });
+  return Response.json({ students, families, teachers });
 };
 
 const Students = () => {

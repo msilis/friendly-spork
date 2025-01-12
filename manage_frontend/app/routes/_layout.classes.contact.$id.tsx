@@ -1,14 +1,14 @@
-import { useNavigate, useParams, useLoaderData, json } from "@remix-run/react";
+import { useNavigate, useParams, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import { useClassContext } from "~/contexts/classContext";
 import { getFamilies } from "~/data/data";
 import { TeacherRecord, StudentRecord, FamilyRecord } from "~/types/types";
 import { jsPDF } from "jspdf";
-import styles from "../styles.module.css";
+import html2canvas from "html2canvas-pro";
 
 export const loader = async () => {
   const families = await getFamilies();
-  return json(families);
+  return Response.json(families);
 };
 
 const ContactSheet = () => {
@@ -81,13 +81,36 @@ const ContactSheet = () => {
 
   if (!classInformation) return <div>Loading</div>;
 
-  const handlePrintClick = () => {
+  const handlePrintClick = async () => {
     const contactSheet = document.getElementById("class_contact_sheet");
     console.log(contactSheet);
-    const pdf = new jsPDF("p", "px", "a4");
-    pdf
-      .html(contactSheet)
-      .then(() => pdf.save(`${classInformation.class_name}.pdf`));
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "px",
+      format: [842, 595],
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    if (!contactSheet) {
+      console.error("Element not found");
+      return;
+    }
+
+    const canvas = await html2canvas(contactSheet, { scale: 2 });
+    const tableData = canvas.toDataURL("image/png");
+
+    const elementWidth = canvas.width;
+    const elementHeight = canvas.height;
+    const scaleX = pageWidth / elementWidth;
+    const scaleY = pageHeight / elementHeight;
+    const scale = Math.min(scaleX, scaleY);
+
+    const tableWidth = elementWidth * scale;
+    const tableHeight = elementHeight * scale;
+
+    pdf.addImage(tableData, "PNG", 0, 0, tableWidth, tableHeight);
+    pdf.save(`${classInformation.class_name}.pdf`);
   };
 
   return (
