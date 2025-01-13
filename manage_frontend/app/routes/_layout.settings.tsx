@@ -55,6 +55,7 @@ const Settings = () => {
         settings_value: value,
       })
     );
+    console.log(halfTermArray, "halfTermArray");
     await saveSettings(halfTermArray);
     revalidator.revalidate();
   };
@@ -140,6 +141,8 @@ const Settings = () => {
             </label>
             <input
               id="term1_halfterm_startdate"
+              name="term1_halfterm_startdate"
+              defaultValue={settingsMap["term1_halfterm_startdate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -149,6 +152,8 @@ const Settings = () => {
             </label>
             <input
               id="term1_halfterm_enddate"
+              name="term1_halfterm_enddate"
+              defaultValue={settingsMap["term1_halfterm_enddate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -158,6 +163,8 @@ const Settings = () => {
             </label>
             <input
               id="term2_halfterm_startdate"
+              name="term2_halfterm_startdate"
+              defaultValue={settingsMap["term2_halfterm_startdate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -167,6 +174,8 @@ const Settings = () => {
             </label>
             <input
               id="term2_halfterm_enddate"
+              name="term2_halfterm_enddate"
+              defaultValue={settingsMap["term2_halfterm_enddate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -176,6 +185,8 @@ const Settings = () => {
             </label>
             <input
               id="term3_halfterm_startdate"
+              name="term3_halfterm_startdate"
+              defaultValue={settingsMap["term3_halfterm_startdate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -185,6 +196,8 @@ const Settings = () => {
             </label>
             <input
               id="term3_halfterm_enddate"
+              name="term3_halfterm_enddate"
+              defaultValue={settingsMap["term3_halfterm_enddate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}

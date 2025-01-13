@@ -1,21 +1,55 @@
-import { useParams, useNavigate, useLoaderData, json } from "@remix-run/react";
+import { useParams, useNavigate, useLoaderData, Link } from "@remix-run/react";
 import { useClassContext } from "~/contexts/classContext";
-import { getFamilies } from "~/data/data";
+import { getSettings } from "~/data/data";
 
 export const loader = async () => {
-  const families = await getFamilies();
-  return json(families);
+  const settings = await getSettings();
+  return Response.json(settings);
+};
+
+type SettingsType = {
+  settings_key: string;
+  settings_value: string;
 };
 
 const Register = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const families = useLoaderData<typeof loader>();
+  const settings = useLoaderData<typeof loader>();
+
   const handleBackClick = () => {
     navigate(`/classes/${params.id}`);
   };
-  const { classInformation, studentInformation, teacherInformation } =
-    useClassContext();
+  const {
+    classInformation,
+    setClassInformation,
+    studentInformation,
+    setStudentInformation,
+    teacherInformation,
+    setTeacherInformation,
+  } = useClassContext();
+
+  const hasSetTermDate = settings.some(
+    (setting: SettingsType) => setting.settings_key === "term1_start_date"
+  );
+
+  const hasSetHalfTermDates = settings.some(
+    (setting: SettingsType) =>
+      setting.settings_key === "term1_halfterm_start_date"
+  );
+
+  if (!hasSetTermDate || !hasSetHalfTermDates) {
+    return (
+      <div>
+        <h2>
+          You have not set term dates or you have not set half-term dates.
+        </h2>
+        <h3>
+          Please go to <Link to={"/settings"}>Settings.</Link>
+        </h3>
+      </div>
+    );
+  }
 
   return (
     <div>
