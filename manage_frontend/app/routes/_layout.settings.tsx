@@ -62,11 +62,11 @@ const Settings = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold">Settings</h1>
-      <div className="mt-4">
-        <div>
+      <div className="mt-4 ml-8">
+        <div className="flex gap-5">
           <div
             className="bg-base-300 p-3 flex flex-col gap-2 rounded-box"
-            style={{ width: "50%" }}
+            style={{ width: "20%", height: "40%" }}
           >
             <h2 className="font-bold">Set Term Dates</h2>
             <label htmlFor="term1_start_date">Term 1 Start Date</label>
@@ -131,8 +131,8 @@ const Settings = () => {
             </button>
           </div>
           <div
-            className="bg-base-300 p-3 flex flex-col gap-2 mt-3 rounded-box"
-            style={{ width: "50%" }}
+            className="bg-base-300 p-3 flex flex-col gap-2  rounded-box"
+            style={{ width: "20%", height: "40%" }}
           >
             <h2 className="font-bold">Set Half-Term Dates</h2>
             <label htmlFor="term1_halfterm_startdate">

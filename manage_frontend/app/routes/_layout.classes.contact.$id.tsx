@@ -83,7 +83,7 @@ const ContactSheet = () => {
 
   const handlePrintClick = async () => {
     const contactSheet = document.getElementById("class_contact_sheet");
-    console.log(contactSheet);
+
     const pdf = new jsPDF({
       orientation: "landscape",
       unit: "px",
@@ -100,7 +100,7 @@ const ContactSheet = () => {
     const canvas = await html2canvas(contactSheet, { scale: 2 });
     const tableData = canvas.toDataURL("image/png");
 
-    const elementWidth = canvas.width;
+    const elementWidth = canvas.width - 10;
     const elementHeight = canvas.height;
     const scaleX = pageWidth / elementWidth;
     const scaleY = pageHeight / elementHeight;
@@ -109,7 +109,8 @@ const ContactSheet = () => {
     const tableWidth = elementWidth * scale;
     const tableHeight = elementHeight * scale;
 
-    pdf.addImage(tableData, "PNG", 0, 0, tableWidth, tableHeight);
+    // the add image has the following format: (imageToAdd, imageType, xOffset, yOffset, imageWidth, imageHeight)
+    pdf.addImage(tableData, "PNG", 5, 20, tableWidth, tableHeight);
     pdf.save(`${classInformation.class_name}.pdf`);
   };
 
@@ -120,7 +121,7 @@ const ContactSheet = () => {
         Back
       </button>
       <button className="btn btn-sm" onClick={handlePrintClick}>
-        Print
+        Save PDF
       </button>
       <div id="class_contact_sheet">
         <div className="flex mb-4 text-lg gap-2 justify-center">
