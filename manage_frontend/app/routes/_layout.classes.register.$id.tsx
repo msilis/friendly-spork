@@ -3,6 +3,7 @@ import { useClassContext } from "~/contexts/classContext";
 import { getSettings } from "~/data/data";
 import { useState, useEffect } from "react";
 import { getWednesdays } from "~/utils/utils";
+import { TeacherRecord, StudentRecord } from "~/types/types";
 
 export const loader = async () => {
   const settings = await getSettings();
@@ -92,12 +93,54 @@ const Register = () => {
     setAllDates(allDatesArray);
   }, [term, settings]);
 
+  useEffect(() => {
+    if (!classInformation) {
+      const storedClassInformation = sessionStorage.getItem("classInformation");
+      if (storedClassInformation) {
+        setClassInformation(JSON.parse(storedClassInformation));
+      }
+    }
+    if (!studentInformation) {
+      const storedStudentInformation =
+        sessionStorage.getItem("studentInformation");
+      if (storedStudentInformation) {
+        setStudentInformation(JSON.parse(storedStudentInformation));
+      }
+    }
+    if (!teacherInformation) {
+      const storedTeacherInformation =
+        sessionStorage.getItem("teacherInformation");
+      if (storedTeacherInformation) {
+        setTeacherInformation(JSON.parse(storedTeacherInformation));
+      }
+    }
+  }, [
+    classInformation,
+    setClassInformation,
+    teacherInformation,
+    setTeacherInformation,
+    studentInformation,
+    setStudentInformation,
+  ]);
+
   const hasSetHalfTermDates = settings.some(
     (setting: SettingsType) =>
       setting.settings_key === "term1_halfterm_startdate"
   );
 
-  console.log(allDates, "allDates");
+  const findTeacher = (id: number | undefined) => {
+    const teacher = teacherInformation?.find(
+      (teacher: TeacherRecord) => teacher.id === id
+    );
+    return teacher;
+  };
+
+  const findStudent = (id: number | undefined) => {
+    const student = studentInformation?.find(
+      (student: StudentRecord) => student.id === id
+    );
+    return student;
+  };
 
   if (!hasSetTermDate || !hasSetHalfTermDates) {
     return (
@@ -116,7 +159,7 @@ const Register = () => {
     const dateOne: Date = new Date(birthDate);
     const dateTwo: Date = new Date(currentDate);
 
-    const years = dateOne.getFullYear() - dateTwo.getFullYear();
+    const years = dateTwo.getFullYear() - dateOne.getFullYear();
     return years;
   };
 
@@ -127,6 +170,8 @@ const Register = () => {
     );
     return !(entry.type === "class" && hasBreak);
   });
+
+  const currentDate = new Date();
 
   return (
     <div>
@@ -168,6 +213,43 @@ const Register = () => {
               ))}
             </tr>
           </thead>
+          <tbody>
+            {classInformation?.class_students
+              ?.map((student) => findStudent(Number(student)))
+              .filter(
+                (studentInfo): studentInfo is StudentRecord =>
+                  studentInfo !== undefined
+              )
+              .sort((a, b) => a.last_name.localeCompare(b.last_name))
+              .map((studentInfo) => {
+                return (
+                  <tr
+                    key={studentInfo.id}
+                    className="text-center border border-1 border-gray-800"
+                  >
+                    <td className="border border-1 border-gray-800 bg-gray-100">
+                      {studentInfo?.first_name || ""}
+                    </td>
+                    <td className="border border-1 border-gray-800">
+                      {studentInfo?.last_name || ""}
+                    </td>
+                    <td className="border border-1 border-gray-800">
+                      {getAge(studentInfo?.birthdate, currentDate.toString())}
+                    </td>
+                    <td className="border border-1 border-gray-800">
+                      {findTeacher(studentInfo?.teacher_id)
+                        ?.teacher_last_name || ""}
+                    </td>
+                    {filteredDates?.map((date) => (
+                      <td
+                        key={date?.date.toString()}
+                        className="border border-1 border-gray-800"
+                      ></td>
+                    ))}
+                  </tr>
+                );
+              })}
+          </tbody>
         </table>
       </div>
     </div>
