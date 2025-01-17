@@ -2,7 +2,7 @@ import { useParams, useNavigate, useLoaderData, Link } from "@remix-run/react";
 import { useClassContext } from "~/contexts/classContext";
 import { getSettings } from "~/data/data";
 import { useState, useEffect } from "react";
-import { getWednesdays } from "~/utils/utils";
+import { getWednesdays, handleSaveClick } from "~/utils/utils";
 import { TeacherRecord, StudentRecord } from "~/types/types";
 
 export const loader = async () => {
@@ -172,12 +172,21 @@ const Register = () => {
   });
 
   const currentDate = new Date();
+  const handleClick = () => {
+    handleSaveClick(
+      "register-table",
+      `${classInformation?.class_name}-register`
+    );
+  };
 
   return (
     <div>
       <h2>Register</h2>
       <button className="btn btn-link" onClick={handleBackClick}>
         Back
+      </button>
+      <button className="btn btn-sm" onClick={handleClick}>
+        Save PDF
       </button>
       <div>
         <label htmlFor="term-select">Select Term</label>
@@ -191,7 +200,7 @@ const Register = () => {
           <option value={3}>Term 3</option>
         </select>
       </div>
-      <div className="overflow-x-auto mt-6">
+      <div className="overflow-x-auto mt-6" id="register-table">
         <table className="table table-xs border border-1 border-gray-800">
           <thead>
             <tr className="border border-1 border-gray-800 bg-gray-300">

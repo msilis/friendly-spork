@@ -81,7 +81,7 @@ const ContactSheet = () => {
 
   if (!classInformation) return <div>Loading</div>;
 
-  const handlePrintClick = async () => {
+  const handleSaveClick = async () => {
     const contactSheet = document.getElementById("class_contact_sheet");
 
     const pdf = new jsPDF({
@@ -120,7 +120,7 @@ const ContactSheet = () => {
       <button className="btn btn-link" onClick={handleBackClick}>
         Back
       </button>
-      <button className="btn btn-sm" onClick={handlePrintClick}>
+      <button className="btn btn-sm" onClick={handleSaveClick}>
         Save PDF
       </button>
       <div id="class_contact_sheet">
