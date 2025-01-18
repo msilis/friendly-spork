@@ -3,8 +3,7 @@ import { useEffect } from "react";
 import { useClassContext } from "~/contexts/classContext";
 import { getFamilies } from "~/data/data";
 import { TeacherRecord, StudentRecord, FamilyRecord } from "~/types/types";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas-pro";
+import { handleSaveClick } from "~/utils/utils";
 
 export const loader = async () => {
   const families = await getFamilies();
@@ -81,37 +80,11 @@ const ContactSheet = () => {
 
   if (!classInformation) return <div>Loading</div>;
 
-  const handleSaveClick = async () => {
-    const contactSheet = document.getElementById("class_contact_sheet");
-
-    const pdf = new jsPDF({
-      orientation: "landscape",
-      unit: "px",
-      format: [842, 595],
-    });
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    if (!contactSheet) {
-      console.error("Element not found");
-      return;
-    }
-
-    const canvas = await html2canvas(contactSheet, { scale: 2 });
-    const tableData = canvas.toDataURL("image/png");
-
-    const elementWidth = canvas.width - 10;
-    const elementHeight = canvas.height;
-    const scaleX = pageWidth / elementWidth;
-    const scaleY = pageHeight / elementHeight;
-    const scale = Math.min(scaleX, scaleY);
-
-    const tableWidth = elementWidth * scale;
-    const tableHeight = elementHeight * scale;
-
-    // the add image has the following format: (imageToAdd, imageType, xOffset, yOffset, imageWidth, imageHeight)
-    pdf.addImage(tableData, "PNG", 5, 20, tableWidth, tableHeight);
-    pdf.save(`${classInformation.class_name}.pdf`);
+  const handleSavePDFClick = () => {
+    handleSaveClick(
+      "class_contact_sheet",
+      `${classInformation.class_name}-contact-sheet.pdf`
+    );
   };
 
   return (
@@ -120,7 +93,7 @@ const ContactSheet = () => {
       <button className="btn btn-link" onClick={handleBackClick}>
         Back
       </button>
-      <button className="btn btn-sm" onClick={handleSaveClick}>
+      <button className="btn btn-sm" onClick={handleSavePDFClick}>
         Save PDF
       </button>
       <div id="class_contact_sheet">
@@ -145,7 +118,7 @@ const ContactSheet = () => {
           <h2>{classInformation?.class_location}</h2>
         </div>
 
-        <div className="overflow-x-auto mr-6">
+        <div className="overflow-x-auto mr-12">
           <table className="table table-xs border border-1 border-gray-800">
             <thead>
               <tr className="border border-1 border-gray-800 bg-gray-300">

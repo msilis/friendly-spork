@@ -20,7 +20,11 @@ export const getWednesdays = (startDate: string, endDate: string) => {
   return wednesdays;
 };
 
-export const handleSaveClick = async (element: string, pdfName: string) => {
+export const handleSaveClick = async (
+  element: string,
+  pdfName: string,
+  shrinkAmount?: number
+) => {
   console.log(element, "element");
   const elementToSave = document.getElementById(element);
 
@@ -46,7 +50,7 @@ export const handleSaveClick = async (element: string, pdfName: string) => {
   const scaleY = pageHeight / elementHeight;
   const scale = Math.min(scaleX, scaleY);
 
-  const tableWidth = elementWidth * scale;
+  const tableWidth = (elementWidth - (shrinkAmount ? shrinkAmount : 0)) * scale;
   const tableHeight = elementHeight * scale;
 
   // the add image has the following format: (imageToAdd, imageType, xOffset, yOffset, imageWidth, imageHeight)

@@ -26,6 +26,7 @@ const Register = () => {
   const settings = useLoaderData<typeof loader>();
   const [term, setTerm] = useState<string>("1");
   const [allDates, setAllDates] = useState<DateEntry[]>();
+  const [additionalNote, setAdditionalNote] = useState<string>("");
 
   const handleBackClick = () => {
     navigate(`/classes/${params.id}`);
@@ -45,6 +46,11 @@ const Register = () => {
 
   const handleTermChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setTerm(event.target.value);
+  };
+
+  const handleNoteInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const text = event.currentTarget?.value;
+    setAdditionalNote(text);
   };
 
   useEffect(() => {
@@ -175,7 +181,8 @@ const Register = () => {
   const handleClick = () => {
     handleSaveClick(
       "register-table",
-      `${classInformation?.class_name}-register`
+      `${classInformation?.class_name}-register`,
+      40
     );
   };
 
@@ -199,8 +206,38 @@ const Register = () => {
           <option value={2}>Term 2</option>
           <option value={3}>Term 3</option>
         </select>
+        <label htmlFor="additional-note" className="ml-2 mr-2">
+          Additional Note
+        </label>
+        <input
+          type="text"
+          className="input input-bordered w-full max-w-xs"
+          placeholder="Type here..."
+          onChange={handleNoteInput}
+        />
       </div>
-      <div className="overflow-x-auto mt-6" id="register-table">
+      <div className="overflow-x-auto mt-6 mr-16 ml-16" id="register-table">
+        <div className="flex mb-4 text-lg gap-2 justify-center">
+          <h2>
+            {classInformation?.class_name}
+            {" - "}
+          </h2>
+          <h2>
+            {findTeacher(classInformation?.class_teacher)?.teacher_first_name}
+            {" & "}
+            {
+              findTeacher(classInformation?.class_accompanist)
+                ?.teacher_first_name
+            }
+            {" -"}
+          </h2>
+          <h2>
+            {classInformation?.class_start_time} to{" "}
+            {classInformation?.class_end_time} {" - "}
+          </h2>
+          <h2>{classInformation?.class_location}</h2>
+          <h2>{additionalNote}</h2>
+        </div>
         <table className="table table-xs border border-1 border-gray-800">
           <thead>
             <tr className="border border-1 border-gray-800 bg-gray-300">
