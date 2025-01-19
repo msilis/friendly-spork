@@ -551,6 +551,26 @@ router.get("/transactions/:familyId", async (req, res) => {
   }
 });
 
+router.post("/transactions/save", async (req, res) => {
+  const { transaction_date, account_id, transaction_type, transaction_amount } =
+    req.body;
+  try {
+    const transactionData = {
+      transaction_date,
+      account_id,
+      transaction_type,
+      transaction_amount,
+    };
+    await db.insert(transactionTable).values(transactionData);
+    res.status(200).json({ message: "Transaction saved" });
+  } catch (error) {
+    console.error("Error saving the transaction: ", error);
+    res
+      .status(500)
+      .json({ message: "Thee was an error saving the transaction" });
+  }
+});
+
 interface SettingsPayload {
   [key: string]: string;
 }

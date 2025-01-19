@@ -5,6 +5,7 @@ import {
   FamilyRecord,
   StudentRecord,
   TeacherRecord,
+  TransactionRecord,
 } from "~/types/types";
 
 export const getStudents = async () => {
@@ -272,6 +273,24 @@ export const getFamilyTransactions = async (params: string | undefined) => {
     return findTransactions;
   } catch (error) {
     console.error("There was an error getting transactions: ", error);
+  }
+};
+
+export const saveTransaction = async (data: TransactionRecord) => {
+  try {
+    const saveTransaction = await fetch(
+      "http://localhost:3000/transactions/save",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return saveTransaction;
+  } catch (error) {
+    console.error("There was an error savig the transaction: ", error);
   }
 };
 

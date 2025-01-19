@@ -63,7 +63,7 @@ export const transactionTable = sqliteTable("transaction_table", {
   id: int("id").primaryKey({ autoIncrement: true }),
   account_id: int("account_id").references(() => familyTable.id),
   transaction_date: text("transaction_date"),
-  transactino_amount: int("transaction_amount"),
+  transaction_amount: int("transaction_amount"),
   transaction_type: int("transaction_type"),
   description: text("transaction-description"),
 });

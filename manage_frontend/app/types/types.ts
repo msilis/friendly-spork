@@ -50,3 +50,12 @@ export interface SelectOption {
   value: number | string;
   name: string;
 }
+
+export interface TransactionRecord {
+  id?: number;
+  account_id: number;
+  transaction_date: string;
+  transaction_amount: number | string;
+  transaction_type: string;
+  description?: string;
+}

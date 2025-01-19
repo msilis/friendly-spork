@@ -41,7 +41,6 @@ const Student = () => {
 
   const params = useParams();
   const revalidator = useRevalidator();
-  console.log(params.id, "paramsID");
 
   const handleOpenModal = () => {
     modalRef.current?.showModal();
