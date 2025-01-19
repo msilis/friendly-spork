@@ -9,6 +9,7 @@ import {
   teacherTable,
   classesTable,
   settingsTable,
+  transactionTable,
 } from "../db/dbSchema.mts";
 
 const router = express.Router();
@@ -193,12 +194,14 @@ router.post("/families/add", async (req, res) => {
 });
 
 router.get("/families/:family", async (req, res) => {
+  console.log(req.params.family, "request");
   const familyLastName = req.params.family;
   try {
     const familyData = await db
       .select()
       .from(familyTable)
       .where(sql`LOWER(${familyTable.family_last_name}) = ${familyLastName}`);
+    console.log(familyData, "familyData");
     res.status(200).json(familyData);
   } catch (error) {
     console.error("There was an error retreiving the family record", error);
@@ -505,9 +508,47 @@ router
     }
   });
 
+router.post("/classes/getstudent/:studentId", async (req, res) => {
+  const student = req.params.studentId;
+  try {
+    const findStudentInClass = await db
+      .select()
+      .from(classesTable)
+      .where(sql`${classesTable.class_students} LIKE ${`%${student}%`}`);
+    res.status(200).json(findStudentInClass);
+  } catch (error) {
+    console.error(
+      "There was an error finding the student info in classes",
+      error,
+    );
+    res.status(500).json({
+      message: "There was an error finding the student info in classes",
+    });
+  }
+});
+
 router.delete("/classes/:classId/delete", (req, res) => {
   const classId = req.params.classId;
   res.status(200).json({ message: "Class deleted successfully!" });
+});
+
+router.get("/transactions/:familyId", async (req, res) => {
+  const id = req.params.familyId;
+  try {
+    const findTransactions = await db
+      .select()
+      .from(transactionTable)
+      .where(eq(transactionTable.account_id, Number(id)));
+    if (findTransactions === "undefined") {
+      res.status(404).json({ message: "No records found" });
+    }
+    res.status(200).json(findTransactions);
+  } catch (error) {
+    console.error("There was an error getting transactions: ", error);
+    res
+      .status(500)
+      .json({ message: "There was an error getting transactions" });
+  }
 });
 
 interface SettingsPayload {

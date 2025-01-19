@@ -52,3 +52,18 @@ export const settingsTable = sqliteTable("settings_table", {
   settings_key: text("settings_key").primaryKey().notNull(),
   settings_value: text("settings_value").notNull(),
 });
+
+export const familyAccountTable = sqliteTable("family_account_table", {
+  id: int("id").primaryKey({ autoIncrement: true }),
+  family_id: int("family_id").references(() => familyTable.id),
+  account_status: text("account_status"),
+});
+
+export const transactionTable = sqliteTable("transaction_table", {
+  id: int("id").primaryKey({ autoIncrement: true }),
+  account_id: int("account_id").references(() => familyTable.id),
+  transaction_date: text("transaction_date"),
+  transactino_amount: int("transaction_amount"),
+  transaction_type: int("transaction_type"),
+  description: text("transaction-description"),
+});

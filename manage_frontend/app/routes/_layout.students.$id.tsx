@@ -1,5 +1,4 @@
 import {
-  json,
   Link,
   useLoaderData,
   useParams,
@@ -12,20 +11,23 @@ import {
   getTeachers,
   getFamilies,
   updateStudent,
+  findStudentInClass,
 } from "~/data/data";
-import { FamilyRecord, TeacherRecord } from "~/types/types";
+import { ClassRecord, FamilyRecord, TeacherRecord } from "~/types/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const [studentData, families, teachers] = await Promise.all([
+  const [studentData, families, teachers, studentInClass] = await Promise.all([
     getStudent(params.id),
     getFamilies(),
     getTeachers(),
+    findStudentInClass(params.id),
   ]);
-  return json({ studentData, families, teachers });
+  return Response.json({ studentData, families, teachers, studentInClass });
 };
 
 const Student = () => {
-  const { studentData, families, teachers } = useLoaderData<typeof loader>();
+  const { studentData, families, teachers, studentInClass } =
+    useLoaderData<typeof loader>();
   const student = studentData?.[0];
   const modalRef = useRef<HTMLDialogElement>(null);
   const [formState, setFormState] = useState({
@@ -39,6 +41,7 @@ const Student = () => {
 
   const params = useParams();
   const revalidator = useRevalidator();
+  console.log(params.id, "paramsID");
 
   const handleOpenModal = () => {
     modalRef.current?.showModal();
@@ -102,36 +105,51 @@ const Student = () => {
       <Link to={"/students"}>
         <button className="btn-link">Back</button>
       </Link>
-      <section className="ml-12 flex">
-        <div>
-          <h1 className="font-semibold text-lg pb-4 pt-4">Student info</h1>
-          <h2 className="font-light mb-2">Student First Name</h2>
-          <p className="pb-4">{student.first_name}</p>
-          <h2 className="font-light mb-2">Student Last Name</h2>
-          <p className="pb-4">{student.last_name}</p>
-          <h2 className="font-light mb-2">Birthdate</h2>
-          <p className="pb-4">{student.birthdate}</p>
-          <h2 className="font-light mb-2">Family</h2>
-          <p className="pb-4">
-            {student.family_id
-              ? families.filter(
-                  (family: FamilyRecord) => family.id === student.family_id
-                )?.[0].family_last_name
-              : "Not assigned"}
-          </p>
-          <h2 className="font-light mb-2">Teacher</h2>
-          <p className="pb-4">
-            {student.teacher_id
-              ? teachers.filter(
-                  (teacher: TeacherRecord) => teacher.id === student.teacher_id
-                )?.[0].teacher_last_name
-              : "Not assigned"}
-          </p>
-          <button className="btn" onClick={() => handleOpenModal()}>
-            Edit
-          </button>
-        </div>
-      </section>
+      <div className="flex gap-12">
+        <section className="ml-12 flex">
+          <div>
+            <h1 className="font-semibold text-lg pb-4 pt-4">Student info</h1>
+            <h2 className="font-light mb-2">Student First Name</h2>
+            <p className="pb-4">{student.first_name}</p>
+            <h2 className="font-light mb-2">Student Last Name</h2>
+            <p className="pb-4">{student.last_name}</p>
+            <h2 className="font-light mb-2">Birthdate</h2>
+            <p className="pb-4">{student.birthdate}</p>
+            <h2 className="font-light mb-2">Family</h2>
+            <p className="pb-4">
+              {student.family_id
+                ? families.filter(
+                    (family: FamilyRecord) => family.id === student.family_id
+                  )?.[0].family_last_name
+                : "Not assigned"}
+            </p>
+            <h2 className="font-light mb-2">Teacher</h2>
+            <p className="pb-4">
+              {student.teacher_id
+                ? teachers.filter(
+                    (teacher: TeacherRecord) =>
+                      teacher.id === student.teacher_id
+                  )?.[0].teacher_last_name
+                : "Not assigned"}
+            </p>
+            <button className="btn" onClick={() => handleOpenModal()}>
+              Edit
+            </button>
+          </div>
+        </section>
+        <aside className="pt-4 ml-4">
+          <h3 className="font-bold">Currently in the following classes:</h3>
+          <ul className="pt-4">
+            {studentInClass.map((laudClass: ClassRecord) => {
+              return (
+                <li key={laudClass.id} className="font-light">
+                  {laudClass.class_name}
+                </li>
+              );
+            })}
+          </ul>
+        </aside>
+      </div>
 
       <dialog id="student-edit-modal" className="modal" ref={modalRef}>
         <div className="modal-box">

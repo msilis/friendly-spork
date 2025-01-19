@@ -114,6 +114,14 @@ const Family = () => {
       <Link to={"/families"}>
         <button className="btn-link">Back</button>
       </Link>
+      <Link
+        to={`/families/${
+          family.id
+        }/account?name=${family.family_last_name.toLowerCase()}`}
+        viewTransition
+      >
+        <button className="btn btn-sm ml-4 mt-4">Family Account</button>
+      </Link>
       <section className="ml-12 flex ">
         <div>
           <h1 className="font-semibold text-lg pb-4 pt-4">Family info</h1>

@@ -85,6 +85,7 @@ export const getFamilies = async () => {
 };
 
 export const getFamily = async (params: string | undefined) => {
+  console.log(params, "params from data");
   const family = await fetch(
     `${process.env.MANAGE_BACKEND}/families/${params}`
   ).then((response) => response.json());
@@ -237,6 +238,40 @@ export const updateClass = async (
     return updateClass;
   } catch (error) {
     console.error(error, "Error updating class");
+  }
+};
+
+export const findStudentInClass = async (params: string | undefined) => {
+  try {
+    const findStudent = await fetch(
+      `http://localhost:3000/classes/getstudent/${params}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return findStudent;
+  } catch (error) {
+    console.error("Error getting student info from classes: ", error);
+  }
+};
+
+export const getFamilyTransactions = async (params: string | undefined) => {
+  try {
+    const findTransactions = await fetch(
+      `http://localhost:3000/transactions/${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return findTransactions;
+  } catch (error) {
+    console.error("There was an error getting transactions: ", error);
   }
 };
 
