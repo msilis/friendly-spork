@@ -5,7 +5,7 @@ import {
   useParams,
   useRevalidator,
 } from "@remix-run/react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { getFamily, getFamilyTransactions, saveTransaction } from "~/data/data";
 import { FamilyRecord, TransactionRecord } from "~/types/types";
@@ -32,7 +32,9 @@ const FamilyAccount = () => {
     transaction_type: "payment",
     transaction_amount: "",
   });
+  const [showToast, setShowToast] = useState(false);
   const revalidator = useRevalidator();
+  const editRef = useRef<HTMLDialogElement>(null);
   const convertAmount = (amount: number) => {
     return Math.round(amount * 100);
   };
@@ -42,8 +44,11 @@ const FamilyAccount = () => {
 
   const { family, transactions } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
+  console.log(transactions, "transactions");
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = event.target;
     let newValue: string | number = value;
     if (name === "transaction_amount") {
@@ -51,6 +56,28 @@ const FamilyAccount = () => {
     }
 
     setTransactionData({ ...transactionData, [name]: newValue });
+  };
+
+  const showToastMessage = () => {
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 2000);
+  };
+
+  const calculateTotal = (transactionArray: TransactionRecord) => {
+    let total = 0;
+    for (const transaction of transactionArray) {
+      if (transaction.transaction_type === "payment") {
+        console.log("calculating payment");
+        total = total - transaction.transaction_amount;
+      } else if (transaction.transaction_type === "charge") {
+        console.log("calculating charge");
+        total = total + transaction.transaction_amount;
+      }
+    }
+    console.log(total, "total");
+    return total;
   };
 
   const handleSave = () => {
@@ -75,6 +102,13 @@ const FamilyAccount = () => {
       transaction_type: "payment",
       transaction_amount: "",
     });
+    showToastMessage();
+  };
+
+  const calculatedTotal = convertToCurrency(calculateTotal(transactions));
+
+  const handleEditClick = () => {
+    editRef.current?.showModal();
   };
 
   return (
@@ -90,8 +124,9 @@ const FamilyAccount = () => {
         <select
           name="transaction_type"
           id="transaction_type"
+          onChange={handleChange}
           className="select select-bordered w-fit max-w-xs"
-          defaultValue={"payment"}
+          value={transactionData.transaction_type}
         >
           <option value={"payment"}>Payment</option>
           <option value={"charge"}>Charge</option>
@@ -121,6 +156,79 @@ const FamilyAccount = () => {
           Save
         </button>
       </section>
+      <section className="mt-4">
+        <h2 className="font-bold mt-2">Recent Transactions</h2>
+        <h3
+          className={`${
+            calculatedTotal >= 0 ? "text-green-400" : "text-red-700"
+          }`}
+        >
+          Balance: £{calculatedTotal}
+        </h3>
+        <div className="h-1 border-2 border-black w-2/3"></div>
+        <div className="overflow-x-auto mt-6">
+          <table className="table table-xs table-zebra">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions?.map(
+                (transaction: TransactionRecord, index: number) => {
+                  const transactionType = transaction.transaction_type;
+                  return (
+                    <tr key={`${transaction.id}-${index}`}>
+                      <td>{transaction.transaction_date}</td>
+                      <td>
+                        {transactionType[0]?.toUpperCase()}
+                        {transactionType?.substring(1)}
+                      </td>
+                      <td
+                        onClick={() => handleEditClick()}
+                        className={`${
+                          transaction.transaction_type === "charge"
+                            ? "text-red-700"
+                            : ""
+                        } ${
+                          transaction.transaction_type === "payment"
+                            ? "text-green-400"
+                            : ""
+                        } ${"hover:cursor-pointer"}`}
+                      >
+                        £
+                        {convertToCurrency(
+                          Number(transaction.transaction_amount)
+                        )}
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <dialog ref={editRef} className="modal">
+        <div className="modal-box">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onClick={() => editRef.current?.close()}
+          >
+            ✕
+          </button>
+          <h2 className="font-bold">Edit Transaction</h2>
+        </div>
+      </dialog>
+      {showToast ? (
+        <div className="toast">
+          <div className="alert alert-info">
+            <span>Transaction saved</span>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 };
