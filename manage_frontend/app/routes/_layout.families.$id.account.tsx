@@ -167,7 +167,7 @@ const FamilyAccount = () => {
         </h3>
         <div className="h-1 border-2 border-black w-2/3"></div>
         <div className="overflow-x-auto mt-6">
-          <table className="table table-xs table-zebra">
+          <table className="table table-xs table-zebra w-2/3">
             <thead>
               <tr>
                 <th>Date</th>
@@ -220,6 +220,43 @@ const FamilyAccount = () => {
             ✕
           </button>
           <h2 className="font-bold">Edit Transaction</h2>
+          <div className="flex flex-col">
+            <label htmlFor="transaction_type">Transaction Type</label>
+            <select
+              name="transaction_type"
+              id="transaction_type"
+              onChange={handleChange}
+              className="select select-bordered w-fit max-w-xs"
+              value={transactionData.transaction_type}
+            >
+              <option value={"payment"}>Payment</option>
+              <option value={"charge"}>Charge</option>
+              <option value={"refund"}>Refund</option>
+              <option value={"discount"}>Discount</option>
+            </select>
+            <label htmlFor="transaction_amount">Amount</label>
+            <input
+              type="number"
+              className="input input-bordered"
+              style={{ width: 100 }}
+              placeholder="£"
+              name="transaction_amount"
+              value={transactionData.transaction_amount}
+              onChange={handleChange}
+            />
+            <label htmlFor="transaction_date">Date</label>
+            <input
+              type="date"
+              className="input input-bordered"
+              name="transaction_date"
+              id="transaction_date"
+              onChange={handleChange}
+              defaultValue={date.toISOString().split("T")[0].toString()}
+            />
+            <button className="btn btn-sm btn-info text-white mt-4 w-fit">
+              Update
+            </button>
+          </div>
         </div>
       </dialog>
       {showToast ? (
