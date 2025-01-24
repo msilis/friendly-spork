@@ -570,6 +570,8 @@ router.get("/transactions/get/:transactionId", async (req, res) => {
   }
 });
 
+//TODO: add route for saving single transaction
+
 router.post("/transactions/save", async (req, res) => {
   const { transaction_date, account_id, transaction_type, transaction_amount } =
     req.body;
