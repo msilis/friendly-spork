@@ -56,6 +56,6 @@ export interface TransactionRecord {
   account_id: number;
   transaction_date: string;
   transaction_amount: number | string;
-  transaction_type: "payment" | "charge" | "refund" | "discount";
+  transaction_type: "payment" | "charge" | "refund" | "discount" | "";
   description?: string;
 }

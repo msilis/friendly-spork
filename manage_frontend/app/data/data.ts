@@ -276,6 +276,23 @@ export const getFamilyTransactions = async (params: string | undefined) => {
   }
 };
 
+export const getTransaction = async (params: string | undefined) => {
+  try {
+    const findTransaction = await fetch(
+      `http://localhost:3000/transactions/get/${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return findTransaction;
+  } catch (error) {
+    console.error("There was an error getting the transaction", error);
+  }
+};
+
 export const saveTransaction = async (data: TransactionRecord) => {
   try {
     const saveTransaction = await fetch(

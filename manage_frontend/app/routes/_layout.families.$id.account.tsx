@@ -7,7 +7,12 @@ import {
 } from "@remix-run/react";
 import { useState, useRef } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { getFamily, getFamilyTransactions, saveTransaction } from "~/data/data";
+import {
+  getFamily,
+  getFamilyTransactions,
+  getTransaction,
+  saveTransaction,
+} from "~/data/data";
 import { FamilyRecord, TransactionRecord } from "~/types/types";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -32,6 +37,14 @@ const FamilyAccount = () => {
     transaction_type: "payment",
     transaction_amount: "",
   });
+  const [modalTransaction, setModalTransaction] = useState<TransactionRecord>({
+    id: 0,
+    transaction_date: "",
+    account_id: 0,
+    transaction_type: "",
+    transaction_amount: 0,
+  });
+
   const [showToast, setShowToast] = useState(false);
   const revalidator = useRevalidator();
   const editRef = useRef<HTMLDialogElement>(null);
@@ -44,7 +57,6 @@ const FamilyAccount = () => {
 
   const { family, transactions } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
-  console.log(transactions, "transactions");
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -69,14 +81,12 @@ const FamilyAccount = () => {
     let total = 0;
     for (const transaction of transactionArray) {
       if (transaction.transaction_type === "payment") {
-        console.log("calculating payment");
         total = total - transaction.transaction_amount;
       } else if (transaction.transaction_type === "charge") {
-        console.log("calculating charge");
         total = total + transaction.transaction_amount;
       }
     }
-    console.log(total, "total");
+
     return total;
   };
 
@@ -106,9 +116,21 @@ const FamilyAccount = () => {
   };
 
   const calculatedTotal = convertToCurrency(calculateTotal(transactions));
+  console.log(modalTransaction, "modalTransaction");
 
-  const handleEditClick = () => {
+  const handleEditClick = async (id: number | undefined) => {
+    const data = await getTransaction(id);
+    setModalTransaction({
+      id: data[0].id,
+      account_id: data[0].account_id,
+      transaction_date: data[0].transaction_date,
+      transaction_type: data[0].transaction_type,
+      transaction_amount: data[0].transaction_amount,
+    });
     editRef.current?.showModal();
+
+    console.log(id, "id");
+    console.log(data, "data");
   };
 
   return (
@@ -187,7 +209,7 @@ const FamilyAccount = () => {
                         {transactionType?.substring(1)}
                       </td>
                       <td
-                        onClick={() => handleEditClick()}
+                        onClick={() => handleEditClick(transaction?.id)}
                         className={`${
                           transaction.transaction_type === "charge"
                             ? "text-red-700"
@@ -227,7 +249,7 @@ const FamilyAccount = () => {
               id="transaction_type"
               onChange={handleChange}
               className="select select-bordered w-fit max-w-xs"
-              value={transactionData.transaction_type}
+              value={modalTransaction.transaction_type}
             >
               <option value={"payment"}>Payment</option>
               <option value={"charge"}>Charge</option>
@@ -241,7 +263,9 @@ const FamilyAccount = () => {
               style={{ width: 100 }}
               placeholder="£"
               name="transaction_amount"
-              value={transactionData.transaction_amount}
+              value={convertToCurrency(
+                Number(modalTransaction.transaction_amount)
+              )}
               onChange={handleChange}
             />
             <label htmlFor="transaction_date">Date</label>
@@ -251,7 +275,7 @@ const FamilyAccount = () => {
               name="transaction_date"
               id="transaction_date"
               onChange={handleChange}
-              defaultValue={date.toISOString().split("T")[0].toString()}
+              value={modalTransaction.transaction_date}
             />
             <button className="btn btn-sm btn-info text-white mt-4 w-fit">
               Update

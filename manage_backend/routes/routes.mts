@@ -539,7 +539,7 @@ router.get("/transactions/:familyId", async (req, res) => {
       .select()
       .from(transactionTable)
       .where(eq(transactionTable.account_id, Number(id)));
-    if (findTransactions === "undefined") {
+    if (findTransactions === undefined) {
       res.status(404).json({ message: "No records found" });
     }
     res.status(200).json(findTransactions);
@@ -548,6 +548,25 @@ router.get("/transactions/:familyId", async (req, res) => {
     res
       .status(500)
       .json({ message: "There was an error getting transactions" });
+  }
+});
+
+router.get("/transactions/get/:transactionId", async (req, res) => {
+  const transactionId = req.params.transactionId;
+  try {
+    const findTransaction = await db
+      .select()
+      .from(transactionTable)
+      .where(eq(transactionTable.id, Number(transactionId)));
+    if (findTransaction === undefined) {
+      res.status(404).json({ message: "Transaction not found" });
+    }
+    res.status(200).json(findTransaction);
+  } catch (error) {
+    console.error("There was an error getting the required transaction", error);
+    res
+      .status(500)
+      .json({ message: "There was an error getting the required transaction" });
   }
 });
 
