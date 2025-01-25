@@ -66,7 +66,7 @@ router.post("/students/add", async (req: Request, res: Response) => {
 
 router
   .route("/students/:studentId/edit")
-  .get(async (req, res) => {
+  .delete(async (req, res) => {
     const studentId = req.params.studentId;
     try {
       const studentData = await db
@@ -102,7 +102,7 @@ router
           .set(filteredStudentData)
           .where(eq(studentTable.id, Number(studentId)));
 
-        // res.status(200).json(updatedData);
+        res.status(200).json(updatedData);
       }
     } catch (error) {
       console.error("There was an error updating the student record: ", error);
@@ -114,7 +114,6 @@ router
 
 router.delete("/students/:studentId/delete", async (req, res) => {
   const studentId = req.params.studentId;
-  console.log(studentId, "studentId from params in routes");
   try {
     const studentExists = await db
       .select()
@@ -551,24 +550,60 @@ router.get("/transactions/:familyId", async (req, res) => {
   }
 });
 
-router.get("/transactions/get/:transactionId", async (req, res) => {
-  const transactionId = req.params.transactionId;
-  try {
-    const findTransaction = await db
-      .select()
-      .from(transactionTable)
-      .where(eq(transactionTable.id, Number(transactionId)));
-    if (findTransaction === undefined) {
-      res.status(404).json({ message: "Transaction not found" });
+router
+  .route("/transactions/get/:transactionId")
+  .get(async (req, res) => {
+    const transactionId = req.params.transactionId;
+    try {
+      const findTransaction = await db
+        .select()
+        .from(transactionTable)
+        .where(eq(transactionTable.id, Number(transactionId)));
+      if (findTransaction === undefined) {
+        res.status(404).json({ message: "Transaction not found" });
+      }
+      res.status(200).json(findTransaction);
+    } catch (error) {
+      console.error(
+        "There was an error getting the required transaction",
+        error,
+      );
+      res.status(500).json({
+        message: "There was an error getting the required transaction",
+      });
     }
-    res.status(200).json(findTransaction);
-  } catch (error) {
-    console.error("There was an error getting the required transaction", error);
-    res
-      .status(500)
-      .json({ message: "There was an error getting the required transaction" });
-  }
-});
+  })
+  .post(async (req, res) => {
+    const transactionId = req.params.transactionId;
+    const updatedTransactionData = req.body;
+    try {
+      const checkIfRecordExists = await db
+        .select()
+        .from(transactionTable)
+        .where(eq(transactionTable.id, Number(transactionId)));
+      if (checkIfRecordExists.length === 0) {
+        console.log(checkIfRecordExists, "checkIfRecordExists");
+        res.status(404).json({ message: "Transaction not found!" });
+      } else {
+        const filteredTransactionData = Object.fromEntries(
+          Object.entries(updatedTransactionData).filter(
+            (_, value) => value !== undefined,
+          ),
+        );
+        const updatedData = await db
+          .update(transactionTable)
+          .set(filteredTransactionData)
+          .where(eq(transactionTable.id, Number(transactionId)));
+
+        res.status(200).json(updatedData);
+      }
+    } catch (error) {
+      console.error("There was an error updting the transaction: ", error);
+      res
+        .status(500)
+        .json({ message: "There was an error updating the transaction" });
+    }
+  });
 
 //TODO: add route for saving single transaction
 
@@ -589,6 +624,29 @@ router.post("/transactions/save", async (req, res) => {
     res
       .status(500)
       .json({ message: "Thee was an error saving the transaction" });
+  }
+});
+
+router.delete("/transactions/get/:transactionId/delete", async (req, res) => {
+  const transactionId = req.params.transactionId;
+  try {
+    const findTransaction = await db
+      .select()
+      .from(transactionTable)
+      .where(eq(transactionTable.id, Number(transactionId)));
+    if (findTransaction.length === 0) {
+      res.status(404).json({ message: "Transaction not found" });
+    } else {
+      await db
+        .delete(transactionTable)
+        .where(eq(transactionTable.id, Number(transactionId)));
+      res.status(200).json({ message: "Transaction deleted" });
+    }
+  } catch (error) {
+    console.error("There was an error deleting the transaction: ", error);
+    res
+      .status(500)
+      .json({ message: "There was an error deleting the transaction, sorry." });
   }
 });
 

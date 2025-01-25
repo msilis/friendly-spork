@@ -311,6 +311,40 @@ export const saveTransaction = async (data: TransactionRecord) => {
   }
 };
 
+type TransactionUpdateType = Omit<TransactionRecord, "account_id">;
+
+export const updateTransaction = async (data: TransactionUpdateType) => {
+  const id = data.id;
+  try {
+    const updateTransaction = await fetch(
+      `http://localhost:3000/transactions/get/${Number(id)}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return updateTransaction;
+  } catch (error) {
+    console.error("There was an error updating the transaction: ", error);
+  }
+};
+
+export const deleteTransaction = async (params: string | undefined) => {
+  const deleteTransaction = await fetch(
+    `http://localhost:3000/transactions/get/${params}/delete`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response) => response.json());
+  return deleteTransaction;
+};
+
 export const getSettings = async () => {
   const settings = await fetch("http://localhost:3000/settings").then(
     (response) => response.json()

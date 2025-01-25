@@ -7,7 +7,12 @@ import {
 } from "@remix-run/react";
 import { useState, useRef } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { getFamily, getFamilyTransactions, saveTransaction } from "~/data/data";
+import {
+  getFamily,
+  getFamilyTransactions,
+  saveTransaction,
+  updateTransaction,
+} from "~/data/data";
 import { FamilyRecord, TransactionRecord } from "~/types/types";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -33,11 +38,11 @@ const FamilyAccount = () => {
     transaction_amount: "",
   });
   const [modalTransaction, setModalTransaction] = useState<TransactionRecord>({
-    id: 0,
+    id: transactionData.id,
     transaction_date: "",
-    account_id: 0,
+    account_id: transactionData.account_id,
     transaction_type: "",
-    transaction_amount: 0,
+    transaction_amount: "",
   });
 
   const [showToast, setShowToast] = useState(false);
@@ -52,7 +57,6 @@ const FamilyAccount = () => {
 
   const { family, transactions } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
-
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -116,15 +120,35 @@ const FamilyAccount = () => {
     showToastMessage();
   };
 
+  const handleUpdate = () => {
+    if (
+      typeof modalTransaction.transaction_date !== "string" ||
+      typeof modalTransaction.account_id !== "number" ||
+      typeof modalTransaction.transaction_amount !== "number" ||
+      typeof modalTransaction.transaction_type !== "string"
+    ) {
+      throw new Error("Invalid form data!");
+    }
+    updateTransaction({
+      id: modalTransaction.id,
+      transaction_date: modalTransaction.transaction_date,
+      transaction_type: modalTransaction.transaction_type,
+      transaction_amount: convertAmount(modalTransaction.transaction_amount),
+    });
+    revalidator.revalidate();
+    editRef.current?.close();
+  };
+
   const calculatedTotal = convertToCurrency(calculateTotal(transactions));
 
   const handleEditClick = async (id: number | undefined) => {
     const data = findTransactions(id);
+
     setModalTransaction({
       id: data.id,
       account_id: data.account_id,
       transaction_date: data.transaction_date,
-      transaction_amount: data.transaction_amount,
+      transaction_amount: convertToCurrency(data.transaction_amount),
       transaction_type: data.transaction_type,
       description: null,
     });
@@ -135,9 +159,10 @@ const FamilyAccount = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = event.target;
+
     let newValue: string | number = value;
     if (name === "transaction_amount") {
-      newValue = Number(value);
+      newValue = value === "" ? "" : Number(value);
     }
 
     setModalTransaction({ ...modalTransaction, [name]: newValue });
@@ -277,11 +302,8 @@ const FamilyAccount = () => {
               type="number"
               className="input input-bordered"
               style={{ width: 100 }}
-              placeholder="£"
               name="transaction_amount"
-              value={convertToCurrency(
-                Number(modalTransaction.transaction_amount)
-              )}
+              value={modalTransaction.transaction_amount}
               onChange={handleModalChange}
             />
             <label htmlFor="transaction_date">Date</label>
@@ -294,6 +316,7 @@ const FamilyAccount = () => {
               value={modalTransaction.transaction_date}
             />
             <button
+              onClick={handleUpdate}
               className={
                 isFormDirty
                   ? "btn btn-sm btn-info text-white mt-4 w-fit"
