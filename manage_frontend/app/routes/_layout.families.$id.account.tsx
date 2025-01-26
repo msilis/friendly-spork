@@ -208,7 +208,7 @@ const FamilyAccount = () => {
         <button className="btn-link">Back</button>
       </Link>
       <h2 className="mt-4 font-bold">{`Account for ${familyAccount.family_last_name} Family`}</h2>
-      <div className="h-1 border-2 border-black w-2/3"></div>
+      <div className="h-1 border-2 border-black mr-4"></div>
       <section className="mt-2 flex gap-2 items-center">
         <h2 className="font-semibold">Add transaction:</h2>
         <label htmlFor="transaction_type">Transaction Type</label>
@@ -256,7 +256,7 @@ const FamilyAccount = () => {
         >
           Balance: £{calculatedTotal}
         </h3>
-        <div className="h-1 border-2 border-black w-2/3"></div>
+        <div className="h-1 border-2 border-black mr-4"></div>
         <div className="overflow-x-auto mt-6">
           <table className="table table-xs table-zebra w-2/3">
             <thead>
@@ -267,8 +267,13 @@ const FamilyAccount = () => {
               </tr>
             </thead>
             <tbody>
-              {transactions?.map(
-                (transaction: TransactionRecord, index: number) => {
+              {transactions
+                ?.sort(
+                  (a: TransactionRecord, b: TransactionRecord) =>
+                    new Date(b.transaction_date).getTime() -
+                    new Date(a.transaction_date).getTime()
+                )
+                .map((transaction: TransactionRecord, index: number) => {
                   const transactionType = transaction.transaction_type;
                   return (
                     <tr key={`${transaction.id}-${index}`}>
@@ -296,8 +301,7 @@ const FamilyAccount = () => {
                       </td>
                     </tr>
                   );
-                }
-              )}
+                })}
             </tbody>
           </table>
         </div>
