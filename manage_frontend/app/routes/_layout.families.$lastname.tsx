@@ -122,6 +122,9 @@ const Family = () => {
       >
         <button className="btn btn-sm ml-4 mt-4">Family Account</button>
       </Link>
+      <Link to={`/families/invoices/${family.id}`}>
+        <button className="btn mt-4 btn-sm ml-2">Invoices</button>
+      </Link>
       <section className="ml-12 flex ">
         <div>
           <h1 className="font-semibold text-lg pb-4 pt-4">Family info</h1>
