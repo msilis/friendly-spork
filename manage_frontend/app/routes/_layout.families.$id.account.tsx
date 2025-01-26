@@ -37,6 +37,7 @@ const FamilyAccount = () => {
     account_id: Number(params.id),
     transaction_type: "payment",
     transaction_amount: "",
+    transaction_description: "",
   });
   const [modalTransaction, setModalTransaction] = useState<TransactionRecord>({
     id: transactionData.id,
@@ -44,6 +45,7 @@ const FamilyAccount = () => {
     account_id: transactionData.account_id,
     transaction_type: "",
     transaction_amount: "",
+    transaction_description: "",
   });
   const [showDelete, setShowDelete] = useState<boolean>(false);
 
@@ -121,6 +123,7 @@ const FamilyAccount = () => {
       transaction_date: transactionData.transaction_date,
       transaction_type: transactionData.transaction_type,
       transaction_amount: convertAmount(transactionData.transaction_amount),
+      transaction_description: transactionData?.transaction_description,
     });
     revalidator.revalidate();
     setTransactionData({
@@ -146,6 +149,7 @@ const FamilyAccount = () => {
       transaction_date: modalTransaction.transaction_date,
       transaction_type: modalTransaction.transaction_type,
       transaction_amount: convertAmount(modalTransaction.transaction_amount),
+      transaction_description: modalTransaction?.transaction_description,
     });
     revalidator.revalidate();
     editRef.current?.close();
@@ -162,7 +166,7 @@ const FamilyAccount = () => {
       transaction_date: data.transaction_date,
       transaction_amount: convertToCurrency(data.transaction_amount),
       transaction_type: data.transaction_type,
-      description: null,
+      transaction_description: data.transaction_description,
     });
     editRef.current?.showModal();
   };
@@ -243,10 +247,24 @@ const FamilyAccount = () => {
           onChange={handleChange}
           defaultValue={date.toISOString().split("T")[0].toString()}
         />
+        <label htmlFor="transaction_description">Description</label>
+        <input
+          className="input input-bordered"
+          type="text"
+          name="transaction_description"
+          id="transaction_description"
+          onChange={handleChange}
+          value={
+            transactionData?.transaction_description
+              ? transactionData.transaction_description
+              : ""
+          }
+        />
         <button className="btn btn-info" onClick={handleSave}>
           Save
         </button>
       </section>
+
       <section className="mt-4">
         <h2 className="font-bold mt-2">Recent Transactions</h2>
         <h3
@@ -264,6 +282,7 @@ const FamilyAccount = () => {
                 <th>Date</th>
                 <th>Type</th>
                 <th>Amount</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody>
@@ -292,13 +311,19 @@ const FamilyAccount = () => {
                           transaction.transaction_type === "payment"
                             ? "text-green-400"
                             : ""
-                        } ${"hover:cursor-pointer"}`}
+                        } ${"hover:cursor-pointer"} ${
+                          transaction.transaction_type === "discount" ||
+                          transaction.transaction_type === "refund"
+                            ? "text-blue-400"
+                            : ""
+                        } `}
                       >
                         £
                         {convertToCurrency(
                           Number(transaction.transaction_amount)
                         )}
                       </td>
+                      <td>{transaction?.transaction_description}</td>
                     </tr>
                   );
                 })}
@@ -346,6 +371,18 @@ const FamilyAccount = () => {
               id="transaction_date"
               onChange={handleModalChange}
               value={modalTransaction.transaction_date}
+            />
+            <label htmlFor="transaction_description">Description</label>
+            <input
+              name="transaction_description"
+              id="transaction_description"
+              onChange={handleModalChange}
+              className="input input-bordered"
+              value={
+                modalTransaction.transaction_description
+                  ? modalTransaction.transaction_description
+                  : ""
+              }
             />
             <div className="flex gap-2">
               <button

@@ -608,14 +608,21 @@ router
 //TODO: add route for saving single transaction
 
 router.post("/transactions/save", async (req, res) => {
-  const { transaction_date, account_id, transaction_type, transaction_amount } =
-    req.body;
+  console.log(req.body, "request body from transaction save");
+  const {
+    transaction_date,
+    account_id,
+    transaction_type,
+    transaction_amount,
+    transaction_description,
+  } = req.body;
   try {
     const transactionData = {
       transaction_date,
       account_id,
       transaction_type,
       transaction_amount,
+      transaction_description,
     };
     await db.insert(transactionTable).values(transactionData);
     res.status(200).json({ message: "Transaction saved" });

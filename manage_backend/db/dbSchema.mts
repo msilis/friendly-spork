@@ -65,5 +65,25 @@ export const transactionTable = sqliteTable("transaction_table", {
   transaction_date: text("transaction_date"),
   transaction_amount: int("transaction_amount"),
   transaction_type: int("transaction_type"),
-  description: text("transaction-description"),
+  transaction_description: text("transaction_description"),
+});
+
+export const invoiceTable = sqliteTable("invoice_table", {
+  id: int("id").primaryKey({ autoIncrement: true }),
+  account_id: int("account_id")
+    .notNull()
+    .references(() => familyTable.id),
+  invoice_date: text("invoice_date").notNull(),
+  total_amount: int("total_amount").notNull(),
+  invoice_status: text("invoice_status").default("unpaid"), //unpaid, paid, overdue
+});
+
+export const invoiceItemsTable = sqliteTable("invoice_item_table", {
+  id: int("id").primaryKey({ autoIncrement: true }),
+  invoice_id: int("invoice_id")
+    .notNull()
+    .references(() => invoiceTable.id),
+  item_type: text("item_type").notNull(), //charge, payment, refund, discount
+  item_description: text("item_description"),
+  item_amount: int("item_amount").notNull(),
 });
