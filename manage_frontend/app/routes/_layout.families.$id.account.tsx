@@ -76,13 +76,23 @@ const FamilyAccount = () => {
     }, 2000);
   };
 
-  const calculateTotal = (transactionArray: TransactionRecord) => {
+  const calculateTotal = (transactionArray: TransactionRecord[]) => {
     let total = 0;
     for (const transaction of transactionArray) {
+      const amount = Number(transaction.transaction_amount);
+      if (isNaN(amount)) {
+        throw new Error(
+          `Amount is not a valid number: ${transaction.transaction_amount}`
+        );
+      }
       if (transaction.transaction_type === "payment") {
-        total = total - transaction.transaction_amount;
+        total += amount;
       } else if (transaction.transaction_type === "charge") {
-        total = total + transaction.transaction_amount;
+        total -= amount;
+      } else if (transaction.transaction_type === "refund") {
+        total += amount;
+      } else if (transaction.transaction_type === "discount") {
+        total += amount;
       }
     }
 
@@ -167,10 +177,19 @@ const FamilyAccount = () => {
 
     setModalTransaction({ ...modalTransaction, [name]: newValue });
   };
-
+  // The isFormDirty was failing because transactions are kept as smallest unit
+  // integers and modalTransaction uses currency. This fixes that.
+  const normalisedFormData = (transactions: TransactionRecord) => {
+    return {
+      ...transactions,
+      transaction_amount: convertToCurrency(
+        Number(transactions?.transaction_amount)
+      ),
+    };
+  };
   const isFormDirty =
     JSON.stringify(modalTransaction) !==
-    JSON.stringify(findTransactions(modalTransaction.id))
+    JSON.stringify(normalisedFormData(findTransactions(modalTransaction.id)))
       ? true
       : false;
 
