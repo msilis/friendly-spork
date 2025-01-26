@@ -85,7 +85,7 @@ export const getFamilies = async () => {
   return allFamilies;
 };
 
-export const getFamily = async (params: string | undefined) => {
+export const getFamily = async (params: string | null) => {
   console.log(params, "params from data");
   const family = await fetch(
     `${process.env.MANAGE_BACKEND}/families/${params}`
