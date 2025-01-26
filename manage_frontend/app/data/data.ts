@@ -332,7 +332,7 @@ export const updateTransaction = async (data: TransactionUpdateType) => {
   }
 };
 
-export const deleteTransaction = async (params: string | undefined) => {
+export const deleteTransaction = async (params: number | undefined) => {
   const deleteTransaction = await fetch(
     `http://localhost:3000/transactions/get/${params}/delete`,
     {

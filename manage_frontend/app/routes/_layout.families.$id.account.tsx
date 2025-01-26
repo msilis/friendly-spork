@@ -8,6 +8,7 @@ import {
 import { useState, useRef } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import {
+  deleteTransaction,
   getFamily,
   getFamilyTransactions,
   saveTransaction,
@@ -44,6 +45,7 @@ const FamilyAccount = () => {
     transaction_type: "",
     transaction_amount: "",
   });
+  const [showDelete, setShowDelete] = useState<boolean>(false);
 
   const [showToast, setShowToast] = useState(false);
   const revalidator = useRevalidator();
@@ -193,6 +195,13 @@ const FamilyAccount = () => {
       ? true
       : false;
 
+  const handleDeleteConfirm = (id: number | undefined) => {
+    deleteTransaction(id);
+    revalidator.revalidate();
+    setShowDelete(false);
+    editRef.current?.close();
+  };
+
   return (
     <>
       <Link to={`/families/${param}`} viewTransition>
@@ -302,7 +311,7 @@ const FamilyAccount = () => {
             ✕
           </button>
           <h2 className="font-bold">Edit Transaction</h2>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2">
             <label htmlFor="transaction_type">Transaction Type</label>
             <select
               name="transaction_type"
@@ -334,16 +343,45 @@ const FamilyAccount = () => {
               onChange={handleModalChange}
               value={modalTransaction.transaction_date}
             />
-            <button
-              onClick={handleUpdate}
-              className={
-                isFormDirty
-                  ? "btn btn-sm btn-info text-white mt-4 w-fit"
-                  : "btn btn-disabled btn-sm mt-4 w-fit"
-              }
-            >
-              Update
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleUpdate}
+                className={
+                  isFormDirty
+                    ? "btn btn-sm btn-info text-white w-fit"
+                    : "btn btn-disabled btn-sm w-fit"
+                }
+              >
+                Update
+              </button>
+              <button
+                className="btn btn-sm btn-warning w-fit"
+                onClick={() => setShowDelete(true)}
+              >
+                Delete
+              </button>
+              <div
+                className={
+                  showDelete
+                    ? "flex gap-2 pl-2 align-middle justify-center mt-1"
+                    : "hidden"
+                }
+              >
+                <h3>Are you sure?</h3>
+                <button
+                  className="btn btn-xs btn-active btn-secondary"
+                  onClick={() => handleDeleteConfirm(modalTransaction?.id)}
+                >
+                  Yes
+                </button>
+                <button
+                  className="btn btn-xs btn-neutral"
+                  onClick={() => setShowDelete(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </dialog>
