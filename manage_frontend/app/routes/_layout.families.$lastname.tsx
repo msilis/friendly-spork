@@ -5,7 +5,7 @@ import React, { useRef, useState } from "react";
 import { FamilyRecord } from "~/types/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const families = await getFamily(params.lastname);
+  const families = await getFamily(params?.lastname);
   return Response.json(families);
 };
 
@@ -122,7 +122,11 @@ const Family = () => {
       >
         <button className="btn btn-sm ml-4 mt-4">Family Account</button>
       </Link>
-      <Link to={`/families/invoices/${family.id}`}>
+      <Link
+        to={`/families/invoices/${
+          family.id
+        }?name=${family.family_last_name.toLowerCase()}`}
+      >
         <button className="btn mt-4 btn-sm ml-2">Invoices</button>
       </Link>
       <section className="ml-12 flex ">

@@ -55,16 +55,35 @@ const Settings = () => {
         settings_value: value,
       })
     );
-    console.log(halfTermArray, "halfTermArray");
+
     await saveSettings(halfTermArray);
     revalidator.revalidate();
+  };
+
+  const savePriceSetting = async (key: string, amount: number) => {
+    const priceToSave = [{ settings_key: key, settings_value: amount }];
+    await saveSettings(priceToSave);
+    revalidator.revalidate();
+  };
+
+  const handleSaveAmountClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const button = event?.target as HTMLButtonElement;
+    const input = button?.previousElementSibling as HTMLInputElement;
+    const name = input?.name;
+    const value = input?.value;
+    savePriceSetting(name, Number(value));
+    input.value = "";
   };
 
   return (
     <div>
       <h1 className="text-2xl font-bold">Settings</h1>
       <div className="mt-4 ml-8">
-        <div className="flex gap-5">
+        <h2 className="font-bold mb-2">Term dates</h2>
+        <div className="h-1 border-2 border-black mr-4"></div>
+        <div className="flex gap-5 mt-2 mb-2">
           <div
             className="bg-base-300 p-3 flex flex-col gap-2 rounded-box"
             style={{ width: "20%", height: "40%" }}
@@ -207,6 +226,50 @@ const Settings = () => {
             </button>
           </div>
         </div>
+        <h2 className="mt-2 mb-2 font-bold">Rates</h2>
+        <div className="h-1 border-2 border-black mr-4"></div>
+        <section className="flex gap-4 mt-4">
+          <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
+            <label htmlFor="per_student_price">Price per student</label>
+            <input
+              className="input input-bordered w-fit"
+              name="per_student_price"
+              type="number"
+              placeholder="£"
+            />
+            <button
+              className="btn btn-success btn-xs w-fit"
+              onClick={handleSaveAmountClick}
+            >
+              Save
+            </button>
+          </div>
+          <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
+            <h3>Current amount </h3>
+            <h2 className="font-bold text-center text-xl">£98.98</h2>
+            <h3 className="text-center">per term</h3>
+          </div>
+          <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
+            <label htmlFor="theory_price">Theory Price</label>
+            <input
+              className="input input-bordered w-fit"
+              type="number"
+              name="theory_price"
+              placeholder="£"
+            />
+            <button
+              className="btn btn-success btn-xs w-fit"
+              onClick={handleSaveAmountClick}
+            >
+              Save
+            </button>
+          </div>
+          <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
+            <h3>Current amount </h3>
+            <h2 className="font-bold text-center text-xl">£75.00</h2>
+            <h3 className="text-center">per term</h3>
+          </div>
+        </section>
       </div>
     </div>
   );
