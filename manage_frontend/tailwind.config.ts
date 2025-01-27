@@ -17,6 +17,11 @@ export default {
         ],
       },
     },
+    screens: {
+      sm: { max: "300px" },
+      md: { max: "680px" },
+      lg: { max: "1024px" },
+    },
   },
   plugins: [require("daisyui")],
 } satisfies Config;

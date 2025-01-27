@@ -79,10 +79,10 @@ const Settings = () => {
       <div className="mt-4 ml-8">
         <h2 className="font-bold mb-2">Term dates</h2>
         <div className="h-1 border-2 border-black mr-4"></div>
-        <div className="flex gap-5 mt-2 mb-2">
+        <div className="flex gap-5 mt-2 mb-2 md:flex-col">
           <div
             className="bg-base-300 p-3 flex flex-col gap-2 rounded-box"
-            style={{ width: "20%", height: "40%" }}
+            style={{ minWidth: "300px" }}
           >
             <h2 className="font-bold">Set Term Dates</h2>
             <label htmlFor="term1_start_date">Term 1 Start Date</label>
@@ -147,8 +147,8 @@ const Settings = () => {
             </button>
           </div>
           <div
-            className="bg-base-300 p-3 flex flex-col gap-2  rounded-box"
-            style={{ width: "20%", height: "40%" }}
+            className="bg-base-300 p-3 flex flex-col gap-2 rounded-box"
+            style={{ minWidth: "300px" }}
           >
             <h2 className="font-bold">Set Half-Term Dates</h2>
             <label htmlFor="term1_halfterm_startdate">
@@ -224,7 +224,7 @@ const Settings = () => {
         </div>
         <h2 className="mt-2 mb-2 font-bold">Rates</h2>
         <div className="h-1 border-2 border-black mr-4"></div>
-        <section className="flex gap-4 mt-4">
+        <section className="flex gap-4 mt-4 lg:flex-col">
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
             <label htmlFor="per_student_price">Price per student</label>
             <input
