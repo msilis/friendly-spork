@@ -60,21 +60,17 @@ const Settings = () => {
     revalidator.revalidate();
   };
 
-  const savePriceSetting = async (key: string, amount: number) => {
-    const priceToSave = [{ settings_key: key, settings_value: amount }];
-    await saveSettings(priceToSave);
-    revalidator.revalidate();
-  };
-
-  const handleSaveAmountClick = (
+  const savePriceSetting = async (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     const button = event?.target as HTMLButtonElement;
     const input = button?.previousElementSibling as HTMLInputElement;
     const name = input?.name;
     const value = input?.value;
-    savePriceSetting(name, Number(value));
+    const priceToSave = [{ settings_key: name, settings_value: value }];
+    await saveSettings(priceToSave);
     input.value = "";
+    revalidator.revalidate();
   };
 
   return (
@@ -239,14 +235,16 @@ const Settings = () => {
             />
             <button
               className="btn btn-success btn-xs w-fit"
-              onClick={handleSaveAmountClick}
+              onClick={savePriceSetting}
             >
               Save
             </button>
           </div>
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
             <h3>Current amount </h3>
-            <h2 className="font-bold text-center text-xl">£98.98</h2>
+            <h2 className="font-bold text-center text-xl">
+              {`£${settingsMap["per_student_price"]}` || ""}
+            </h2>
             <h3 className="text-center">per term</h3>
           </div>
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
@@ -259,15 +257,43 @@ const Settings = () => {
             />
             <button
               className="btn btn-success btn-xs w-fit"
-              onClick={handleSaveAmountClick}
+              onClick={savePriceSetting}
             >
               Save
             </button>
           </div>
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
             <h3>Current amount </h3>
-            <h2 className="font-bold text-center text-xl">£75.00</h2>
+            <h2 className="font-bold text-center text-xl">
+              {`£${settingsMap["theory_price"]}` || ""}
+            </h2>
             <h3 className="text-center">per term</h3>
+          </div>
+          <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
+            <label htmlFor="sibling_discount">Sibling Discount</label>
+            <input
+              className="input input-bordered w-fit"
+              type="number"
+              name="sibling_discount"
+              placeholder="%"
+            />
+            <button
+              className="btn btn-success btn-xs w-fit"
+              onClick={savePriceSetting}
+            >
+              Save
+            </button>
+          </div>
+          <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
+            <h3>Current discount </h3>
+            <h2 className="font-bold text-center text-xl">
+              {`${
+                settingsMap["sibling_discount"]
+                  ? settingsMap["sibling_discount"]
+                  : "0"
+              }%`}
+            </h2>
+            <h3 className="text-center">per sibling</h3>
           </div>
         </section>
       </div>

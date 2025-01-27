@@ -657,17 +657,16 @@ router.delete("/transactions/get/:transactionId/delete", async (req, res) => {
   }
 });
 
-interface SettingsPayload {
-  [key: string]: string;
+interface Setting {
+  settings_key: string;
+  settings_value: string;
 }
 
 router
   .route("/settings")
   .get(async (req, res) => {
-    console.log(req, "request from route");
     try {
       const allSettings = await db.select().from(settingsTable);
-      console.log(allSettings, "allSettings");
       res.status(200).json(allSettings);
     } catch (error) {
       console.error("Error getting settings", error);
@@ -675,7 +674,7 @@ router
     }
   })
   .post(async (req, res) => {
-    const settings = req.body as SettingsPayload[];
+    const settings = req.body as Setting[];
 
     await Promise.all(
       settings.map(async (setting) =>
@@ -688,6 +687,7 @@ router
           }),
       ),
     );
+    res.status(200).json({ message: "Setting saved successfully" });
   });
 
 export default router;
