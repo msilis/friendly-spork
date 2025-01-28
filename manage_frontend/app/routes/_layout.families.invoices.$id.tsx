@@ -34,7 +34,22 @@ const Invoices = () => {
       </Link>
       <h2 className="mt-4 font-bold">{`Invoices for ${familyAccount.family_last_name} Family`}</h2>
       <div className="h-1 border-2 border-black mr-4"></div>
-      <section className="mt-2 font-bold"></section>
+      <section className="mt-2 flex gap-2 items-center">
+        <h2 className="font-semibold">Create invoice:</h2>
+        <label htmlFor="invoice_start_date">Start Date</label>
+        <input
+          type="date"
+          name="invoice_start_date"
+          className="input input-bordered"
+        />
+        <label htmlFor="invoice_end_date">End Date</label>
+        <input
+          type="date"
+          name="invoice_end_date"
+          className="input input-bordered"
+        />
+        <button className="btn btn-accent w-fit">Generate invoice</button>
+      </section>
     </>
   );
 };
