@@ -345,6 +345,19 @@ export const deleteTransaction = async (params: number | undefined) => {
   return deleteTransaction;
 };
 
+export const getTransactionsForInvoice = async (data: {
+  start_date: string;
+  end_date: string;
+}) => {
+  const startDate = data.start_date;
+  const endDate = data.end_date;
+  try {
+    const getTransactionsForInvoice = await fetch();
+  } catch (error) {
+    console.error("There was an error getting those transactions");
+  }
+};
+
 export const getSettings = async () => {
   const settings = await fetch("http://localhost:3000/settings").then(
     (response) => response.json()

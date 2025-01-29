@@ -5,11 +5,9 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { useEffect } from "react";
+import { generatePdf } from "~/utils/utils";
 import { getFamily, getFamilyTransactions } from "~/data/data";
 import { FamilyRecord } from "~/types/types";
-import { BasePdf } from "node_modules/@pdfme/common/dist/types/src/schema";
-import { position } from "html2canvas-pro/dist/types/css/property-descriptors/position";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
@@ -30,83 +28,9 @@ const Invoices = () => {
   const { family, transactions } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
 
-  const getPdfMe = async () => {
-    if (typeof window !== "undefined") {
-      const { generate } = await import("@pdfme/generator");
-      return generate;
-    }
-    return null;
-  };
-  const getBlankPdf = async () => {
-    if (typeof window !== "undefined") {
-      const { BLANK_PDF } = await import("@pdfme/common");
-      return BLANK_PDF;
-    }
-    return null;
-  };
-
-  const generatePdf = async () => {
-    const generate = await getPdfMe();
-    const BLANK_PDF = await getBlankPdf();
-    if (generate && BLANK_PDF) {
-      const template = {
-        basePdf: BLANK_PDF,
-        schemas: [
-          [
-            {
-              position: { x: 10, y: 10 },
-              width: 200,
-              height: 30,
-              type: "text",
-              name: "title",
-            },
-          ],
-        ],
-      };
-      const inputs = [{ title: "My PDF" }];
-      generate({ template, inputs }).then((pdf) => {
-        const blob = new Blob([pdf.buffer], { type: "application/pdf" });
-        window.open(URL.createObjectURL(blob));
-      });
-    }
-  };
-
   const handleGenerateClick = () => {
     generatePdf();
   };
-
-  // const TestPdf = () => {
-  //   useEffect(() => {
-  //     console.log("useEffect ran");
-  //     const generatePdf = async () => {
-  //       const generate = await usePdfMe();
-  //       const BLANK_PDF = await useBlankPdf();
-  //       if (generate) {
-  //         const template = {
-  //           basePdf: BLANK_PDF,
-  //           schemas: [
-  //             [
-  //               {
-  //                 position: { x: 10, y: 10 },
-  //                 width: 200,
-  //                 height: 30,
-  //                 type: "text",
-  //                 name: "title",
-  //               },
-  //             ],
-  //           ],
-  //         };
-  //         const inputs = [{ title: "My PDF" }];
-  //         generate({ template, inputs }).then((pdf) => {
-  //           const blob = new Blob([pdf.buffer], { type: "application/pdf" });
-  //           window.open(URL.createObjectURL(blob));
-  //         });
-  //       }
-  //     };
-  //     generatePdf();
-  //   }, []);
-  //   return <div>This should show something</div>;
-  // };
 
   return (
     <>

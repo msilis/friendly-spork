@@ -57,3 +57,44 @@ export const handleSaveClick = async (
   pdf.addImage(tableData, "PNG", 5, 20, tableWidth, tableHeight);
   pdf.save(`${pdfName}.pdf`);
 };
+
+const getPdfMe = async () => {
+  if (typeof window !== "undefined") {
+    const { generate } = await import("@pdfme/generator");
+    return generate;
+  }
+  return null;
+};
+const getBlankPdf = async () => {
+  if (typeof window !== "undefined") {
+    const { BLANK_PDF } = await import("@pdfme/common");
+    return BLANK_PDF;
+  }
+  return null;
+};
+
+export const generatePdf = async () => {
+  const generate = await getPdfMe();
+  const BLANK_PDF = await getBlankPdf();
+  if (generate && BLANK_PDF) {
+    const template = {
+      basePdf: BLANK_PDF,
+      schemas: [
+        [
+          {
+            position: { x: 10, y: 10 },
+            width: 200,
+            height: 30,
+            type: "text",
+            name: "title",
+          },
+        ],
+      ],
+    };
+    const inputs = [{ title: "My PDF" }];
+    generate({ template, inputs }).then((pdf) => {
+      const blob = new Blob([pdf.buffer], { type: "application/pdf" });
+      window.open(URL.createObjectURL(blob));
+    });
+  }
+};

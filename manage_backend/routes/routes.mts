@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { drizzle } from "drizzle-orm/libsql";
-import { sql } from "drizzle-orm";
+import { and, between, sql } from "drizzle-orm";
 import "dotenv/config";
 import { eq } from "drizzle-orm";
 import {
@@ -605,10 +605,41 @@ router
     }
   });
 
+router.post("/transactions/range", async (req, res) => {
+  console.log(req.body);
+  const { invoice_start_date, invoice_end_date, account_id } = req.body;
+  try {
+    if (!invoice_start_date || !invoice_end_date) {
+      res
+        .status(400)
+        .json({ message: "You need to include a start and end date" });
+      return;
+    }
+    const transactions = await db
+      .select()
+      .from(transactionTable)
+      .where(
+        and(
+          eq(transactionTable.account_id, account_id),
+          between(
+            transactionTable.transaction_date,
+            invoice_start_date,
+            invoice_end_date,
+          ),
+        ),
+      );
+    res.status(200).json(transactions);
+  } catch (error) {
+    console.error("There was an error getting those transactions: ", error);
+    res
+      .status(500)
+      .json({ message: "There was an error getting those transactions" });
+  }
+});
+
 //TODO: add route for saving single transaction
 
 router.post("/transactions/save", async (req, res) => {
-  console.log(req.body, "request body from transaction save");
   const {
     transaction_date,
     account_id,
