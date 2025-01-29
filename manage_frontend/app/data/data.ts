@@ -345,14 +345,27 @@ export const deleteTransaction = async (params: number | undefined) => {
   return deleteTransaction;
 };
 
-export const getTransactionsForInvoice = async (data: {
-  start_date: string;
-  end_date: string;
-}) => {
-  const startDate = data.start_date;
-  const endDate = data.end_date;
+type DateRangeType = {
+  invoice_start_date: string;
+  invoice_end_date: string;
+  account_id: string | null;
+};
+
+export const getTransactionsForInvoice = async (data: DateRangeType) => {
+  if (!data.account_id)
+    throw new Error("Getting transactions for invoice needs an account id");
   try {
-    const getTransactionsForInvoice = await fetch();
+    const getTransactionsForInvoice = await fetch(
+      "http://localhost:3000/transactions/range",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return getTransactionsForInvoice;
   } catch (error) {
     console.error("There was an error getting those transactions");
   }

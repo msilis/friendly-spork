@@ -6,8 +6,13 @@ import {
 } from "@remix-run/react";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { generatePdf } from "~/utils/utils";
-import { getFamily, getFamilyTransactions } from "~/data/data";
+import {
+  getFamily,
+  getFamilyTransactions,
+  getTransactionsForInvoice,
+} from "~/data/data";
 import { FamilyRecord } from "~/types/types";
+import { useState } from "react";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
@@ -24,12 +29,37 @@ const Invoices = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
   const param = searchParams.get("name");
+  const [dateState, setDateState] = useState({
+    invoice_start_date: "",
+    invoice_end_date: "",
+  });
 
   const { family, transactions } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
 
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setDateState({ ...dateState, [name]: value });
+  };
+
+  console.log(dateState, "dateState");
+  console.log(params, "params");
+
+  const getTransactions = async () => {
+    if (!params.id) throw new Error("Id is missing");
+    const transactionQueryData = {
+      invoice_start_date: dateState.invoice_start_date,
+      invoice_end_date: dateState.invoice_end_date,
+      account_id: params.id,
+    };
+    const transactions = await getTransactionsForInvoice(transactionQueryData);
+    console.log(transactions, "transactions");
+    return transactions;
+  };
+
   const handleGenerateClick = () => {
-    generatePdf();
+    getTransactions();
+    // generatePdf();
   };
 
   return (
@@ -46,12 +76,14 @@ const Invoices = () => {
           type="date"
           name="invoice_start_date"
           className="input input-bordered"
+          onChange={handleDateChange}
         />
         <label htmlFor="invoice_end_date">End Date</label>
         <input
           type="date"
           name="invoice_end_date"
           className="input input-bordered"
+          onChange={handleDateChange}
         />
         <button className="btn btn-accent w-fit" onClick={handleGenerateClick}>
           Generate invoice
