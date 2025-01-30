@@ -5,13 +5,13 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { generatePdf } from "~/utils/utils";
+import { convertToCurrency, formatter, generatePdf } from "~/utils/utils";
 import {
   getFamily,
   getFamilyTransactions,
   getTransactionsForInvoice,
 } from "~/data/data";
-import { FamilyRecord } from "~/types/types";
+import { FamilyRecord, TransactionRecord } from "~/types/types";
 import { useState } from "react";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -53,13 +53,59 @@ const Invoices = () => {
       account_id: params.id,
     };
     const transactions = await getTransactionsForInvoice(transactionQueryData);
-    console.log(transactions, "transactions");
+    console.log(transactions);
     return transactions;
   };
 
-  const handleGenerateClick = () => {
-    getTransactions();
-    // generatePdf();
+  const calculateTotal = (transactions: TransactionRecord[]) => {
+    let total = 0;
+    for (const item of transactions) {
+      console.log(item);
+      const amount = Number(item.transaction_amount);
+      if (isNaN(amount))
+        throw new Error(
+          `Amount is not a valid number: ${item.transaction_amount}`
+        );
+      if (item.transaction_type === "payment") {
+        total += amount;
+      } else if (item.transaction_type === "charge") {
+        total -= amount;
+      } else if (item.transaction_type === "refund") {
+        total += amount;
+      } else if (item.transaction_amount === "discount") {
+        total += amount;
+      }
+    }
+    return total;
+  };
+
+  const handleGenerateClick = async () => {
+    const transactionArray = await getTransactions();
+    console.log(transactionArray, "transactionArray");
+    console.log(
+      convertToCurrency(calculateTotal(transactionArray)),
+      " is the total"
+    );
+    const invoiceTotal = convertToCurrency(calculateTotal(transactionArray));
+    const formattedTotal = formatter.format(invoiceTotal);
+    console.log(formattedTotal, "formattedTotal");
+    const invoiceInputs = {
+      head: "Lauderdale Invoice",
+      billedToInput: "Miks Silis \n22 Cromwell Road\nLondon N3 2ET",
+      info: JSON.stringify({ InvoiceNo: "12345", Date: "12 January 2025" }),
+      orders: [
+        ["August Silis", "150.09"],
+        ["Archie Silis", "150.09"],
+      ],
+      total: formattedTotal,
+      thankyou: "Thank you",
+      paymentInfoInput:
+        "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
+      shopName: "Lauderdale Suzuki Group",
+      shopAddress: "Lauderdale House, Highgate N6",
+    };
+
+    generatePdf(invoiceInputs);
   };
 
   return (
