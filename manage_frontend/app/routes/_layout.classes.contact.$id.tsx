@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useClassContext } from "~/contexts/classContext";
 import { getFamilies } from "~/data/data";
 import { TeacherRecord, StudentRecord, FamilyRecord } from "~/types/types";
-import { handleSaveClick } from "~/utils/utils";
+import { handleSaveClick } from "~/utils/pdf-utils";
 
 export const loader = async () => {
   const families = await getFamilies();

@@ -5,7 +5,7 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { convertToCurrency, formatter, generatePdf } from "~/utils/utils";
+import { convertToCurrency, formatter, generatePdf } from "~/utils/pdf-utils";
 import {
   getFamily,
   getFamilyTransactions,
@@ -60,7 +60,6 @@ const Invoices = () => {
   const calculateTotal = (transactions: TransactionRecord[]) => {
     let total = 0;
     for (const item of transactions) {
-      console.log(item);
       const amount = Number(item.transaction_amount);
       if (isNaN(amount))
         throw new Error(
@@ -81,28 +80,20 @@ const Invoices = () => {
 
   const handleGenerateClick = async () => {
     const transactionArray = await getTransactions();
-    console.log(transactionArray, "transactionArray");
-    console.log(
-      convertToCurrency(calculateTotal(transactionArray)),
-      " is the total"
-    );
     const invoiceTotal = convertToCurrency(calculateTotal(transactionArray));
     const formattedTotal = formatter.format(invoiceTotal);
-    console.log(formattedTotal, "formattedTotal");
     const invoiceInputs = {
       head: "Lauderdale Invoice",
-      billedToInput: "Miks Silis \n22 Cromwell Road\nLondon N3 2ET",
+      billedToInput: "Miks Silis \n87 Some Road\nLondon N2 9YM",
       info: JSON.stringify({ InvoiceNo: "12345", Date: "12 January 2025" }),
       orders: [
-        ["August Silis", "150.09"],
-        ["Archie Silis", "150.09"],
+        ["First Last", "150.09"],
+        ["First Last", "150.09"],
       ],
       total: formattedTotal,
       thankyou: "Thank you",
       paymentInfoInput:
         "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
-      shopName: "Lauderdale Suzuki Group",
-      shopAddress: "Lauderdale House, Highgate N6",
     };
 
     generatePdf(invoiceInputs);

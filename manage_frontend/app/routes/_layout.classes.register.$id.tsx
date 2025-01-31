@@ -2,7 +2,8 @@ import { useParams, useNavigate, useLoaderData, Link } from "@remix-run/react";
 import { useClassContext } from "~/contexts/classContext";
 import { getSettings } from "~/data/data";
 import { useState, useEffect } from "react";
-import { getWednesdays, handleSaveClick } from "~/utils/utils";
+import { handleSaveClick } from "~/utils/pdf-utils";
+import { getWednesdays } from "~/utils/utils";
 import { TeacherRecord, StudentRecord } from "~/types/types";
 
 export const loader = async () => {
