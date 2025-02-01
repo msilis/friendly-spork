@@ -24,6 +24,10 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   return Response.json({ family, transactions });
 };
 
+type Transaction = {
+  [key: string]: string | number;
+};
+
 const Invoices = () => {
   const params = useParams();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -42,9 +46,6 @@ const Invoices = () => {
     setDateState({ ...dateState, [name]: value });
   };
 
-  console.log(dateState, "dateState");
-  console.log(params, "params");
-
   const getTransactions = async () => {
     if (!params.id) throw new Error("Id is missing");
     const transactionQueryData = {
@@ -53,7 +54,6 @@ const Invoices = () => {
       account_id: params.id,
     };
     const transactions = await getTransactionsForInvoice(transactionQueryData);
-    console.log(transactions);
     return transactions;
   };
 
@@ -80,16 +80,45 @@ const Invoices = () => {
 
   const handleGenerateClick = async () => {
     const transactionArray = await getTransactions();
+    console.log(transactionArray, "transactionArray");
+    const convertedAmountArray = transactionArray.map((transaction) => {
+      let transaction_description;
+      if (transaction.transaction_description === null) {
+        transaction_description = "Description not entered";
+      } else {
+        transaction_description = transaction.transaction_description;
+      }
+      return {
+        ...transaction,
+        transaction_description: transaction_description,
+        transaction_amount: convertToCurrency(
+          transaction.transaction_amount
+        ).toString(),
+      };
+    });
+    const keysForList = [
+      "transaction_description",
+      "transaction_type",
+      "transaction_amount",
+    ];
+    const transactionsToList = convertedAmountArray.map(
+      (transaction: Transaction) => {
+        return keysForList
+          .filter((key) => Object.hasOwn(transaction, key))
+          .map((key) => transaction[key]);
+      }
+    );
     const invoiceTotal = convertToCurrency(calculateTotal(transactionArray));
     const formattedTotal = formatter.format(invoiceTotal);
+
     const invoiceInputs = {
       head: "Lauderdale Invoice",
-      billedToInput: "Miks Silis \n87 Some Road\nLondon N2 9YM",
-      info: JSON.stringify({ InvoiceNo: "12345", Date: "12 January 2025" }),
-      orders: [
-        ["First Last", "150.09"],
-        ["First Last", "150.09"],
-      ],
+      billedToInput: `${familyAccount.parent1_first_name} ${familyAccount.parent1_last_name} \n${familyAccount.parent1_address}`,
+      info: JSON.stringify({
+        InvoiceNo: `${Date.now()}`,
+        Date: `${new Date().toLocaleDateString()}`,
+      }),
+      orders: transactionsToList,
       total: formattedTotal,
       thankyou: "Thank you",
       paymentInfoInput:

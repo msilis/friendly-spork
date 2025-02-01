@@ -70,6 +70,7 @@ export const transactionTable = sqliteTable("transaction_table", {
 
 export const invoiceTable = sqliteTable("invoice_table", {
   id: int("id").primaryKey({ autoIncrement: true }),
+  invoice_numner: int("invoice_number"),
   account_id: int("account_id")
     .notNull()
     .references(() => familyTable.id),
