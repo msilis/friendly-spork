@@ -10,6 +10,8 @@ import {
   classesTable,
   settingsTable,
   transactionTable,
+  invoiceTable,
+  invoiceItemsTable,
 } from "../db/dbSchema.mts";
 
 const router = express.Router();
@@ -606,7 +608,6 @@ router
   });
 
 router.post("/transactions/range", async (req, res) => {
-  console.log(req.body, "request from transaction range");
   const { invoice_start_date, invoice_end_date, account_id } = req.body;
   try {
     if (!invoice_start_date || !invoice_end_date) {
@@ -662,6 +663,48 @@ router.post("/transactions/save", async (req, res) => {
     res
       .status(500)
       .json({ message: "Thee was an error saving the transaction" });
+  }
+});
+
+router.post("/transactions/invoices/save", async (req, res) => {
+  const {
+    invoice_number,
+    account_id,
+    invoice_date,
+    total_amount,
+    invoice_status,
+  } = req.body.invoice;
+
+  try {
+    const invoiceData = {
+      invoice_number,
+      account_id,
+      invoice_date,
+      total_amount,
+      invoice_status,
+    };
+
+    const invoice = await db
+      .insert(invoiceTable)
+      .values(invoiceData)
+      .returning();
+
+    const invoiceId = invoice[0].invoice_id;
+
+    const itemsWithInvoiceId = req.body.transactions.map((item) => ({
+      ...item,
+      invoice_id: invoiceId,
+      item_type: item.transaction_type,
+    }));
+
+    await db.insert(invoiceItemsTable).values(itemsWithInvoiceId);
+
+    res
+      .status(201)
+      .json({ message: "Invoice and transactions saved to database" });
+  } catch (error) {
+    console.error("Error saving invoice: ", error);
+    res.status(500).json({ message: "There was an error saving the invoice" });
   }
 });
 

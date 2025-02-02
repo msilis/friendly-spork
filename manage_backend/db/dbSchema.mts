@@ -69,8 +69,8 @@ export const transactionTable = sqliteTable("transaction_table", {
 });
 
 export const invoiceTable = sqliteTable("invoice_table", {
-  id: int("id").primaryKey({ autoIncrement: true }),
-  invoice_numner: int("invoice_number"),
+  invoice_id: int("invoice_id").primaryKey({ autoIncrement: true }),
+  invoice_number: int("invoice_number"),
   account_id: int("account_id")
     .notNull()
     .references(() => familyTable.id),
@@ -80,10 +80,11 @@ export const invoiceTable = sqliteTable("invoice_table", {
 });
 
 export const invoiceItemsTable = sqliteTable("invoice_item_table", {
-  id: int("id").primaryKey({ autoIncrement: true }),
+  invoice_item_id: int("id").primaryKey({ autoIncrement: true }),
+  invoice_number: int("invoice_number"),
   invoice_id: int("invoice_id")
     .notNull()
-    .references(() => invoiceTable.id),
+    .references(() => invoiceTable.invoice_id),
   item_type: text("item_type").notNull(), //charge, payment, refund, discount
   item_description: text("item_description"),
   item_amount: int("item_amount").notNull(),

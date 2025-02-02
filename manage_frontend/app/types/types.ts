@@ -59,3 +59,20 @@ export interface TransactionRecord {
   transaction_type: "payment" | "charge" | "refund" | "discount" | "";
   transaction_description?: string;
 }
+
+export interface InvoiceRecord {
+  invoice_id?: number;
+  invoice_number: number;
+  account_id: number;
+  invoice_date: string;
+  total_amount: number | string;
+  invoice_status?: string;
+}
+
+export interface InvoiceItemRecord {
+  invoice_item_id?: number;
+  invoice_id: number;
+  item_type: "charge" | "payment" | "refund" | "discount";
+  item_description?: string;
+  item_amount: number;
+}

@@ -10,8 +10,14 @@ import {
   getFamily,
   getFamilyTransactions,
   getTransactionsForInvoice,
+  saveInvoice,
 } from "~/data/data";
-import { FamilyRecord, TransactionRecord } from "~/types/types";
+import {
+  FamilyRecord,
+  TransactionRecord,
+  InvoiceRecord,
+  InvoiceItemRecord,
+} from "~/types/types";
 import { useState } from "react";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -38,7 +44,7 @@ const Invoices = () => {
     invoice_end_date: "",
   });
 
-  const { family, transactions } = useLoaderData<typeof loader>();
+  const { family } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,6 +60,10 @@ const Invoices = () => {
       account_id: params.id,
     };
     const transactions = await getTransactionsForInvoice(transactionQueryData);
+    if (!transactions.length)
+      throw new Error(
+        "No transactions for this family or no transactions for this date range"
+      );
     return transactions;
   };
 
@@ -66,13 +76,13 @@ const Invoices = () => {
           `Amount is not a valid number: ${item.transaction_amount}`
         );
       if (item.transaction_type === "payment") {
-        total += amount;
-      } else if (item.transaction_type === "charge") {
         total -= amount;
+      } else if (item.transaction_type === "charge") {
+        total += amount;
       } else if (item.transaction_type === "refund") {
-        total += amount;
+        total -= amount;
       } else if (item.transaction_amount === "discount") {
-        total += amount;
+        total -= amount;
       }
     }
     return total;
@@ -80,22 +90,17 @@ const Invoices = () => {
 
   const handleGenerateClick = async () => {
     const transactionArray = await getTransactions();
-    console.log(transactionArray, "transactionArray");
-    const convertedAmountArray = transactionArray.map((transaction) => {
-      let transaction_description;
-      if (transaction.transaction_description === null) {
-        transaction_description = "Description not entered";
-      } else {
-        transaction_description = transaction.transaction_description;
+    const convertedAmountArray = transactionArray.map(
+      (transaction: Transaction) => {
+        return {
+          ...transaction,
+          transaction_description: transaction?.transaction_description ?? "",
+          transaction_amount: convertToCurrency(
+            transaction.transaction_amount as number // TODO fix this casting
+          ).toString(),
+        };
       }
-      return {
-        ...transaction,
-        transaction_description: transaction_description,
-        transaction_amount: convertToCurrency(
-          transaction.transaction_amount
-        ).toString(),
-      };
-    });
+    );
     const keysForList = [
       "transaction_description",
       "transaction_type",
@@ -110,13 +115,15 @@ const Invoices = () => {
     );
     const invoiceTotal = convertToCurrency(calculateTotal(transactionArray));
     const formattedTotal = formatter.format(invoiceTotal);
+    const invoiceNumber = Date.now();
+    const invoiceDate = new Date().toLocaleString();
 
     const invoiceInputs = {
       head: "Lauderdale Invoice",
       billedToInput: `${familyAccount.parent1_first_name} ${familyAccount.parent1_last_name} \n${familyAccount.parent1_address}`,
       info: JSON.stringify({
-        InvoiceNo: `${Date.now()}`,
-        Date: `${new Date().toLocaleDateString()}`,
+        InvoiceNo: invoiceNumber,
+        Date: invoiceDate,
       }),
       orders: transactionsToList,
       total: formattedTotal,
@@ -124,6 +131,34 @@ const Invoices = () => {
       paymentInfoInput:
         "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
     };
+
+    const invoiceToSave: InvoiceRecord = {
+      invoice_number: invoiceNumber,
+      total_amount: invoiceTotal,
+      account_id: Number(params.id),
+      invoice_date: invoiceDate,
+    };
+
+    const removeNullsArray = transactionArray.map(
+      (transaction: TransactionRecord) => {
+        return {
+          ...transaction,
+          item_description:
+            transaction?.transaction_description ??
+            transaction.transaction_type,
+          item_type: transaction.transaction_type,
+          item_amount: transaction.transaction_amount,
+          invoice_number: invoiceNumber,
+        };
+      }
+    );
+
+    const saveData = {
+      invoice: invoiceToSave,
+      transactions: removeNullsArray,
+    };
+
+    saveInvoice(saveData);
 
     generatePdf(invoiceInputs);
   };
@@ -154,6 +189,10 @@ const Invoices = () => {
         <button className="btn btn-accent w-fit" onClick={handleGenerateClick}>
           Generate invoice
         </button>
+      </section>
+      <section>
+        <h2 className="mt-4 font-bold">Previous Invoices</h2>
+        <div className="h-1 border-2 border-black mr-4"></div>
       </section>
     </>
   );

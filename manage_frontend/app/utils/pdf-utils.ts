@@ -176,9 +176,9 @@ export const generatePdf = async (invoiceInputs) => {
           },
           {
             type: "text",
-            position: { x: 131.94, y: 174.64 },
-            content: "Total",
-            width: 27.01,
+            position: { x: 120.94, y: 174.64 },
+            content: "Total owed",
+            width: 40.01,
             height: 11,
             rotate: 0,
             alignment: "right",

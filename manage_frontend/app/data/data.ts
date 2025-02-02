@@ -371,6 +371,24 @@ export const getTransactionsForInvoice = async (data: DateRangeType) => {
   }
 };
 
+export const saveInvoice = async (data) => {
+  try {
+    const saveInvoice = await fetch(
+      "http://localhost:3000/transactions/invoices/save",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return saveInvoice;
+  } catch (error) {
+    console.error("There was an error saving the invoice: ", error);
+  }
+};
+
 export const getSettings = async () => {
   const settings = await fetch("http://localhost:3000/settings").then(
     (response) => response.json()
