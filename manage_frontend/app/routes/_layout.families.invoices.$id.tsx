@@ -7,8 +7,10 @@ import {
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { convertToCurrency, formatter, generatePdf } from "~/utils/pdf-utils";
 import {
+  getAllInvoices,
   getFamily,
   getFamilyTransactions,
+  getInvoiceForFamily,
   getTransactionsForInvoice,
   saveInvoice,
 } from "~/data/data";
@@ -23,11 +25,12 @@ import { useState } from "react";
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
   const name = searchParams.get("name");
-  const [family, transactions] = await Promise.all([
+  const [family, transactions, invoices] = await Promise.all([
     getFamily(name),
     getFamilyTransactions(params.id),
+    getInvoiceForFamily(params.id),
   ]);
-  return Response.json({ family, transactions });
+  return Response.json({ family, transactions, invoices });
 };
 
 type Transaction = {
@@ -44,9 +47,8 @@ const Invoices = () => {
     invoice_end_date: "",
   });
 
-  const { family } = useLoaderData<typeof loader>();
+  const { family, invoices } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
-
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setDateState({ ...dateState, [name]: value });
@@ -113,7 +115,8 @@ const Invoices = () => {
           .map((key) => transaction[key]);
       }
     );
-    const invoiceTotal = convertToCurrency(calculateTotal(transactionArray));
+    const calculatedTotal = calculateTotal(transactionArray);
+    const invoiceTotal = convertToCurrency(calculatedTotal);
     const formattedTotal = formatter.format(invoiceTotal);
     const invoiceNumber = Date.now();
     const invoiceDate = new Date().toLocaleString();
@@ -134,7 +137,7 @@ const Invoices = () => {
 
     const invoiceToSave: InvoiceRecord = {
       invoice_number: invoiceNumber,
-      total_amount: invoiceTotal,
+      total_amount: calculatedTotal,
       account_id: Number(params.id),
       invoice_date: invoiceDate,
     };
@@ -162,6 +165,10 @@ const Invoices = () => {
 
     generatePdf(invoiceInputs);
   };
+
+  const filteredInvoices = invoices.filter(
+    (invoice: InvoiceRecord) => invoice.invoice_number !== null
+  );
 
   return (
     <>
@@ -193,6 +200,35 @@ const Invoices = () => {
       <section>
         <h2 className="mt-4 font-bold">Previous Invoices</h2>
         <div className="h-1 border-2 border-black mr-4"></div>
+        {invoices.length === 0 ? (
+          <div className="w-fit mr-auto ml-auto mt-5 font-bold text-cyan-500">
+            ...no invoices found
+          </div>
+        ) : (
+          <table className="table table-xs table-zebra w-2/3">
+            <thead>
+              <tr>
+                <th>Invoice Number</th>
+                <th>Invoice Date</th>
+                <th>Invoice Amont</th>
+                <th>Invoice Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredInvoices.map((invoice: InvoiceRecord) => {
+                return (
+                  <tr key={invoice.invoice_number}>
+                    <td>{invoice.invoice_number}</td>
+                    <td>{invoice.invoice_date}</td>
+                    <td>{invoice.total_amount}</td>
+                    <td className="capitalize">{invoice.invoice_status}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </section>
     </>
   );

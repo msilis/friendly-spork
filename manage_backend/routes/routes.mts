@@ -202,7 +202,6 @@ router.get("/families/:family", async (req, res) => {
       .select()
       .from(familyTable)
       .where(sql`LOWER(${familyTable.family_last_name}) = ${familyLastName}`);
-    console.log(familyData, "familyData");
     res.status(200).json(familyData);
   } catch (error) {
     console.error("There was an error retreiving the family record", error);
@@ -705,6 +704,51 @@ router.post("/transactions/invoices/save", async (req, res) => {
   } catch (error) {
     console.error("Error saving invoice: ", error);
     res.status(500).json({ message: "There was an error saving the invoice" });
+  }
+});
+
+router.get("/transactions/invoices/get", async (req, res) => {
+  try {
+    const getAllInvoices = await db.select().from(invoiceTable);
+    res.status(200).json(getAllInvoices);
+  } catch (error) {
+    console.error("There was an error getting invoices: ", error);
+    res.status(500).json({ message: "There was an error getting invoices" });
+  }
+});
+
+router.post("/transactions/invoices/get/family/:familyId", async (req, res) => {
+  const familyId = req.params.familyId;
+
+  try {
+    const familyInvoices = await db
+      .select()
+      .from(invoiceTable)
+      .where(eq(invoiceTable.account_id, Number(familyId)));
+    console.log(familyInvoices, "familyInvoices");
+    res.status(200).json(familyInvoices);
+  } catch (error) {
+    console.error("Error getting invoice for family: ", error);
+    res.status(500).json({ message: "Error getting invoice for family" });
+  }
+});
+
+router.get("/transactions/invoices/get/:invoiceId", async (req, res) => {
+  const invoiceId = req.params.invoiceId;
+
+  try {
+    const findInvoice = await db
+      .select()
+      .from(invoiceTable)
+      .where(eq(invoiceTable.invoice_id, Number(invoiceId)));
+    if (findInvoice === undefined)
+      res.status(404).json({ message: "Invoice not found" });
+    res.status(200).json(findInvoice);
+  } catch (error) {
+    console.error("Error getting your requested invoice: ", error);
+    res
+      .status(500)
+      .json({ message: "There was an error getting your requested invoice." });
   }
 });
 

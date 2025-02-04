@@ -389,6 +389,58 @@ export const saveInvoice = async (data) => {
   }
 };
 
+export const getAllInvoices = async () => {
+  try {
+    const retreiveAllInvoices = await fetch(
+      "http://localhost:3000/transactions/invoices/get",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return retreiveAllInvoices;
+  } catch (error) {
+    console.error("Error getting all invoices: ", error);
+  }
+};
+
+export const getInvoiceForFamily = async (familyId: string | undefined) => {
+  console.log(familyId, "familyId from get function");
+  try {
+    const retreiveFamilyInvoices = await fetch(
+      `http://localhost:3000/transactions/invoices/get/family/${familyId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return retreiveFamilyInvoices;
+  } catch (error) {
+    console.error("Error geting invoice for family");
+  }
+};
+
+export const getInvoice = async (params: number) => {
+  try {
+    const retreiveInvoice = await fetch(
+      `http://localhost:3000/transactions/invoices/get/${params}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return retreiveInvoice;
+  } catch (error) {
+    console.error("Error getting invoice: ", error);
+  }
+};
+
 export const getSettings = async () => {
   const settings = await fetch("http://localhost:3000/settings").then(
     (response) => response.json()
