@@ -371,6 +371,24 @@ export const getTransactionsForInvoice = async (data: DateRangeType) => {
   }
 };
 
+export const getLastInvoice = async () => {
+  try {
+    const retreiveLastInvoice = await fetch(
+      "http://localhost:3000/transactions/invoices/get_last_record",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    console.log(retreiveLastInvoice, "last invoice");
+    return retreiveLastInvoice;
+  } catch (error) {
+    console.error("Error getting last invoice: ", error);
+  }
+};
+
 export const saveInvoice = async (data) => {
   try {
     const saveInvoice = await fetch(

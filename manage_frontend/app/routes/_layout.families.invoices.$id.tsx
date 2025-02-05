@@ -3,6 +3,7 @@ import {
   Link,
   useSearchParams,
   useLoaderData,
+  useRevalidator,
 } from "@remix-run/react";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { convertToCurrency, formatter, generatePdf } from "~/utils/pdf-utils";
@@ -10,6 +11,7 @@ import {
   getFamily,
   getFamilyTransactions,
   getInvoiceForFamily,
+  getLastInvoice,
   getTransactionsForInvoice,
   saveInvoice,
 } from "~/data/data";
@@ -19,12 +21,13 @@ import { useState } from "react";
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
   const name = searchParams.get("name");
-  const [family, transactions, invoices] = await Promise.all([
+  const [family, transactions, invoices, lastInvoice] = await Promise.all([
     getFamily(name),
     getFamilyTransactions(params.id),
     getInvoiceForFamily(params.id),
+    getLastInvoice(),
   ]);
-  return Response.json({ family, transactions, invoices });
+  return Response.json({ family, transactions, invoices, lastInvoice });
 };
 
 type Transaction = {
@@ -40,8 +43,10 @@ const Invoices = () => {
     invoice_start_date: "",
     invoice_end_date: "",
   });
+  const revalidator = useRevalidator();
 
-  const { family, invoices } = useLoaderData<typeof loader>();
+  const { family, invoices, allInvoices, lastInvoice } =
+    useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -65,7 +70,7 @@ const Invoices = () => {
 
   const generateInvoiceNumber = () => {
     const requiredInvoiceLength = 6;
-    const lastInvoiceNumber = invoices[invoices.length - 1]["invoice_id"];
+    const lastInvoiceNumber = lastInvoice[0].invoice_id;
     const invoiceNumber = `${new Date().getMonth() + 1}${new Date().getDate()}${
       lastInvoiceNumber + 1
     }`;
@@ -165,8 +170,8 @@ const Invoices = () => {
     };
 
     saveInvoice(saveData);
-
     generatePdf(invoiceInputs);
+    revalidator.revalidate();
   };
 
   const filteredInvoices = invoices.filter(

@@ -62,7 +62,7 @@ export interface TransactionRecord {
 
 export interface InvoiceRecord {
   invoice_id?: number;
-  invoice_number: number;
+  invoice_number: number | string;
   account_id: number;
   invoice_date: string;
   total_amount: number | string;

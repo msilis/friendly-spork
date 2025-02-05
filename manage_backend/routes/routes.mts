@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { drizzle } from "drizzle-orm/libsql";
-import { and, between, sql } from "drizzle-orm";
+import { and, between, desc, sql } from "drizzle-orm";
 import "dotenv/config";
 import { eq } from "drizzle-orm";
 import {
@@ -730,6 +730,21 @@ router.post("/transactions/invoices/get/family/:familyId", async (req, res) => {
   } catch (error) {
     console.error("Error getting invoice for family: ", error);
     res.status(500).json({ message: "Error getting invoice for family" });
+  }
+});
+
+router.get("/transactions/invoices/get_last_record", async (req, res) => {
+  try {
+    const getLastRecord = await db
+      .select()
+      .from(invoiceTable)
+      .orderBy(desc(invoiceTable.invoice_id))
+      .limit(1);
+    console.log(getLastRecord, "last record");
+    res.status(200).json(getLastRecord);
+  } catch (error) {
+    console.log("Error getting alst record: ", error);
+    res.status(500).json({ message: "Error getting last record" });
   }
 });
 
