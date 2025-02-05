@@ -7,19 +7,13 @@ import {
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { convertToCurrency, formatter, generatePdf } from "~/utils/pdf-utils";
 import {
-  getAllInvoices,
   getFamily,
   getFamilyTransactions,
   getInvoiceForFamily,
   getTransactionsForInvoice,
   saveInvoice,
 } from "~/data/data";
-import {
-  FamilyRecord,
-  TransactionRecord,
-  InvoiceRecord,
-  InvoiceItemRecord,
-} from "~/types/types";
+import { FamilyRecord, TransactionRecord, InvoiceRecord } from "~/types/types";
 import { useState } from "react";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -67,6 +61,15 @@ const Invoices = () => {
         "No transactions for this family or no transactions for this date range"
       );
     return transactions;
+  };
+
+  const generateInvoiceNumber = () => {
+    const requiredInvoiceLength = 6;
+    const lastInvoiceNumber = invoices[invoices.length - 1]["invoice_id"];
+    const invoiceNumber = `${new Date().getMonth() + 1}${new Date().getDate()}${
+      lastInvoiceNumber + 1
+    }`;
+    return String(invoiceNumber).padStart(requiredInvoiceLength, "0");
   };
 
   const calculateTotal = (transactions: TransactionRecord[]) => {
@@ -118,7 +121,7 @@ const Invoices = () => {
     const calculatedTotal = calculateTotal(transactionArray);
     const invoiceTotal = convertToCurrency(calculatedTotal);
     const formattedTotal = formatter.format(invoiceTotal);
-    const invoiceNumber = Date.now();
+    const invoiceNumber = generateInvoiceNumber();
     const invoiceDate = new Date().toLocaleString();
 
     const invoiceInputs = {
