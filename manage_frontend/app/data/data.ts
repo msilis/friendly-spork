@@ -459,6 +459,23 @@ export const getInvoice = async (params: number) => {
   }
 };
 
+export const deleteInvoice = async (invoiceToDelete: number) => {
+  try {
+    const deleteInvoice = await fetch(
+      `http://localhost:3000/transactions/get/${invoiceToDelete}/delete`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return deleteInvoice;
+  } catch (error) {
+    console.error("Error deleting invoice ", error);
+  }
+};
+
 export const getSettings = async () => {
   const settings = await fetch("http://localhost:3000/settings").then(
     (response) => response.json()

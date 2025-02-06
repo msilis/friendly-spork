@@ -8,6 +8,7 @@ import {
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { convertToCurrency, formatter, generatePdf } from "~/utils/pdf-utils";
 import {
+  deleteInvoice,
   getFamily,
   getFamilyTransactions,
   getInvoiceForFamily,
@@ -45,8 +46,7 @@ const Invoices = () => {
   });
   const revalidator = useRevalidator();
 
-  const { family, invoices, allInvoices, lastInvoice } =
-    useLoaderData<typeof loader>();
+  const { family, invoices, lastInvoice } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -178,6 +178,15 @@ const Invoices = () => {
     (invoice: InvoiceRecord) => invoice.invoice_number !== null
   );
 
+  const handleInvoiceDelete = (invoiceId: number | undefined) => {
+    if (invoiceId !== undefined) {
+      deleteInvoice(invoiceId);
+      revalidator.revalidate();
+    } else {
+      throw new Error("InvoiceId is not valid");
+    }
+  };
+
   return (
     <>
       <Link to={`/families/${param}`} viewTransition>
@@ -220,6 +229,7 @@ const Invoices = () => {
                 <th>Invoice Date</th>
                 <th>Invoice Amont</th>
                 <th>Invoice Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
 
@@ -231,6 +241,19 @@ const Invoices = () => {
                     <td>{invoice.invoice_date}</td>
                     <td>{invoice.total_amount}</td>
                     <td className="capitalize">{invoice.invoice_status}</td>
+                    <td>
+                      {" "}
+                      <button
+                        onClick={() => handleInvoiceDelete(invoice.invoice_id)}
+                      >
+                        <img
+                          src="/public/icons8-delete.svg"
+                          alt="delete student"
+                          className="hover:cursor-pointer pl-2"
+                          style={{ height: "20px" }}
+                        />
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
