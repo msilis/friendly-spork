@@ -780,13 +780,14 @@ router.delete("/transactions/get/:invoiceId/delete", async (req, res) => {
         .json({ message: `Cannot find invoice number ${invoiceToDelete}` });
     } else {
       await db
+        .delete(invoiceItemsTable)
+        .where(eq(invoiceItemsTable.invoice_id, Number(invoiceToDelete)));
+      await db
         .delete(invoiceTable)
         .where(eq(invoiceTable.invoice_id, Number(invoiceToDelete)));
-      res
-        .status(200)
-        .json({
-          message: `Invoice number ${invoiceToDelete} has been deleted`,
-        });
+      res.status(200).json({
+        message: `Invoice number ${invoiceToDelete} has been deleted`,
+      });
     }
   } catch (error) {
     console.error("Error deleting invoice: ", error);

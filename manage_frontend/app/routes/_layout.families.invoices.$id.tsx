@@ -247,7 +247,7 @@ const Invoices = () => {
                         onClick={() => handleInvoiceDelete(invoice.invoice_id)}
                       >
                         <img
-                          src="/public/icons8-delete.svg"
+                          src="/icons8-delete.svg"
                           alt="delete student"
                           className="hover:cursor-pointer pl-2"
                           style={{ height: "20px" }}
