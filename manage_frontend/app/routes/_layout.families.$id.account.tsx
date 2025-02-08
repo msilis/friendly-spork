@@ -283,6 +283,7 @@ const FamilyAccount = () => {
                 <th>Type</th>
                 <th>Amount</th>
                 <th>Description</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -324,6 +325,19 @@ const FamilyAccount = () => {
                         )}
                       </td>
                       <td>{transaction?.transaction_description}</td>
+                      <td>
+                        {" "}
+                        <button
+                          onClick={() => handleDeleteConfirm(transaction?.id)}
+                        >
+                          <img
+                            src="/icons8-delete.svg"
+                            alt="delete student"
+                            className="hover:cursor-pointer pl-2"
+                            style={{ height: "20px" }}
+                          />
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}

@@ -195,7 +195,6 @@ router.post("/families/add", async (req, res) => {
 });
 
 router.get("/families/:family", async (req, res) => {
-  console.log(req.params.family, "request");
   const familyLastName = req.params.family;
   try {
     const familyData = await db
@@ -583,7 +582,6 @@ router
         .from(transactionTable)
         .where(eq(transactionTable.id, Number(transactionId)));
       if (checkIfRecordExists.length === 0) {
-        console.log(checkIfRecordExists, "checkIfRecordExists");
         res.status(404).json({ message: "Transaction not found!" });
       } else {
         const filteredTransactionData = Object.fromEntries(
@@ -725,7 +723,6 @@ router.post("/transactions/invoices/get/family/:familyId", async (req, res) => {
       .select()
       .from(invoiceTable)
       .where(eq(invoiceTable.account_id, Number(familyId)));
-    console.log(familyInvoices, "familyInvoices");
     res.status(200).json(familyInvoices);
   } catch (error) {
     console.error("Error getting invoice for family: ", error);
@@ -740,10 +737,9 @@ router.get("/transactions/invoices/get_last_record", async (req, res) => {
       .from(invoiceTable)
       .orderBy(desc(invoiceTable.invoice_id))
       .limit(1);
-    console.log(getLastRecord, "last record");
     res.status(200).json(getLastRecord);
   } catch (error) {
-    console.log("Error getting alst record: ", error);
+    console.error("Error getting alst record: ", error);
     res.status(500).json({ message: "Error getting last record" });
   }
 });
@@ -767,7 +763,7 @@ router.get("/transactions/invoices/get/:invoiceId", async (req, res) => {
   }
 });
 
-router.delete("/transactions/get/:invoiceId/delete", async (req, res) => {
+router.delete("/transactions/invoices/:invoiceId/delete", async (req, res) => {
   const invoiceToDelete = req.params.invoiceId;
   try {
     const findInvoice = await db

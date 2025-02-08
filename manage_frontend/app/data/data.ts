@@ -333,6 +333,7 @@ export const updateTransaction = async (data: TransactionUpdateType) => {
 };
 
 export const deleteTransaction = async (params: number | undefined) => {
+  console.log("params: ", params);
   const deleteTransaction = await fetch(
     `http://localhost:3000/transactions/get/${params}/delete`,
     {
@@ -462,7 +463,7 @@ export const getInvoice = async (params: number) => {
 export const deleteInvoice = async (invoiceToDelete: number) => {
   try {
     const deleteInvoice = await fetch(
-      `http://localhost:3000/transactions/get/${invoiceToDelete}/delete`,
+      `http://localhost:3000/transactions/invoices/${invoiceToDelete}/delete`,
       {
         method: "DELETE",
         headers: {
