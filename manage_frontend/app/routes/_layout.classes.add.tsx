@@ -7,8 +7,8 @@ import {
   getStudents,
   getAccompanists,
 } from "~/data/data";
-import Select, { MultiValue } from "react-select";
-import { SelectOption, StudentRecord, TeacherRecord } from "~/types/types";
+import Select, { MultiValue, SingleValue } from "react-select";
+import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 
 export const loader = async () => {
   const [studentData, teacherData, accompanistData] = await Promise.all([
@@ -20,14 +20,14 @@ export const loader = async () => {
 };
 
 const AddClass = () => {
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<ClassRecord>({
     class_name: "",
     class_location: "",
     class_start_time: "",
     class_end_time: "",
     class_students: [],
-    class_teacher: {},
-    class_accompanist: "",
+    class_teacher: 0,
+    class_accompanist: 0,
   });
   const { studentData, teacherData, accompanistData } =
     useLoaderData<typeof loader>();
@@ -87,24 +87,21 @@ const AddClass = () => {
     setFormState({ ...formState, [name]: value });
   };
 
-  const handleSelectChange = (
-    value: SelectOption,
-    event: { action: string; name: string; option: string }
-  ) => {
-    const eventName = event.name;
+  const handleSelectChange =
+    (name: string) =>
+    (newValue: MultiValue<{ value: string; label: string }>) => {
+      const selectedOptions = newValue
+        ? newValue.map((option) => option.value)
+        : [];
+      setFormState({ ...formState, [name]: selectedOptions });
+    };
 
-    if (eventName === "class_students") {
-      if (Array.isArray(value)) {
-        const newStudents = value.map((student) => student.value);
-        setFormState({ ...formState, [eventName]: newStudents });
-      }
-    } else if (eventName === "class_teacher") {
-      setFormState({ ...formState, [eventName]: value.value });
-    } else if (eventName === "class_accompanist") {
-      setFormState({ ...formState, [eventName]: value.value });
-    }
-  };
-  console.log(formState, "formState");
+  const handleSingleSelectChange =
+    (name: string) =>
+    (newValue: SingleValue<{ value: string; label: string }>) => {
+      setFormState({ ...formState, [name]: newValue?.value });
+    };
+
   return (
     <div>
       <Link to={"/classes"}>
@@ -148,21 +145,19 @@ const AddClass = () => {
           isMulti={true}
           closeMenuOnSelect={false}
           hideSelectedOptions={false}
-          onChange={(event: MultiValue<unknown>, value) =>
-            handleSelectChange(event, value)
-          }
+          onChange={handleSelectChange("class_students")}
         />
         <label htmlFor="class_teacher">Class Teacher</label>
         <Select
           options={teacherOptions}
           name="class_teacher"
-          onChange={(event, value) => handleSelectChange(event, value)}
+          onChange={handleSingleSelectChange("class_teacher")}
         />
         <label htmlFor="class_accompanist">Accompanist</label>
         <Select
           options={accompanistOptions}
           name="class_accompanist"
-          onChange={(event, value) => handleSelectChange(event, value)}
+          onChange={handleSingleSelectChange("class_accompanist")}
         />
         <button type="submit" className="btn-neutral btn-active w-fit p-3">
           Add Class
