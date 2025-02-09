@@ -15,9 +15,10 @@ import {
   getLastInvoice,
   getTransactionsForInvoice,
   saveInvoice,
+  updateInvoice,
 } from "~/data/data";
 import { FamilyRecord, TransactionRecord, InvoiceRecord } from "~/types/types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
@@ -52,6 +53,8 @@ const Invoices = () => {
     const { name, value } = event.target;
     setDateState({ ...dateState, [name]: value });
   };
+  const statusDialogRef = useRef<HTMLDialogElement>(null);
+  const [invoiceStatus, setInvoiceStatus] = useState<InvoiceRecord>();
 
   const getTransactions = async () => {
     if (!params.id) throw new Error("Id is missing");
@@ -187,6 +190,37 @@ const Invoices = () => {
     }
   };
 
+  const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    if (invoiceStatus) {
+      setInvoiceStatus({ ...invoiceStatus, [name]: value });
+    }
+  };
+
+  const handleShowStatusModal = (invoice: InvoiceRecord) => {
+    if (invoice && invoice.invoice_status) {
+      setInvoiceStatus(invoice);
+      statusDialogRef.current?.showModal();
+    } else {
+      console.warn("Invoice did not contain a status");
+      return;
+    }
+  };
+
+  const handleModalSave = () => {
+    updateInvoice(invoiceStatus);
+    revalidator.revalidate();
+    statusDialogRef.current?.close();
+  };
+
+  const findInvoice = invoices.filter(
+    (invoice: InvoiceRecord) => invoice.invoice_id === invoiceStatus?.invoice_id
+  );
+  const isFormDirty =
+    JSON.stringify(invoiceStatus) !== JSON.stringify(findInvoice[0])
+      ? true
+      : false;
+
   return (
     <>
       <Link to={`/families/${param}`} viewTransition>
@@ -239,10 +273,14 @@ const Invoices = () => {
                   <tr key={invoice.invoice_number}>
                     <td>{invoice.invoice_number}</td>
                     <td>{invoice.invoice_date}</td>
-                    <td>{invoice.total_amount}</td>
-                    <td className="capitalize">{invoice.invoice_status}</td>
+                    <td>£{convertToCurrency(Number(invoice.total_amount))}</td>
+                    <td
+                      className="capitalize hover:cursor-pointer"
+                      onClick={() => handleShowStatusModal(invoice)}
+                    >
+                      {invoice.invoice_status}
+                    </td>
                     <td>
-                      {" "}
                       <button
                         onClick={() => handleInvoiceDelete(invoice.invoice_id)}
                       >
@@ -261,6 +299,36 @@ const Invoices = () => {
           </table>
         )}
       </section>
+      <dialog ref={statusDialogRef} className="modal">
+        <div className="modal-box flex flex-col gap-4">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onClick={() => statusDialogRef.current?.close()}
+          >
+            ✕
+          </button>
+
+          <h2 className="font-bold mb-4">Change Status</h2>
+          <select
+            name="invoice_status"
+            className="select select-bordered"
+            onChange={handleStatusChange}
+            value={invoiceStatus?.invoice_status}
+          >
+            <option value="unpaid">Unpaid</option>
+            <option value="paid">Paid</option>
+            <option value="overdue">Overdue</option>
+          </select>
+          <button
+            className={
+              isFormDirty ? "btn btn-primary ml-4" : "btn btn-disabled ml-4"
+            }
+            onClick={handleModalSave}
+          >
+            Save
+          </button>
+        </div>
+      </dialog>
     </>
   );
 };

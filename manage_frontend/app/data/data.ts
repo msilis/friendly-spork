@@ -3,6 +3,8 @@ import { json } from "@remix-run/react";
 import {
   ClassRecord,
   FamilyRecord,
+  InvoiceRecord,
+  SaveDataType,
   StudentRecord,
   TeacherRecord,
   TransactionRecord,
@@ -85,8 +87,7 @@ export const getFamilies = async () => {
   return allFamilies;
 };
 
-export const getFamily = async (params: string | null) => {
-  console.log(params, "params from data");
+export const getFamily = async (params: string | undefined | null) => {
   const family = await fetch(
     `${process.env.MANAGE_BACKEND}/families/${params}`
   ).then((response) => response.json());
@@ -333,7 +334,6 @@ export const updateTransaction = async (data: TransactionUpdateType) => {
 };
 
 export const deleteTransaction = async (params: number | undefined) => {
-  console.log("params: ", params);
   const deleteTransaction = await fetch(
     `http://localhost:3000/transactions/get/${params}/delete`,
     {
@@ -383,14 +383,13 @@ export const getLastInvoice = async () => {
         },
       }
     ).then((response) => response.json());
-    console.log(retreiveLastInvoice, "last invoice");
     return retreiveLastInvoice;
   } catch (error) {
     console.error("Error getting last invoice: ", error);
   }
 };
 
-export const saveInvoice = async (data) => {
+export const saveInvoice = async (data: SaveDataType) => {
   try {
     const saveInvoice = await fetch(
       "http://localhost:3000/transactions/invoices/save",
@@ -405,6 +404,25 @@ export const saveInvoice = async (data) => {
     return saveInvoice;
   } catch (error) {
     console.error("There was an error saving the invoice: ", error);
+  }
+};
+
+export const updateInvoice = async (data: InvoiceRecord | undefined) => {
+  const invoiceId = data?.invoice_id;
+  try {
+    const updateInvoiceStatus = await fetch(
+      `http://localhost:3000/transactions/invoices/update/${invoiceId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
+    return updateInvoiceStatus;
+  } catch (error) {
+    console.error("Error updating invoice");
   }
 };
 
@@ -426,7 +444,6 @@ export const getAllInvoices = async () => {
 };
 
 export const getInvoiceForFamily = async (familyId: string | undefined) => {
-  console.log(familyId, "familyId from get function");
   try {
     const retreiveFamilyInvoices = await fetch(
       `http://localhost:3000/transactions/invoices/get/family/${familyId}`,

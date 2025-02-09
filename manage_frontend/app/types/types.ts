@@ -76,3 +76,8 @@ export interface InvoiceItemRecord {
   item_description?: string;
   item_amount: number;
 }
+
+export type SaveDataType = {
+  invoice: InvoiceRecord;
+  transactions: TransactionRecord;
+};

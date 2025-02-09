@@ -635,8 +635,6 @@ router.post("/transactions/range", async (req, res) => {
   }
 });
 
-//TODO: add route for saving single transaction
-
 router.post("/transactions/save", async (req, res) => {
   const {
     transaction_date,
@@ -702,6 +700,38 @@ router.post("/transactions/invoices/save", async (req, res) => {
   } catch (error) {
     console.error("Error saving invoice: ", error);
     res.status(500).json({ message: "There was an error saving the invoice" });
+  }
+});
+
+router.post("/transactions/invoices/update/:invoiceId", async (req, res) => {
+  console.log(req.params);
+  const invoiceId = req.params.invoiceId;
+  const updatedInvoice = req.body;
+  try {
+    const checkIfRecordExists = await db
+      .select()
+      .from(invoiceTable)
+      .where(eq(invoiceTable.invoice_id, Number(invoiceId)));
+    if (checkIfRecordExists.length === 0) {
+      res.status(404).json({ message: "Invoice not found!" });
+    } else {
+      const filteredInvoiceData = Object.fromEntries(
+        Object.entries(updatedInvoice).filter(
+          (_, value) => value !== undefined,
+        ),
+      );
+      const updatedData = await db
+        .update(invoiceTable)
+        .set(filteredInvoiceData)
+        .where(eq(invoiceTable.invoice_id, Number(invoiceId)));
+
+      res.status(200).json(updatedData);
+    }
+  } catch (error) {
+    console.error("There was an error updting the invoice: ", error);
+    res
+      .status(500)
+      .json({ message: "There was an error updating the invoice" });
   }
 });
 
