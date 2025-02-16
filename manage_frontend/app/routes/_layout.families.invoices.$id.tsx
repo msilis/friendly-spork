@@ -72,12 +72,11 @@ const Invoices = () => {
   };
 
   const generateInvoiceNumber = () => {
-    const requiredInvoiceLength = 6;
     const lastInvoiceNumber = lastInvoice[0].invoice_id;
     const invoiceNumber = `${new Date().getMonth() + 1}${new Date().getDate()}${
       lastInvoiceNumber + 1
     }`;
-    return String(invoiceNumber).padStart(requiredInvoiceLength, "0");
+    return String(invoiceNumber);
   };
 
   const calculateTotal = (transactions: TransactionRecord[]) => {
