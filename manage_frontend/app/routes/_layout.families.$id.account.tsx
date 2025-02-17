@@ -13,17 +13,21 @@ import {
   getFamilyTransactions,
   saveTransaction,
   updateTransaction,
+  getStudents,
+  getSettings,
 } from "~/data/data";
-import { FamilyRecord, TransactionRecord } from "~/types/types";
+import { FamilyRecord, StudentRecord, TransactionRecord } from "~/types/types";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
   const name = searchParams.get("name");
-  const [family, transactions] = await Promise.all([
+  const [family, transactions, students, settings] = await Promise.all([
     getFamily(name),
     getFamilyTransactions(params.id),
+    getStudents(),
+    getSettings(),
   ]);
-  return Response.json({ family, transactions });
+  return Response.json({ family, transactions, students, settings });
 };
 
 const FamilyAccount = () => {
@@ -59,8 +63,17 @@ const FamilyAccount = () => {
     return amount / 100;
   };
 
-  const { family, transactions } = useLoaderData<typeof loader>();
+  const { family, transactions, students, settings } =
+    useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
+  const studentsInFamily = students.filter(
+    (student: StudentRecord) => student.family_id === familyAccount.id
+  );
+
+  const [quickAddStudent, setQuickAddStudent] = useState<number | undefined>(
+    studentsInFamily[0]?.id
+  );
+
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -206,6 +219,49 @@ const FamilyAccount = () => {
     editRef.current?.close();
   };
 
+  const theoryPrice = settings.find(
+    (setting) => setting.settings_key === "theory_price"
+  );
+
+  const classPrice = settings.find(
+    (setting) => setting.settings_key === "per_student_price"
+  );
+
+  const [quickAddOption, setQuickAddOption] = useState("class");
+
+  const handleQuickAdd = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setQuickAddOption(event.target.value);
+  };
+
+  const handleSaveQuickAdd = (option: string) => {
+    if (option === "theory") {
+      const saveData: TransactionRecord = {
+        account_id: Number(params.id),
+        transaction_date: String(new Date().toLocaleDateString()),
+        transaction_amount: convertAmount(theoryPrice.settings_value),
+        transaction_type: "charge",
+        transaction_description: studentsInFamily.find(
+          (student: StudentRecord) => student.id === quickAddStudent
+        ).first_name,
+      };
+
+      saveTransaction(saveData);
+      revalidator.revalidate();
+    } else if (option === "class") {
+      const saveAddClassData: TransactionRecord = {
+        account_id: Number(params.id),
+        transaction_date: String(new Date().toLocaleDateString()),
+        transaction_amount: convertAmount(classPrice.settings_value),
+        transaction_type: "charge",
+        transaction_description: studentsInFamily.find(
+          (student: StudentRecord) => student.id === quickAddStudent
+        ).first_name,
+      };
+
+      saveTransaction(saveAddClassData);
+    }
+  };
+
   return (
     <>
       <Link to={`/families/${param}`} viewTransition>
@@ -264,6 +320,40 @@ const FamilyAccount = () => {
           Save
         </button>
       </section>
+      {studentsInFamily.length > 0 ? (
+        <section>
+          <h2 className="font-semibold">Quick Add:</h2>
+          <div>
+            <select className="select select-bordered m-2 mr-2">
+              {studentsInFamily.map((student: StudentRecord) => {
+                return (
+                  <option
+                    key={student.id}
+                    value={student.id}
+                    onChange={() => setQuickAddStudent(student?.id)}
+                  >
+                    {student.first_name}
+                  </option>
+                );
+              })}
+            </select>
+            <select
+              className="select select-bordered mr-2"
+              onChange={(event) => handleQuickAdd(event)}
+            >
+              <option value="class">Add Class</option>
+              <option value="theory">Add Theory</option>
+              <option value="sibling_discount">Add Sibling Discount</option>
+            </select>
+            <button
+              className="btn btn-neutral mr-2"
+              onClick={() => handleSaveQuickAdd(quickAddOption)}
+            >
+              Save
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       <section className="mt-4">
         <h2 className="font-bold mt-2">Recent Transactions</h2>
