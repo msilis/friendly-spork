@@ -229,6 +229,11 @@ const FamilyAccount = () => {
       setting.settings_key === "per_student_price"
   );
 
+  const siblindDiscountAmount = settings.find(
+    (setting: { settings_key: string; settings_value: string }) =>
+      setting.settings_key === "sibling_discount"
+  );
+
   const [quickAddOption, setQuickAddOption] = useState("class");
 
   const handleQuickAdd = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -267,6 +272,21 @@ const FamilyAccount = () => {
       };
 
       saveTransaction(saveAddClassData);
+      revalidator.revalidate();
+    } else if (option === "sibling_discount") {
+      const saveSiblingDiscountData: TransactionRecord = {
+        account_id: Number(params.id),
+        transaction_date: String(new Date().toLocaleDateString()),
+        transaction_amount: convertAmount(siblindDiscountAmount.settings_value),
+        transaction_type: "discount",
+        transaction_description: `${
+          studentsInFamily.find(
+            (student: StudentRecord) => student.id === quickAddStudent
+          ).first_name
+        } - siblind discount`,
+      };
+
+      saveTransaction(saveSiblingDiscountData);
       revalidator.revalidate();
     }
   };
