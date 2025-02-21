@@ -220,17 +220,25 @@ const FamilyAccount = () => {
   };
 
   const theoryPrice = settings.find(
-    (setting) => setting.settings_key === "theory_price"
+    (setting: { settings_key: string; settings_value: string }) =>
+      setting.settings_key === "theory_price"
   );
 
   const classPrice = settings.find(
-    (setting) => setting.settings_key === "per_student_price"
+    (setting: { settings_key: string; settings_value: string }) =>
+      setting.settings_key === "per_student_price"
   );
 
   const [quickAddOption, setQuickAddOption] = useState("class");
 
   const handleQuickAdd = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setQuickAddOption(event.target.value);
+  };
+
+  const handleQuickAddStudent = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setQuickAddStudent(Number(event.target?.value));
   };
 
   const handleSaveQuickAdd = (option: string) => {
@@ -259,6 +267,7 @@ const FamilyAccount = () => {
       };
 
       saveTransaction(saveAddClassData);
+      revalidator.revalidate();
     }
   };
 
@@ -324,14 +333,13 @@ const FamilyAccount = () => {
         <section>
           <h2 className="font-semibold">Quick Add:</h2>
           <div>
-            <select className="select select-bordered m-2 mr-2">
+            <select
+              className="select select-bordered m-2 mr-2"
+              onChange={(event) => handleQuickAddStudent(event)}
+            >
               {studentsInFamily.map((student: StudentRecord) => {
                 return (
-                  <option
-                    key={student.id}
-                    value={student.id}
-                    onChange={() => setQuickAddStudent(student?.id)}
-                  >
+                  <option key={student.id} value={student.id}>
                     {student.first_name}
                   </option>
                 );
