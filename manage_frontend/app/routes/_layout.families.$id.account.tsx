@@ -283,7 +283,10 @@ const FamilyAccount = () => {
         transaction_date: String(
           new Date().toISOString().split("T")[0].toString()
         ),
-        transaction_amount: convertAmount(siblindDiscountAmount.settings_value),
+        transaction_amount: convertAmount(
+          classPrice.settings_value *
+            (siblindDiscountAmount.settings_value / 100)
+        ),
         transaction_type: "discount",
         transaction_description: `${
           studentsInFamily.find(

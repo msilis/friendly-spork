@@ -59,7 +59,7 @@ const Teacher = () => {
       typeof formState.teacher_first_name !== "string" ||
       typeof formState.teacher_last_name !== "string" ||
       typeof formState.teacher_email !== "string" ||
-      typeof formState.teacher_mobile_phone !== "number" ||
+      typeof formState.teacher_mobile_phone !== "string" ||
       typeof formState.teacher_address !== "string"
     ) {
       throw new Error("Invalid form data");

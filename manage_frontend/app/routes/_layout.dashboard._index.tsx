@@ -24,6 +24,7 @@ const Dashboard = () => {
     },
     0
   );
+
   const totalStudents = students.length;
   const totalTeachers = teachers.length;
 
