@@ -250,7 +250,9 @@ const FamilyAccount = () => {
     if (option === "theory") {
       const saveData: TransactionRecord = {
         account_id: Number(params.id),
-        transaction_date: String(new Date().toLocaleDateString()),
+        transaction_date: String(
+          new Date().toISOString().split("T")[0].toString()
+        ),
         transaction_amount: convertAmount(theoryPrice.settings_value),
         transaction_type: "charge",
         transaction_description: studentsInFamily.find(
@@ -263,7 +265,9 @@ const FamilyAccount = () => {
     } else if (option === "class") {
       const saveAddClassData: TransactionRecord = {
         account_id: Number(params.id),
-        transaction_date: String(new Date().toLocaleDateString()),
+        transaction_date: String(
+          new Date().toISOString().split("T")[0].toString()
+        ),
         transaction_amount: convertAmount(classPrice.settings_value),
         transaction_type: "charge",
         transaction_description: studentsInFamily.find(
@@ -276,7 +280,9 @@ const FamilyAccount = () => {
     } else if (option === "sibling_discount") {
       const saveSiblingDiscountData: TransactionRecord = {
         account_id: Number(params.id),
-        transaction_date: String(new Date().toLocaleDateString()),
+        transaction_date: String(
+          new Date().toISOString().split("T")[0].toString()
+        ),
         transaction_amount: convertAmount(siblindDiscountAmount.settings_value),
         transaction_type: "discount",
         transaction_description: `${
