@@ -41,7 +41,7 @@ export interface ClassRecord {
   class_location: string;
   class_start_time: string;
   class_end_time: string;
-  class_students: string[];
+  class_students: number[];
   class_teacher: number;
   class_accompanist: number;
 }

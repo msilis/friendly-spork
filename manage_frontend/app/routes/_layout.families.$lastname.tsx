@@ -1,18 +1,25 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
-import { getFamily, updateFamily } from "~/data/data";
+import { getClasses, getFamily, getStudents, updateFamily } from "~/data/data";
 import React, { useRef, useState } from "react";
-import { FamilyRecord } from "~/types/types";
+import { FamilyRecord, StudentRecord, ClassRecord } from "~/types/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const families = await getFamily(params?.lastname);
-  return Response.json(families);
+  const [families, students, classes] = await Promise.all([
+    getFamily(params?.lastname),
+    getStudents(),
+    getClasses(),
+  ]);
+  return Response.json({ families, students, classes });
 };
 
 const Family = () => {
-  const families = useLoaderData<typeof loader>();
+  const { families, students, classes } = useLoaderData<typeof loader>();
   const family: FamilyRecord = families[0];
   const [showSecondParent, setShowSecondParent] = useState(false);
+  const studentsInFamily = students.filter(
+    (student: StudentRecord) => student.family_id === family.id
+  );
   const revalidator = useRevalidator();
   const [formState, setFormState] = useState<FamilyRecord>({
     id: family.id,
@@ -38,6 +45,7 @@ const Family = () => {
   const handleModalClose = () => {
     modalRef.current?.close();
   };
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     let newValue: string | number = value;
@@ -109,6 +117,15 @@ const Family = () => {
 
   const shouldShowSecondParent = showSecondParent || family.parent2_first_name;
 
+  const studentsInClassMap: Record<number, ClassRecord[]> = {};
+
+  studentsInFamily.forEach((student: StudentRecord) => {
+    studentsInClassMap[Number(student.id)] = classes.filter(
+      (classItem: ClassRecord) =>
+        classItem.class_students.includes(Number(student.id))
+    );
+  });
+
   return (
     <>
       <Link to={"/families"}>
@@ -129,7 +146,7 @@ const Family = () => {
       >
         <button className="btn mt-4 btn-sm ml-2">Invoices</button>
       </Link>
-      <section className="ml-12 flex ">
+      <section className="ml-12 flex gap-8">
         <div>
           <h1 className="font-semibold text-lg pb-4 pt-4">Family info</h1>
           <h2 className="font-light mb-2">Family Last Name</h2>
@@ -173,6 +190,34 @@ const Family = () => {
               <p className="pb-4">{family.parent2_address}</p>
             </>
           ) : null}
+        </div>
+        <div className="ml-4 mt-4">
+          <h2 className="font-bold pb-4">Students in family: </h2>
+          <ul>
+            {studentsInFamily
+              ? studentsInFamily.map((student: StudentRecord) => {
+                  return (
+                    <li key={student.id} className="font-light">
+                      {`${student.first_name} ${student.last_name}`}
+                      <ul>
+                        {studentsInClassMap[Number(student.id)].map(
+                          (classItem: ClassRecord) => {
+                            return (
+                              <li
+                                key={classItem.id}
+                                className="ml-4 font-extralight text-s"
+                              >
+                                {classItem.class_name}
+                              </li>
+                            );
+                          }
+                        )}
+                      </ul>
+                    </li>
+                  );
+                })
+              : null}
+          </ul>
         </div>
       </section>
 
