@@ -68,7 +68,7 @@ router.post("/students/add", async (req: Request, res: Response) => {
 
 router
   .route("/students/:studentId/edit")
-  .delete(async (req, res) => {
+  .get(async (req, res) => {
     const studentId = req.params.studentId;
     try {
       const studentData = await db
@@ -110,8 +110,6 @@ router
       console.error("There was an error updating the student record: ", error);
       res.status(500).json({ message: "Error updating the student" });
     }
-
-    res.status(200).json({ message: "Student data updated successfully!" });
   });
 
 router.delete("/students/:studentId/delete", async (req, res) => {

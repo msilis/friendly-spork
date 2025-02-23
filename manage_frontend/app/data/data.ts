@@ -11,32 +11,34 @@ import {
 } from "~/types/types";
 
 export const getStudents = async () => {
-  const allStudents = await fetch(
-    `${process.env.MANAGE_BACKEND}/students`
-  ).then((response) => response.json());
+  const allStudents = await fetch(`http://localhost:3000/students`).then(
+    (response) => response.json()
+  );
   return allStudents;
 };
 
 export const getStudent = async (params: string | undefined) => {
-  const getStudent = await fetch(
-    `${process.env.MANAGE_BACKEND}/students/${params}/edit`
-  ).then((response) => response.json());
-  return getStudent;
+  console.log(params, "params from get");
+  try {
+    const getStudent = await fetch(
+      `http://localhost:3000/students/${params}/edit`
+    ).then((response) => response.json());
+    return getStudent;
+  } catch (error) {
+    console.error("There was an error getting that student: ", error);
+  }
 };
 
 export const addStudent = async (data: StudentRecord) => {
   try {
-    const addStudent = await fetch(
-      `${process.env.MANAGE_BACKEND}/students/add`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    ).then((response) => response.json());
-    return json(addStudent);
+    const addStudent = await fetch(`http://localhost:3000/students/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((response) => response.json());
+    return addStudent;
   } catch (error) {
     console.error(error, "Error adding student");
   }
@@ -106,7 +108,7 @@ export const addFamily = async (data: FamilyRecord) => {
         body: JSON.stringify(data),
       }
     ).then((response) => response.json());
-    return json(addFamily);
+    return addFamily;
   } catch (error) {
     console.error(error, "Error adding family");
   }

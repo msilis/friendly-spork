@@ -14,6 +14,7 @@ import {
   findStudentInClass,
 } from "~/data/data";
 import { ClassRecord, FamilyRecord, TeacherRecord } from "~/types/types";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [studentData, families, teachers, studentInClass] = await Promise.all([
@@ -41,6 +42,7 @@ const Student = () => {
 
   const params = useParams();
   const revalidator = useRevalidator();
+  const toast = useToast();
 
   const handleOpenModal = () => {
     modalRef.current?.showModal();
@@ -81,6 +83,7 @@ const Student = () => {
       params.id
     );
     revalidator.revalidate();
+    toast.success("Student updated successfully!");
     handleModalClose();
   };
 
