@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLoaderData, useRevalidator } from "@remix-run/react";
 import { getSettings, saveSettings } from "~/data/data";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
   const settings = await getSettings();
@@ -15,6 +16,7 @@ type SettingsType = {
 const Settings = () => {
   const settings: SettingsType[] = useLoaderData<typeof loader>();
   const revalidator = useRevalidator();
+  const toast = useToast();
 
   const settingsMap = settings.reduce<Record<string, string>>(
     (acc, { settings_key, settings_value }) => {
@@ -46,6 +48,7 @@ const Settings = () => {
     );
     await saveSettings(settingsArray);
     revalidator.revalidate();
+    toast.success("Term dates saved");
   };
 
   const handleHalfTermSave = async () => {
@@ -58,6 +61,7 @@ const Settings = () => {
 
     await saveSettings(halfTermArray);
     revalidator.revalidate();
+    toast.success("Half-term dates saved");
   };
 
   const savePriceSetting = async (

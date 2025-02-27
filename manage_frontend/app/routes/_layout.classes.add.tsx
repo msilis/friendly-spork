@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { json, Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 
 import {
   addClass,
@@ -16,7 +16,7 @@ export const loader = async () => {
     getTeachers(),
     getAccompanists(),
   ]);
-  return json({ studentData, teacherData, accompanistData });
+  return Response.json({ studentData, teacherData, accompanistData });
 };
 
 const AddClass = () => {

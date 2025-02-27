@@ -17,6 +17,7 @@ import {
   getSettings,
 } from "~/data/data";
 import { FamilyRecord, StudentRecord, TransactionRecord } from "~/types/types";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
@@ -53,7 +54,7 @@ const FamilyAccount = () => {
   });
   const [showDelete, setShowDelete] = useState<boolean>(false);
 
-  const [showToast, setShowToast] = useState(false);
+  const toast = useToast();
   const revalidator = useRevalidator();
   const editRef = useRef<HTMLDialogElement>(null);
   const convertAmount = (amount: number) => {
@@ -84,13 +85,6 @@ const FamilyAccount = () => {
     }
 
     setTransactionData({ ...transactionData, [name]: newValue });
-  };
-
-  const showToastMessage = () => {
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 2000);
   };
 
   const calculateTotal = (transactionArray: TransactionRecord[]) => {
@@ -145,7 +139,7 @@ const FamilyAccount = () => {
       transaction_type: "payment",
       transaction_amount: "",
     });
-    showToastMessage();
+    toast.success("Transaction added");
   };
 
   const handleUpdate = () => {
@@ -166,6 +160,7 @@ const FamilyAccount = () => {
     });
     revalidator.revalidate();
     editRef.current?.close();
+    toast.success("Transaction updated");
   };
 
   const calculatedTotal = convertToCurrency(calculateTotal(transactions));
@@ -262,6 +257,7 @@ const FamilyAccount = () => {
 
       saveTransaction(saveData);
       revalidator.revalidate();
+      toast.success("Theory has been added");
     } else if (option === "class") {
       const saveAddClassData: TransactionRecord = {
         account_id: Number(params.id),
@@ -277,6 +273,7 @@ const FamilyAccount = () => {
 
       saveTransaction(saveAddClassData);
       revalidator.revalidate();
+      toast.success("Class has been added");
     } else if (option === "sibling_discount") {
       const saveSiblingDiscountData: TransactionRecord = {
         account_id: Number(params.id),
@@ -297,6 +294,7 @@ const FamilyAccount = () => {
 
       saveTransaction(saveSiblingDiscountData);
       revalidator.revalidate();
+      toast.success("Sibling discount added");
     }
   };
 

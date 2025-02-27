@@ -70,6 +70,7 @@ const Student = () => {
       typeof family !== "number" ||
       typeof teacher !== "number"
     ) {
+      toast.error("There was an error with the form");
       throw new Error("Invalid form data");
     }
     updateStudent(

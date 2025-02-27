@@ -3,6 +3,7 @@ import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
 import { getClasses, getFamily, getStudents, updateFamily } from "~/data/data";
 import React, { useRef, useState } from "react";
 import { FamilyRecord, StudentRecord, ClassRecord } from "~/types/types";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [families, students, classes] = await Promise.all([
@@ -20,6 +21,7 @@ const Family = () => {
   const studentsInFamily = students.filter(
     (student: StudentRecord) => student.family_id === family.id
   );
+  const toast = useToast();
   const revalidator = useRevalidator();
   const [formState, setFormState] = useState<FamilyRecord>({
     id: family.id,
@@ -60,7 +62,6 @@ const Family = () => {
     JSON.stringify(formState) !== JSON.stringify(family) ? true : false;
 
   const handleSave = () => {
-    console.log(formState, "formState");
     let familyId = formState.id;
     if (formState.id) {
       familyId = Number(formState.id);
@@ -80,6 +81,7 @@ const Family = () => {
         typeof formState.parent2_last_name !== "string") ||
       (formState.parent2_email && typeof formState.parent2_email !== "string")
     ) {
+      toast.error("There was an error updating the family");
       throw new Error("Invalid form data");
     }
 
@@ -112,6 +114,7 @@ const Family = () => {
 
     updateFamily(updatedData, family.id?.toString());
     revalidator.revalidate();
+    toast.success("Family info updated");
     handleModalClose();
   };
 

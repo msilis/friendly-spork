@@ -11,6 +11,7 @@ import { getClass, getStudents, getTeachers, updateClass } from "~/data/data";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import Select, { MultiValue } from "react-select";
 import { useClassContext } from "~/contexts/classContext";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [classData, studentData, teacherData] = await Promise.all([
@@ -43,6 +44,7 @@ const LauderdaleClass = () => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const params = useParams();
   const revalidator = useRevalidator();
+  const toast = useToast();
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -194,6 +196,7 @@ const LauderdaleClass = () => {
     );
     revalidator.revalidate();
     handleCloseModal();
+    toast.success("Class has been updated");
   };
 
   const handleRegisterClick = () => {

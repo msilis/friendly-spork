@@ -7,6 +7,7 @@ import {
 } from "~/data/data";
 import { useRef } from "react";
 import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
   const [students, families, teachers] = await Promise.all([
@@ -36,6 +37,7 @@ const Students = () => {
   };
 
   const revalidate = useRevalidator();
+  const toast = useToast();
   const confirmationRef = useRef<HTMLDialogElement>(null);
   let studentIdToDelete: number | undefined;
 
@@ -49,6 +51,7 @@ const Students = () => {
     revalidate.revalidate();
     studentIdToDelete = undefined;
     confirmationRef.current?.close();
+    toast.success("Student deleted successfully");
   };
 
   return (

@@ -9,6 +9,7 @@ import {
 } from "@remix-run/react";
 import { useRef, useState } from "react";
 import { TeacherRecord } from "~/types/types";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [teacherData] = await getTeacher(params.id);
@@ -18,6 +19,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 const Teacher = () => {
   const teacherData = useLoaderData<typeof loader>();
   const modalRef = useRef<HTMLDialogElement>(null);
+  const toast = useToast();
 
   const [formState, setFormState] = useState<TeacherRecord>({
     id: teacherData.id,
@@ -79,6 +81,7 @@ const Teacher = () => {
     );
     revalidator.revalidate();
     handleModalClose();
+    toast.success("Teacher information updated");
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

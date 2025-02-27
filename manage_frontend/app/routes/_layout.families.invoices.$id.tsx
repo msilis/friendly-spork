@@ -19,6 +19,7 @@ import {
 } from "~/data/data";
 import { FamilyRecord, TransactionRecord, InvoiceRecord } from "~/types/types";
 import { useRef, useState } from "react";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
@@ -55,6 +56,7 @@ const Invoices = () => {
   };
   const statusDialogRef = useRef<HTMLDialogElement>(null);
   const [invoiceStatus, setInvoiceStatus] = useState<InvoiceRecord>();
+  const toast = useToast();
 
   const getTransactions = async () => {
     if (!params.id) throw new Error("Id is missing");
@@ -174,6 +176,7 @@ const Invoices = () => {
     saveInvoice(saveData);
     generatePdf(invoiceInputs);
     revalidator.revalidate();
+    toast.success("Invoice created");
   };
 
   const filteredInvoices = invoices.filter(
