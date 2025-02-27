@@ -11,7 +11,6 @@ interface ToastType {
 }
 
 const ToastContainer = ({ toasts }: ToastType) => {
-  console.log(toasts, "toasts from container");
   return (
     <div className="toast">
       {toasts.map((toast, index) => (

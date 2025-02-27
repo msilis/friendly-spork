@@ -45,10 +45,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <ClassProvider>
-      <AlertProvider>
+    <AlertProvider>
+      <ClassProvider>
         <Outlet />
-      </AlertProvider>
-    </ClassProvider>
+      </ClassProvider>
+    </AlertProvider>
   );
 }

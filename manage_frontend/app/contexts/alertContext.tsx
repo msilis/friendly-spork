@@ -7,12 +7,12 @@ const initialToastState = {
 };
 
 type ToastType = "success" | "warning" | "error";
-interface AlertContextType {
+export interface AlertContextType {
   addToast?: (toastType: ToastType, message: string) => void;
-  success?: (message: string) => void;
-  warning?: (message: string) => void;
-  error?: (message: string) => void;
-  removeToast?: (id: string | number) => void;
+  success: (message: string) => void;
+  warning: (message: string) => void;
+  error: (message: string) => void;
+  removeToast: (id: string | number) => void;
 }
 export const AlertContext = createContext<AlertContextType | undefined>(
   undefined

@@ -15,6 +15,7 @@ import {
 } from "~/data/data";
 import { ClassRecord, FamilyRecord, TeacherRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
+import { AlertContextType } from "~/contexts/alertContext";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [studentData, families, teachers, studentInClass] = await Promise.all([
@@ -42,7 +43,7 @@ const Student = () => {
 
   const params = useParams();
   const revalidator = useRevalidator();
-  const toast = useToast();
+  const toast: AlertContextType = useToast();
 
   const handleOpenModal = () => {
     modalRef.current?.showModal();
@@ -83,7 +84,7 @@ const Student = () => {
       params.id
     );
     revalidator.revalidate();
-    toast.success("Student updated successfully!");
+    toast.success("Student updated");
     handleModalClose();
   };
 
