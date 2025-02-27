@@ -565,13 +565,6 @@ const FamilyAccount = () => {
           </div>
         </div>
       </dialog>
-      {showToast ? (
-        <div className="toast">
-          <div className="alert alert-info">
-            <span>Transaction saved</span>
-          </div>
-        </div>
-      ) : null}
     </>
   );
 };
