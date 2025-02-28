@@ -36,8 +36,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         {children}
         <ScrollRestoration />
-
         <Scripts />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+                        (function() {
+                          const theme = sessionStorage.getItem('colour-theme');
+                          if (theme) {
+                            document.documentElement.setAttribute('data-theme', theme);
+                            document.body.setAttribute('data-theme', theme);
+                          }
+                        })();
+                      `,
+          }}
+        />
       </body>
     </html>
   );

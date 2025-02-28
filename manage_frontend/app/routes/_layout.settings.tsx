@@ -77,6 +77,20 @@ const Settings = () => {
     revalidator.revalidate();
   };
 
+  const handleColourThemeChange = (
+    event: React.ChangeEvent<HTMLInputElement | undefined>
+  ) => {
+    if (event.target?.checked) {
+      document.documentElement.setAttribute("data-theme", "dark");
+      document.body.setAttribute("data-theme", "dark");
+      sessionStorage.setItem("colour-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+      document.body.setAttribute("data-theme", "light");
+      sessionStorage.setItem("colour-theme", "light");
+    }
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold">Settings</h1>
@@ -299,6 +313,17 @@ const Settings = () => {
             </h2>
             <h3 className="text-center">per sibling</h3>
           </div>
+        </section>
+        <section className="flex gap-4 mt-6 mb-6">
+          <h2 className="font-bold">Set colour theme</h2>
+          <p>Light</p>
+          <input
+            type="checkbox"
+            value="dark"
+            className="toggle theme-controller"
+            onChange={(event) => handleColourThemeChange(event)}
+          />
+          <p>Dark</p>
         </section>
       </div>
     </div>
