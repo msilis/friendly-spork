@@ -40,7 +40,7 @@ const ButtonMenu = ({ setButtonMenuOpen }: ButtonMenuProps) => {
           Settings
         </Link>
       </li>
-      <li className="flex flex-row">
+      <li className="flex flex-row cursor-default">
         <h2 className="font-bold">Set colour theme</h2>
         <p>Light</p>
         <input

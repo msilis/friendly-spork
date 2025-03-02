@@ -18,7 +18,7 @@ import {
   updateInvoice,
 } from "~/data/data";
 import { FamilyRecord, TransactionRecord, InvoiceRecord } from "~/types/types";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -187,10 +187,13 @@ const Invoices = () => {
     if (invoiceId !== undefined) {
       deleteInvoice(invoiceId);
       revalidator.revalidate();
+      toast.success("Invoice deleted");
     } else {
       throw new Error("InvoiceId is not valid");
     }
   };
+
+  const handleInvoiceView = () => {};
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
@@ -214,6 +217,18 @@ const Invoices = () => {
     revalidator.revalidate();
     statusDialogRef.current?.close();
   };
+
+  // TODO - fix conditional icons based on theme
+
+  // const deleteIcon = () => {
+  //   if (typeof window !== "undefined") {
+  //     const theme = sessionStorage.getItem("colour-theme");
+  //     if (theme === "dark") {
+  //       return "/icons8-trash-can-light.svw";
+  //     }
+  //     return "/icons8-trash-can-black.svg";
+  //   }
+  // };
 
   const findInvoice = invoices.filter(
     (invoice: InvoiceRecord) => invoice.invoice_id === invoiceStatus?.invoice_id
@@ -282,14 +297,23 @@ const Invoices = () => {
                     >
                       {invoice.invoice_status}
                     </td>
-                    <td>
+                    <td className="flex gap-1">
                       <button
                         onClick={() => handleInvoiceDelete(invoice.invoice_id)}
                       >
                         <img
-                          src="/icons8-delete.svg"
-                          alt="delete student"
+                          src="/delete.svg"
+                          title="Delete invoice"
+                          alt="Delete invoice"
                           className="hover:cursor-pointer pl-2"
+                          style={{ height: "20px" }}
+                        />
+                      </button>
+                      <button>
+                        <img
+                          src="/view.svg"
+                          alt="View invoice"
+                          title="View invoice"
                           style={{ height: "20px" }}
                         />
                       </button>
