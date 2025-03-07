@@ -370,7 +370,6 @@ export const getTransactionsForInvoice = async (data: DateRangeType) => {
         body: JSON.stringify(data),
       }
     ).then((response) => response.json());
-    console.log(getTransactionsForInvoice, "transactions for invoice");
     return getTransactionsForInvoice;
   } catch (error) {
     console.error("There was an error getting those transactions");
@@ -384,7 +383,6 @@ export const getTransactionsFromInvoice = async (
   if (!invoiceId) {
     throw new Error("Getting transactions to recreate invoice needs an id");
   }
-  console.log(invoiceId, "invoiceId");
   try {
     const invoiceTransactions = await fetch(
       `http://localhost:3000/transactions/invoices/recreate/${invoiceId}`

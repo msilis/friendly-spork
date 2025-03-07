@@ -604,7 +604,6 @@ router
 
 router.post("/transactions/range", async (req, res) => {
   const { invoice_start_date, invoice_end_date, account_id } = req.body;
-  console.log(account_id, "accountId from route");
   try {
     if (!invoice_start_date || !invoice_end_date) {
       res

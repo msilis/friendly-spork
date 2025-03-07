@@ -109,9 +109,13 @@ const Invoices = () => {
         return {
           ...transaction,
           transaction_description: transaction?.transaction_description ?? "",
-          transaction_amount: convertToCurrency(
-            transaction.transaction_amount as number // TODO fix this casting
-          ).toString(),
+          transaction_amount: formatter
+            .format(
+              convertToCurrency(
+                transaction.transaction_amount as number // TODO fix this casting
+              )
+            )
+            .toString(),
         };
       }
     );
@@ -200,9 +204,13 @@ const Invoices = () => {
         return {
           ...transaction,
           transaction_description: transaction?.transaction_description ?? "",
-          item_amount: convertToCurrency(
-            transaction.item_amount as number // TODO fix this casting
-          ).toString(),
+          item_amount: formatter
+            .format(
+              convertToCurrency(
+                transaction.item_amount as number // TODO fix this casting
+              )
+            )
+            .toString(),
         };
       }
     );
