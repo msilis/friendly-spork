@@ -29,6 +29,7 @@ const getSchemas = async () => {
 };
 
 export const generatePdf = async (invoiceInputs) => {
+  console.log(invoiceInputs, "invoiceInputs");
   const generate = await getPdfMe();
   const BLANK_PDF = await getBlankPdf();
   const { text, multiVariableText, table, line } = await getSchemas();

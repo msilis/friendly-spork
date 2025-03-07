@@ -11,7 +11,7 @@ import {
   settingsTable,
   transactionTable,
   invoiceTable,
-  invoiceItemsTable,
+  invoiceItemTable,
 } from "../db/dbSchema.mts";
 
 const router = express.Router();
@@ -604,6 +604,7 @@ router
 
 router.post("/transactions/range", async (req, res) => {
   const { invoice_start_date, invoice_end_date, account_id } = req.body;
+  console.log(account_id, "accountId from route");
   try {
     if (!invoice_start_date || !invoice_end_date) {
       res
@@ -690,7 +691,7 @@ router.post("/transactions/invoices/save", async (req, res) => {
       item_type: item.transaction_type,
     }));
 
-    await db.insert(invoiceItemsTable).values(itemsWithInvoiceId);
+    await db.insert(invoiceItemTable).values(itemsWithInvoiceId);
 
     res
       .status(201)
@@ -701,8 +702,22 @@ router.post("/transactions/invoices/save", async (req, res) => {
   }
 });
 
+router.get("/transactions/invoices/recreate/:invoiceId", async (req, res) => {
+  const invoiceId = req.params.invoiceId;
+  try {
+    const transactions = await db
+      .select()
+      .from(invoiceItemTable)
+      .where(eq(invoiceItemTable.invoice_id, Number(invoiceId)));
+
+    res.status(200).json(transactions);
+  } catch (error) {
+    console.error("Error getting transactions for invoice");
+    res.status(500).json({ message: "Error getting transactions for invoice" });
+  }
+});
+
 router.post("/transactions/invoices/update/:invoiceId", async (req, res) => {
-  console.log(req.params);
   const invoiceId = req.params.invoiceId;
   const updatedInvoice = req.body;
   try {
@@ -804,8 +819,8 @@ router.delete("/transactions/invoices/:invoiceId/delete", async (req, res) => {
         .json({ message: `Cannot find invoice number ${invoiceToDelete}` });
     } else {
       await db
-        .delete(invoiceItemsTable)
-        .where(eq(invoiceItemsTable.invoice_id, Number(invoiceToDelete)));
+        .delete(invoiceItemTable)
+        .where(eq(invoiceItemTable.invoice_id, Number(invoiceToDelete)));
       await db
         .delete(invoiceTable)
         .where(eq(invoiceTable.invoice_id, Number(invoiceToDelete)));

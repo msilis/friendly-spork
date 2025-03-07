@@ -79,7 +79,7 @@ export const invoiceTable = sqliteTable("invoice_table", {
   invoice_status: text("invoice_status").default("unpaid"), //unpaid, paid, overdue
 });
 
-export const invoiceItemsTable = sqliteTable("invoice_item_table", {
+export const invoiceItemTable = sqliteTable("invoice_item_table", {
   invoice_item_id: int("id").primaryKey({ autoIncrement: true }),
   invoice_number: int("invoice_number"),
   invoice_id: int("invoice_id")

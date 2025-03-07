@@ -14,11 +14,12 @@ import {
   getInvoiceForFamily,
   getLastInvoice,
   getTransactionsForInvoice,
+  getTransactionsFromInvoice,
   saveInvoice,
   updateInvoice,
 } from "~/data/data";
 import { FamilyRecord, TransactionRecord, InvoiceRecord } from "~/types/types";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -72,7 +73,6 @@ const Invoices = () => {
       );
     return transactions;
   };
-
   const generateInvoiceNumber = () => {
     const lastInvoiceNumber = lastInvoice[0].invoice_id;
     const invoiceNumber = `${new Date().getMonth() + 1}${new Date().getDate()}${
@@ -193,7 +193,47 @@ const Invoices = () => {
     }
   };
 
-  const handleInvoiceView = () => {};
+  const handleInvoiceView = async (invoice: InvoiceRecord) => {
+    const transactions = await getTransactionsFromInvoice(invoice.invoice_id);
+    const formattedTransactions = transactions.map(
+      (transaction: Transaction) => {
+        return {
+          ...transaction,
+          transaction_description: transaction?.transaction_description ?? "",
+          item_amount: convertToCurrency(
+            transaction.item_amount as number // TODO fix this casting
+          ).toString(),
+        };
+      }
+    );
+
+    const keysForList = ["item_description", "item_type", "item_amount"];
+
+    const transactionsToList = formattedTransactions.map(
+      (transaction: Transaction) => {
+        return keysForList
+          .filter((key) => Object.hasOwn(transaction, key))
+          .map((key) => transaction[key]);
+      }
+    );
+
+    const viewTotal = convertToCurrency(Number(invoice.total_amount));
+    const formattedTotal = formatter.format(viewTotal);
+    const invoiceViewInputs = {
+      head: "Lauderdale Invoice",
+      billedToInput: `${familyAccount.parent1_first_name} ${familyAccount.parent1_last_name} \n${familyAccount.parent1_address}`,
+      info: JSON.stringify({
+        InvoiceNo: invoice.invoice_number,
+        Date: invoice.invoice_date,
+      }),
+      orders: transactionsToList,
+      total: formattedTotal,
+      thankyou: "Thank you",
+      paymentInfoInput:
+        "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
+    };
+    generatePdf(invoiceViewInputs);
+  };
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
@@ -309,7 +349,7 @@ const Invoices = () => {
                           style={{ height: "20px" }}
                         />
                       </button>
-                      <button>
+                      <button onClick={() => handleInvoiceView(invoice)}>
                         <img
                           src="/view.svg"
                           alt="View invoice"

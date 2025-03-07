@@ -354,7 +354,9 @@ type DateRangeType = {
   account_id: string | null;
 };
 
+// Gets transactions to generate invoice
 export const getTransactionsForInvoice = async (data: DateRangeType) => {
+  console.log(data, "data from get");
   if (!data.account_id)
     throw new Error("Getting transactions for invoice needs an account id");
   try {
@@ -368,9 +370,28 @@ export const getTransactionsForInvoice = async (data: DateRangeType) => {
         body: JSON.stringify(data),
       }
     ).then((response) => response.json());
+    console.log(getTransactionsForInvoice, "transactions for invoice");
     return getTransactionsForInvoice;
   } catch (error) {
     console.error("There was an error getting those transactions");
+  }
+};
+
+//Gets transactions to recreate and view invoice
+export const getTransactionsFromInvoice = async (
+  invoiceId: number | undefined
+) => {
+  if (!invoiceId) {
+    throw new Error("Getting transactions to recreate invoice needs an id");
+  }
+  console.log(invoiceId, "invoiceId");
+  try {
+    const invoiceTransactions = await fetch(
+      `http://localhost:3000/transactions/invoices/recreate/${invoiceId}`
+    ).then((response) => response.json());
+    return invoiceTransactions;
+  } catch (error) {
+    console.error("Error retreiiving transactions for invoice");
   }
 };
 
