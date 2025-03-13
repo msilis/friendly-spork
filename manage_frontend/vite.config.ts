@@ -1,5 +1,7 @@
 import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
+import type { UserConfig } from "vite";
+import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 declare module "@remix-run/node" {
@@ -10,19 +12,27 @@ declare module "@remix-run/node" {
 
 export default defineConfig({
   plugins: [
-    remix({
-      future: {
-        v3_fetcherPersist: true,
-        v3_relativeSplatPath: true,
-        v3_throwAbortReason: true,
-        v3_singleFetch: true,
-        v3_lazyRouteDiscovery: true,
-      },
-    }),
+    !process.env.VITEST
+      ? remix({
+          future: {
+            v3_fetcherPersist: true,
+            v3_relativeSplatPath: true,
+            v3_throwAbortReason: true,
+            v3_singleFetch: true,
+            v3_lazyRouteDiscovery: true,
+          },
+        })
+      : react(),
+
     tsconfigPaths(),
   ],
   build: {
     sourcemap: false,
+  },
+  test: {
+    globals: true,
+    setupFiles: "./app/tests/setup.ts",
+    environment: "happy-dom",
   },
 
   resolve: {
@@ -30,4 +40,4 @@ export default defineConfig({
       html2canvas: "html2canvas-pro",
     },
   },
-});
+}) satisfies UserConfig;

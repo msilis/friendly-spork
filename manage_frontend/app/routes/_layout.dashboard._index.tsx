@@ -29,7 +29,7 @@ const Dashboard = () => {
   const totalTeachers = teachers.length;
 
   return (
-    <div>
+    <div data-testid="dashboardContainer">
       <h2 className="font-bold text-lg">Dashboard</h2>
       <div className="h-1 border-2 border-black mr-4"></div>
       <section className="flex flex-col gap-2 mt-4">
