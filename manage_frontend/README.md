@@ -9,8 +9,22 @@ Sample env:
 
 ## Development
 
+Install dependencies:
+
+```shellscript
+yarn install
+```
+
 Run the dev server:
 
 ```shellscript
-npm run dev
+yarn run dev
 ```
+
+## Testing
+
+```shellscript
+yarn run test
+```
+
+This will start playwright tests
