@@ -8,4 +8,7 @@ test("Students page", async ({ page }) => {
   const addStudentButton = page.getByRole("button", { name: /Add Student/ });
   await addStudentButton.click();
   await expect(page).toHaveURL("/students/add");
+  const backButton = page.getByRole("button", { name: "Back" });
+  await backButton.click();
+  await expect(page).toHaveURL("/students");
 });
