@@ -29,12 +29,6 @@ export default defineConfig({
   build: {
     sourcemap: false,
   },
-  test: {
-    globals: true,
-    setupFiles: "./app/tests/setup.ts",
-    environment: "happy-dom",
-  },
-
   resolve: {
     alias: {
       html2canvas: "html2canvas-pro",
