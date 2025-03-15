@@ -21,9 +21,5 @@ jobs:
         with:
           node:version: 20.x
           cache: "yarn"
-
-      - name: Install dependencies
-        uses: yarn install
-
-      - name: Run backend tests
-        uses: yarn run test
+      - run: yarn install
+      - run: yarn run test
