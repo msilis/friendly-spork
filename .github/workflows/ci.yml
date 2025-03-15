@@ -21,5 +21,6 @@ jobs:
         with:
           node:version: 20.x
           cache: "yarn"
+      - run: cd manage_backend
       - run: yarn install
       - run: yarn run test
