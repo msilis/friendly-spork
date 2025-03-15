@@ -17,7 +17,6 @@ import {
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 const router = express.Router();
-console.log(process.env.NODE_ENV, "node environment");
 const dbFile = process.env.DB_FILE_NAME;
 if (!dbFile) {
   throw new Error("Missing env for database file");
