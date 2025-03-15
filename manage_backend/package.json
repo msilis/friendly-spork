@@ -27,10 +27,13 @@
     "start": "tsx index.mjs",
     "serve": "tsx watch index.mjs",
     "eslint": "npx eslint",
-    "test": "cross-env DB_FILE_NAMW=test_db.db vitest"
+    "test": "vitest"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "supertest": "^7.0.0"
+  },
+  "vitest": {
+    "testingEnvironment": "node",
+    "coveragePathIgnorePatterns": "/node_modules"
   }
 }

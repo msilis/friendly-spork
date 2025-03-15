@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { drizzle } from "drizzle-orm/libsql";
 import { and, between, desc, sql } from "drizzle-orm";
-import "dotenv/config";
+import dotenv from "dotenv";
 import { eq } from "drizzle-orm";
 import {
   studentTable,
@@ -14,7 +14,10 @@ import {
   invoiceItemTable,
 } from "../db/dbSchema.mts";
 
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+
 const router = express.Router();
+console.log(process.env.NODE_ENV, "node environment");
 const dbFile = process.env.DB_FILE_NAME;
 if (!dbFile) {
   throw new Error("Missing env for database file");
