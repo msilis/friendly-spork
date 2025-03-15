@@ -20,11 +20,16 @@
     "tsc": "^2.0.4",
     "tsc-node": "^0.0.3",
     "tsx": "^4.19.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^3.0.8"
   },
   "scripts": {
     "start": "tsx index.mjs",
     "serve": "tsx watch index.mjs",
-    "eslint": "npx eslint"
+    "eslint": "npx eslint",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0"
   }
 }

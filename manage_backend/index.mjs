@@ -7,13 +7,13 @@ import cors from "cors";
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 const port = process.env.BACKEND_PORT || 8080;
 const db = drizzle(process.env.DB_FILE_NAME);
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
   }),
 );
 app.use(bodyParser.json());

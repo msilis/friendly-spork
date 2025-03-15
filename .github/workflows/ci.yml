@@ -1,0 +1,29 @@
+name: Backend Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set node version
+        uses: actions/setup-node@v4
+        with:
+          node:version: 20.x
+          cache: "yarn"
+
+      - name: Install dependencies
+        uses: yarn install
+
+      - name: Run backend tests
+        uses: yarn run test
