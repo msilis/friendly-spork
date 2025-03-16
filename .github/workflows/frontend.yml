@@ -31,8 +31,10 @@ jobs:
         working-directory: manage_frontend
       - name: Print environment variables
         run: printenv
+        working-directory: manage_frontend
       - name: Start frontend server
         run: yarn run devtest &
+        working-directory: manage_frontend
       - name: Run Playwright tests
         run: yarn run test
         working-directory: manage_frontend
