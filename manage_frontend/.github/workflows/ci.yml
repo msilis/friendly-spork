@@ -1,0 +1,34 @@
+name: Frontend Pipeline
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: Build frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set node version and start backend
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - run: yarn install
+        working-directory: manage_backend
+
+      - name: Start frontend
+        run: yarn install
+      - name: Setup Playwright
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: yarn run test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
