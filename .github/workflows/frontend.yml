@@ -19,8 +19,9 @@ jobs:
 
       - run: yarn install
         working-directory: manage_backend
-      - run: yarn run start:ci
+      - run: yarn run start:ci &
         working-directory: manage_backend
+        timeout-minutes: 1
 
       - name: Start frontend
         run: yarn install
