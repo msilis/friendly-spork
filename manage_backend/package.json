@@ -24,8 +24,8 @@
     "vitest": "^3.0.8"
   },
   "scripts": {
-    "start": "tsx index.mjs",
-    "serve": "tsx watch index.mjs",
+    "start": "export NODE_ENV=production&& tsx index.mjs",
+    "serve": "export NODE_ENV=development&& tsx watch index.mjs",
     "eslint": "npx eslint",
     "test": "vitest"
   },
