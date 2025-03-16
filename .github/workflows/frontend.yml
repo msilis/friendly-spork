@@ -29,8 +29,10 @@ jobs:
       - name: Setup Playwright
         run: npx playwright install --with-deps
         working-directory: manage_frontend
+      - name: Start frontend server
+        run: yarn run devtest &
       - name: Run Playwright tests
-        run: yarn run devtest
+        run: yarn run test
         working-directory: manage_frontend
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
