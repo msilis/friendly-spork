@@ -22,10 +22,13 @@ jobs:
 
       - name: Start frontend
         run: yarn install
+        working-directory: manage_frontend
       - name: Setup Playwright
         run: npx playwright install --with-deps
+        working-directory: manage_frontend
       - name: Run Playwright tests
         run: yarn run test
+        working-directory: manage_frontend
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
