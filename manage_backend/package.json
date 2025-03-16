@@ -26,6 +26,7 @@
   "scripts": {
     "start": "export NODE_ENV=production&& tsx index.mjs",
     "serve": "export NODE_ENV=development&& tsx watch index.mjs",
+    "start:ci": "export NODE_ENV=development&& tsx index.mjs",
     "eslint": "npx eslint",
     "test": "vitest"
   },

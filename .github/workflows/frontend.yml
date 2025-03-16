@@ -19,7 +19,7 @@ jobs:
 
       - run: yarn install
         working-directory: manage_backend
-      - run: yarn run start
+      - run: yarn run start:ci
         working-directory: manage_backend
 
       - name: Start frontend
