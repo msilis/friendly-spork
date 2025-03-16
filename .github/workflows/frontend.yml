@@ -29,6 +29,8 @@ jobs:
       - name: Setup Playwright
         run: npx playwright install --with-deps
         working-directory: manage_frontend
+      - name: Print environment variables
+        run: printenv
       - name: Start frontend server
         run: yarn run devtest &
       - name: Run Playwright tests
