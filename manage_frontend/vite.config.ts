@@ -9,7 +9,6 @@ declare module "@remix-run/node" {
     v3_singleFetch: true;
   }
 }
-
 export default defineConfig({
   plugins: [
     !process.env.VITEST
