@@ -36,8 +36,8 @@ jobs:
         working-directory: manage_frontend
       - name: Start devserver
         run: yarn run devtest &
-      - run: sleep 8 &&
         working-directory: manage_frontend
+      - run: sleep 8 &&
       - name: Run Playwright tests
         run: yarn run test
         working-directory: manage_frontend
