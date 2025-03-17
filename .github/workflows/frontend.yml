@@ -12,9 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
 
       - name: Set node version and start backend
         uses: actions/setup-node@v4
@@ -25,7 +22,13 @@ jobs:
         working-directory: manage_backend
       - run: yarn run start:ci &
         working-directory: manage_backend
-        timeout-minutes: 1
+        timeout-minutes: 5
+
+      - name: Wait for backend server to start
+        uses: cypress-io/wait-on@v2
+        with:
+          url: "http://localhost:3000"
+          timeout: 120000
 
       - name: Start frontend
         run: yarn install
@@ -39,6 +42,12 @@ jobs:
       - name: Start devserver
         run: yarn run devtest &
         working-directory: manage_frontend
+
+      - name: Wait for frontend dev server to start
+        uses: cypress-io/wait-on@v2
+        with:
+          url: "http://localhost:5174"
+          timeout: 120000
       - name: Run Playwright tests
         run: yarn run test
         working-directory: manage_frontend
