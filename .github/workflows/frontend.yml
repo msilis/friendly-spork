@@ -22,7 +22,7 @@ jobs:
         working-directory: manage_backend
       - run: |
           yarn run start:ci &
-          sleep 5 &&
+          sleep 5 &
         working-directory: manage_backend
         timeout-minutes: 5
 
@@ -38,7 +38,7 @@ jobs:
       - name: Start devserver
         run: |
           yarn run devtest &
-          sleep 5 %%
+          sleep 5 &
         working-directory: manage_frontend
       - name: Run Playwright tests
         run: yarn run test
