@@ -37,9 +37,9 @@ jobs:
         run: printenv
         working-directory: manage_frontend
 
-      # - name: Start devserver
-      #   run: yarn run devtest &
-      #   working-directory: manage_frontend
+      - name: Start devserver
+        run: yarn run devtest &
+        working-directory: manage_frontend
 
       - name: Run Playwright tests
         run: yarn run test
