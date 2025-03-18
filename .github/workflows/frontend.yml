@@ -21,7 +21,6 @@ jobs:
       - run: yarn install
         working-directory: manage_backend
       - run: yarn run start:ci &
-      - run: sleep 5 &
         working-directory: manage_backend
         timeout-minutes: 5
 
