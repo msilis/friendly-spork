@@ -22,6 +22,8 @@ jobs:
         working-directory: manage_backend
       - run: yarn run start:ci &
         working-directory: manage_backend
+        env:
+          DB_FILE_NAME: file:test_db.db
         timeout-minutes: 5
 
       - name: Setup frontend
