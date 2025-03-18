@@ -26,8 +26,6 @@ jobs:
 
       - name: Setup frontend
         run: yarn install
-        env:
-          MANAGE_BACKEND: http://localhost:3000
         working-directory: manage_frontend
 
       - name: Setup Playwright
@@ -47,6 +45,8 @@ jobs:
       - name: Run Playwright tests
         run: yarn run test
         working-directory: manage_frontend
+        env:
+          MANAGE_BACKEND: http://localhost:3000
       - uses: actions/upload-artifact@v4
         if: always()
         with:
