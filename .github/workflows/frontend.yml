@@ -48,7 +48,7 @@ jobs:
         run: yarn run test
         working-directory: manage_frontend
         env:
-          MANAGE_BACKEND: http://localhost:3000
+          MANAGE_BACKEND: ${{secrets.MANAGE_BACKEND}}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

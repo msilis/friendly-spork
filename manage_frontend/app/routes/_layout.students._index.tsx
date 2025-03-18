@@ -74,7 +74,7 @@ const Students = () => {
             </tr>
           </thead>
           <tbody>
-            {students.map((student: StudentRecord) => {
+            {students?.map((student: StudentRecord) => {
               return (
                 <tr key={student.id}>
                   <td>{student.id}</td>

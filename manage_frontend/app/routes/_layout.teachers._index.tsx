@@ -27,7 +27,7 @@ const Teachers = () => {
             </tr>
           </thead>
           <tbody>
-            {teachers.map((teacher: TeacherRecord) => {
+            {teachers?.map((teacher: TeacherRecord) => {
               return (
                 <tr key={teacher.id}>
                   <td>{teacher.id}</td>
