@@ -26,8 +26,8 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: "yarn run devtest",
-    url: "http://localhost:5174",
-    reuseExistingServer: !process.env.CI,
+    // url: "http://localhost:5174",
+    reuseExistingServer: false,
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
