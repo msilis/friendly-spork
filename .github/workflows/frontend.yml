@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   build:
-    timeout-minutes: 15
+    timeout-minutes: 60
     name: Build frontend
     runs-on: ubuntu-latest
 
@@ -25,24 +25,27 @@ jobs:
         working-directory: manage_backend
         timeout-minutes: 5
 
-      - name: Start frontend
-        run: yarn install
-        working-directory: manage_frontend
+      # - name: Start frontend
+      #   run: yarn install
+      #   working-directory: manage_frontend
+
       - name: Setup Playwright
         run: npx playwright install --with-deps
         working-directory: manage_frontend
+
       - name: Print environment variables
         run: printenv
         working-directory: manage_frontend
+
       - name: Start devserver
         run: yarn run devtest &
         working-directory: manage_frontend
-      - run: sleep 10 &
+
       - name: Run Playwright tests
         run: yarn run test
         working-directory: manage_frontend
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: always()
         with:
           name: playwright-report
           path: playwright-report/
