@@ -9,8 +9,11 @@ import { PassThrough } from "node:stream";
 import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
+import "dotenv";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+
+console.log("Manage backend: ", process.env.MANAGE_BACKEND);
 
 const ABORT_DELAY = 5_000;
 

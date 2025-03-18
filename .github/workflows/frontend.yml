@@ -26,6 +26,8 @@ jobs:
 
       - name: Setup frontend
         run: yarn install
+        env:
+          MANAGE_BACKEND: http://localhost:3000
         working-directory: manage_frontend
 
       - name: Setup Playwright

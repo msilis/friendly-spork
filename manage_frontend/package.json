@@ -8,7 +8,7 @@
     "dev": "remix vite:dev",
     "devtest": "remix vite:dev -p 5174",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "remix-serve ./build/server/index.js",
+    "start": "dotenv -e .env.production remix-serve ./build/server/index.js",
     "typecheck": "tsc",
     "test": "yarn playwright test"
   },
@@ -19,6 +19,8 @@
     "@remix-run/node": "^2.13.1",
     "@remix-run/react": "^2.13.1",
     "@remix-run/serve": "^2.13.1",
+    "dotenv": "^16.4.7",
+    "dotenv-cli": "^8.0.0",
     "html2canvas-pro": "^1.5.8",
     "isbot": "^4.1.0",
     "jspdf": "^2.5.2",

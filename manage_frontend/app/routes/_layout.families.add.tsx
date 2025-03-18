@@ -1,5 +1,5 @@
-import { Form, Link } from "@remix-run/react";
-import { useState } from "react";
+import { Form, Link, useActionData, useSubmit } from "@remix-run/react";
+import { useRef, useState } from "react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { addFamily } from "~/data/data";
@@ -31,7 +31,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     parent1Email.length === 0 ||
     parent1MobilePhone.length === 0
   ) {
-    throw new Error("Missing required fields!");
+    return { error: "Missing fields!" };
   }
 
   await addFamily({
@@ -53,10 +53,33 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 const AddFamily = () => {
   const [showSecondParent, setShowSecondParent] = useState(false);
+  const actionData = useActionData<typeof action>();
+  const toast = useToast();
+  const submit = useSubmit();
+  const toastShown = useRef(false);
+  const toastRendered = useRef(false);
 
   const handleSecondParentClick = () => {
     setShowSecondParent(!showSecondParent);
   };
+
+  if (actionData?.error && !toastShown.current) {
+    toastShown.current = true;
+  }
+
+  // On the dev server, this will render two toasts
+  if (toastShown.current && !toastRendered.current) {
+    setTimeout(() => {
+      toast.error("Missing fields");
+      toastShown.current = false;
+      toastRendered.current = true;
+      submit(null, { replace: true });
+    }, 1000);
+  }
+
+  if (!actionData) {
+    toastRendered.current = false;
+  }
   return (
     <div className="ml-8">
       <Link to={"/families"}>

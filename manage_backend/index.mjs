@@ -13,7 +13,11 @@ const db = drizzle(process.env.DB_FILE_NAME);
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:46349",
+    ],
   }),
 );
 app.use(bodyParser.json());
