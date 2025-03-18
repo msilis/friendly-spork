@@ -25,9 +25,9 @@ jobs:
         working-directory: manage_backend
         timeout-minutes: 5
 
-      # - name: Start frontend
-      #   run: yarn install
-      #   working-directory: manage_frontend
+      - name: Setup frontend
+        run: yarn install
+        working-directory: manage_frontend
 
       - name: Setup Playwright
         run: npx playwright install --with-deps
@@ -37,9 +37,9 @@ jobs:
         run: printenv
         working-directory: manage_frontend
 
-      - name: Start devserver
-        run: yarn run devtest &
-        working-directory: manage_frontend
+      # - name: Start devserver
+      #   run: yarn run devtest &
+      #   working-directory: manage_frontend
 
       - name: Run Playwright tests
         run: yarn run test
