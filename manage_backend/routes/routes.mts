@@ -164,10 +164,11 @@ router.post("/families/add", async (req, res) => {
     alternate_contact_mobile_phone,
   } = req.body;
 
-  if (!family_last_name || !parent1_first_name || !parent1_last_name) {
-    res.status(400).json({ error: "Missing fields" });
-  }
   try {
+    if (!family_last_name || !parent1_first_name || !parent1_last_name) {
+      res.status(400).json({ error: "Missing fields" });
+      return;
+    }
     const familyToAdd = {
       family_last_name,
       parent1_first_name,

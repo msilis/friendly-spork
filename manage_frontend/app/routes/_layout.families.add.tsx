@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { addFamily } from "~/data/data";
+import { useToast } from "~/hooks/hooks";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const body = await request.formData();
@@ -23,7 +24,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     typeof parent1FirstName !== "string" ||
     typeof parent1LastName !== "string" ||
     typeof parent1Email !== "string" ||
-    typeof parent1MobilePhone !== "string"
+    typeof parent1MobilePhone !== "string" ||
+    familyLastName.length === 0 ||
+    parent1FirstName.length === 0 ||
+    parent1LastName.length === 0 ||
+    parent1Email.length === 0 ||
+    parent1MobilePhone.length === 0
   ) {
     throw new Error("Missing required fields!");
   }

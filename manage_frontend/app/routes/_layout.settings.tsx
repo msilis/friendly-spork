@@ -244,7 +244,6 @@ const Settings = () => {
               Save
             </button>
           </div>
-          f
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
             <h3>Current amount </h3>
             <h2 className="font-bold text-center text-xl">

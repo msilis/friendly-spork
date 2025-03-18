@@ -41,6 +41,8 @@ jobs:
         run: yarn run devtest &
         working-directory: manage_frontend
 
+      - run: sleep 60
+
       - name: Run Playwright tests
         run: yarn run test
         working-directory: manage_frontend
