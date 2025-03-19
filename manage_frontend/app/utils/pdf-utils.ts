@@ -18,7 +18,14 @@ const getBlankPdf = async () => {
   return null;
 };
 
-const getSchemas = async () => {
+interface SchemaType {
+  text: TextType;
+  multiVariableText: MultiVariableTextType;
+  table: TableType;
+  line: LineType;
+}
+
+const getSchemas = async (): Promise<SchemaType | null> => {
   if (typeof window !== "undefined") {
     const { text, multiVariableText, table, line } = await import(
       "@pdfme/schemas"
@@ -28,11 +35,24 @@ const getSchemas = async () => {
   return null;
 };
 
-export const generatePdf = async (invoiceInputs) => {
+function isSchemaType(value: unknown): value is SchemaType {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "text" in value &&
+    "multiVariableText" in value &&
+    "table" in value &&
+    "line" in value
+  );
+}
+
+export const generatePdf = async (invoiceInputs: Record<string, unknown>[]) => {
   const generate = await getPdfMe();
   const BLANK_PDF = await getBlankPdf();
-  const { text, multiVariableText, table, line } = await getSchemas();
-  if (generate && BLANK_PDF) {
+  const schemas = await getSchemas();
+
+  if (generate && BLANK_PDF && isSchemaType(schemas)) {
+    const { text, multiVariableText, table, line } = schemas;
     const template = {
       schemas: [
         [
@@ -315,7 +335,7 @@ export const generatePdf = async (invoiceInputs) => {
       basePdf: {
         width: 210,
         height: 297,
-        padding: [20, 20, 20, 20],
+        padding: [20, 20, 20, 20] as [number, number, number, number],
         staticSchema: [
           {
             name: "line",
@@ -354,6 +374,7 @@ export const generatePdf = async (invoiceInputs) => {
         ],
       },
     };
+
     const inputs = [invoiceInputs];
     generate({
       template,
