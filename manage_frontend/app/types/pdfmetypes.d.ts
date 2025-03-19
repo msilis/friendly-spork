@@ -12,7 +12,7 @@ type TextType = {
   characterSpacing: number;
   fontColor: string;
   backgroundColor: string;
-  opacity: string;
+  opacity: number;
   readOnly: boolean;
   fontName: string;
   name: string;
@@ -32,7 +32,7 @@ type MultiVariableTextType = {
   characterSpacing: number;
   fontColor: string;
   backgroundColor: string;
-  opacity: string;
+  opacity: number;
   strikethrough: boolean;
   underline: boolean;
   variables: string[];

@@ -1,5 +1,6 @@
 import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
+import { Plugin } from "@pdfme/common";
 
 // pdfMe
 
@@ -19,10 +20,10 @@ const getBlankPdf = async () => {
 };
 
 interface SchemaType {
-  text: TextType;
-  multiVariableText: MultiVariableTextType;
-  table: TableType;
-  line: LineType;
+  text: Plugin<TextType>;
+  multiVariableText: Plugin<MultiVariableTextType>;
+  table: Plugin<TableType>;
+  line: Plugin<LineType>;
 }
 
 const getSchemas = async (): Promise<SchemaType | null> => {
