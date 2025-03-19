@@ -68,7 +68,7 @@ const LauderdaleClass = () => {
 
   const handleSelectChange =
     (name: string) =>
-    (newValue: MultiValue<{ value: string; label: string }>) => {
+    (newValue: MultiValue<{ value: number; label: string }>) => {
       const selectedOptions = newValue
         ? newValue.map((option) => option.value)
         : [];
