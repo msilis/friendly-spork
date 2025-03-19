@@ -21,7 +21,7 @@ const Classes = () => {
     StudentRecord[]
   >([]);
 
-  const handleModalShow = (currentStudents: string[]) => {
+  const handleModalShow = (currentStudents: number[]) => {
     setCurrentClassStudents([]);
     const studentsWithNames = currentStudents.map((currentStudent) => {
       return studentData.find((student: StudentRecord) => {
