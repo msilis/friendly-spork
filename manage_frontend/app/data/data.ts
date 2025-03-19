@@ -1,4 +1,5 @@
 import { json } from "@remix-run/react";
+import "dotenv";
 
 import {
   ClassRecord,
@@ -11,17 +12,16 @@ import {
 } from "~/types/types";
 
 export const getStudents = async () => {
-  const allStudents = await fetch(`http://localhost:3000/students`).then(
-    (response) => response.json()
-  );
+  const allStudents = await fetch(
+    `${process.env.MANAGE_BACKEND}/students`
+  ).then((response) => response.json());
   return allStudents;
 };
 
 export const getStudent = async (params: string | undefined) => {
-  console.log(params, "params from get");
   try {
     const getStudent = await fetch(
-      `http://localhost:3000/students/${params}/edit`
+      `${process.env.MANAGE_BACKEND}/students/${params}/edit`
     ).then((response) => response.json());
     return getStudent;
   } catch (error) {
@@ -31,13 +31,16 @@ export const getStudent = async (params: string | undefined) => {
 
 export const addStudent = async (data: StudentRecord) => {
   try {
-    const addStudent = await fetch(`http://localhost:3000/students/add`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((response) => response.json());
+    const addStudent = await fetch(
+      `${process.env.MANAGE_BACKEND}/students/add`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((response) => response.json());
     return addStudent;
   } catch (error) {
     console.error(error, "Error adding student");
@@ -50,7 +53,7 @@ export const updateStudent = async (
 ) => {
   try {
     const updateStudent = await fetch(
-      `http://localhost:3000/students/${params}/edit`,
+      `${process.env.MANAGE_BACKEND}/students/${params}/edit`,
       {
         method: "POST",
         headers: {
@@ -68,7 +71,7 @@ export const updateStudent = async (
 export const deleteStudent = async (studentId: number | undefined) => {
   if (studentId) {
     const deleteStudent = await fetch(
-      `http://localhost:3000/students/${studentId}/delete`,
+      `${process.env.MANAGE_BACKEND}/students/${studentId}/delete`,
       {
         method: "DELETE",
         headers: {
@@ -120,7 +123,7 @@ export const updateFamily = async (
 ) => {
   try {
     const updateTeacher = await fetch(
-      `http://localhost:3000/families/${id}/edit`,
+      `${process.env.MANAGE_BACKEND}/families/${id}/edit`,
       {
         method: "POST",
         headers: {
@@ -168,7 +171,7 @@ export const addTeacher = async (data: TeacherRecord) => {
         body: JSON.stringify(data),
       }
     ).then((response) => response.json());
-    return json(addTeacher);
+    return addTeacher;
   } catch (error) {
     console.error(error, "Error adding teacher");
   }
@@ -180,7 +183,7 @@ export const updateTeacher = async (
 ) => {
   try {
     const updateTeacher = await fetch(
-      `http://localhost:3000/teachers/${params}/edit`,
+      `${process.env.MANAGE_BACKEND}/teachers/${params}/edit`,
       {
         method: "POST",
         headers: {
@@ -211,7 +214,7 @@ export const getClass = async (params: string | undefined) => {
 
 export const addClass = async (data: ClassRecord) => {
   try {
-    const addClass = await fetch(`http://localhost:3000/classes/add`, {
+    const addClass = await fetch(`${process.env.MANAGE_BACKEND}/classes/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -230,7 +233,7 @@ export const updateClass = async (
 ) => {
   try {
     const updateClass = await fetch(
-      `http://localhost:3000/classes/${params}/edit`,
+      `${process.env.MANAGE_BACKEND}/classes/${params}/edit`,
       {
         method: "POST",
         headers: {
@@ -248,7 +251,7 @@ export const updateClass = async (
 export const findStudentInClass = async (params: string | undefined) => {
   try {
     const findStudent = await fetch(
-      `http://localhost:3000/classes/getstudent/${params}`,
+      `${process.env.MANAGE_BACKEND}/classes/getstudent/${params}`,
       {
         method: "POST",
         headers: {
@@ -265,7 +268,7 @@ export const findStudentInClass = async (params: string | undefined) => {
 export const getFamilyTransactions = async (params: string | undefined) => {
   try {
     const findTransactions = await fetch(
-      `http://localhost:3000/transactions/${params}`,
+      `${process.env.MANAGE_BACKEND}/transactions/${params}`,
       {
         method: "GET",
         headers: {
@@ -282,7 +285,7 @@ export const getFamilyTransactions = async (params: string | undefined) => {
 export const getTransaction = async (params: string | undefined) => {
   try {
     const findTransaction = await fetch(
-      `http://localhost:3000/transactions/get/${params}`,
+      `${process.env.MANAGE_BACKEND}/transactions/get/${params}`,
       {
         method: "GET",
         headers: {
@@ -299,7 +302,7 @@ export const getTransaction = async (params: string | undefined) => {
 export const saveTransaction = async (data: TransactionRecord) => {
   try {
     const saveTransaction = await fetch(
-      "http://localhost:3000/transactions/save",
+      "${process.env.MANAGE_BACKEND}/transactions/save",
       {
         method: "POST",
         headers: {
@@ -320,7 +323,7 @@ export const updateTransaction = async (data: TransactionUpdateType) => {
   const id = data.id;
   try {
     const updateTransaction = await fetch(
-      `http://localhost:3000/transactions/get/${Number(id)}`,
+      `${process.env.MANAGE_BACKEND}/transactions/get/${Number(id)}`,
       {
         method: "POST",
         headers: {
@@ -337,7 +340,7 @@ export const updateTransaction = async (data: TransactionUpdateType) => {
 
 export const deleteTransaction = async (params: number | undefined) => {
   const deleteTransaction = await fetch(
-    `http://localhost:3000/transactions/get/${params}/delete`,
+    `${process.env.MANAGE_BACKEND}/transactions/get/${params}/delete`,
     {
       method: "DELETE",
       headers: {
@@ -356,12 +359,11 @@ type DateRangeType = {
 
 // Gets transactions to generate invoice
 export const getTransactionsForInvoice = async (data: DateRangeType) => {
-  console.log(data, "data from get");
   if (!data.account_id)
     throw new Error("Getting transactions for invoice needs an account id");
   try {
     const getTransactionsForInvoice = await fetch(
-      "http://localhost:3000/transactions/range",
+      `${process.env.MANAGE_BACKEND}/transactions/range`,
       {
         method: "POST",
         headers: {
@@ -385,7 +387,7 @@ export const getTransactionsFromInvoice = async (
   }
   try {
     const invoiceTransactions = await fetch(
-      `http://localhost:3000/transactions/invoices/recreate/${invoiceId}`
+      `${process.env.MANAGE_BACKEND}/transactions/invoices/recreate/${invoiceId}`
     ).then((response) => response.json());
     return invoiceTransactions;
   } catch (error) {
@@ -396,7 +398,7 @@ export const getTransactionsFromInvoice = async (
 export const getLastInvoice = async () => {
   try {
     const retreiveLastInvoice = await fetch(
-      "http://localhost:3000/transactions/invoices/get_last_record",
+      "${process.env.MANAGE_BACKEND}/transactions/invoices/get_last_record",
       {
         method: "GET",
         headers: {
@@ -413,7 +415,7 @@ export const getLastInvoice = async () => {
 export const saveInvoice = async (data: SaveDataType) => {
   try {
     const saveInvoice = await fetch(
-      "http://localhost:3000/transactions/invoices/save",
+      `${process.env.MANAGE_BACKEND}/transactions/invoices/save`,
       {
         method: "POST",
         headers: {
@@ -432,7 +434,7 @@ export const updateInvoice = async (data: InvoiceRecord | undefined) => {
   const invoiceId = data?.invoice_id;
   try {
     const updateInvoiceStatus = await fetch(
-      `http://localhost:3000/transactions/invoices/update/${invoiceId}`,
+      `${process.env.MANAGE_BACKEND}/transactions/invoices/update/${invoiceId}`,
       {
         method: "POST",
         headers: {
@@ -450,7 +452,7 @@ export const updateInvoice = async (data: InvoiceRecord | undefined) => {
 export const getAllInvoices = async () => {
   try {
     const retreiveAllInvoices = await fetch(
-      "http://localhost:3000/transactions/invoices/get",
+      `${process.env.MANAGE_BACKEND}/transactions/invoices/get`,
       {
         method: "GET",
         headers: {
@@ -467,7 +469,7 @@ export const getAllInvoices = async () => {
 export const getInvoiceForFamily = async (familyId: string | undefined) => {
   try {
     const retreiveFamilyInvoices = await fetch(
-      `http://localhost:3000/transactions/invoices/get/family/${familyId}`,
+      `${process.env.MANAGE_BACKEND}/transactions/invoices/get/family/${familyId}`,
       {
         method: "POST",
         headers: {
@@ -484,7 +486,7 @@ export const getInvoiceForFamily = async (familyId: string | undefined) => {
 export const getInvoice = async (params: number) => {
   try {
     const retreiveInvoice = await fetch(
-      `http://localhost:3000/transactions/invoices/get/${params}`,
+      `${process.env.MANAGE_BACKEND}/transactions/invoices/get/${params}`,
       {
         method: "POST",
         headers: {
@@ -501,7 +503,7 @@ export const getInvoice = async (params: number) => {
 export const deleteInvoice = async (invoiceToDelete: number) => {
   try {
     const deleteInvoice = await fetch(
-      `http://localhost:3000/transactions/invoices/${invoiceToDelete}/delete`,
+      `${process.env.MANAGE_BACKEND}/transactions/invoices/${invoiceToDelete}/delete`,
       {
         method: "DELETE",
         headers: {
@@ -516,7 +518,7 @@ export const deleteInvoice = async (invoiceToDelete: number) => {
 };
 
 export const getSettings = async () => {
-  const settings = await fetch("http://localhost:3000/settings").then(
+  const settings = await fetch(`${process.env.MANAGE_BACKEND}/settings`).then(
     (response) => response.json()
   );
   return settings;
@@ -524,7 +526,7 @@ export const getSettings = async () => {
 
 export const saveSettings = async (data: unknown) => {
   try {
-    const saveSettings = await fetch("http://localhost:3000/settings", {
+    const saveSettings = await fetch(`${process.env.MANAGE_BACKEND}/settings`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
