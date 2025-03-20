@@ -10,7 +10,7 @@
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["@remix-run/node", "vite/client", "manage_frontend/app/types"],
+    "types": ["@remix-run/node", "vite/client", "@pdfme/schemas"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",

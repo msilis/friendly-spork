@@ -5,13 +5,16 @@ export const themePrefs = createCookie("theme_prefs", {
   sameSite: "lax",
 });
 
-export const getTheme = async (request) => {
+export const getTheme = async (request: Request) => {
   const cookieHeader = request.headers.get("Cookie");
   const cookieValue = await themePrefs.parse(cookieHeader);
   return cookieValue === "dark" ? "dark" : "light";
 };
 
-export const setTheme = async (theme, headers) => {
+export const setTheme = async (
+  theme: "dark" | "light",
+  headers: HeadersInit
+) => {
   return {
     headers: {
       "Set-Cookie": await themePrefs.serialize(theme),

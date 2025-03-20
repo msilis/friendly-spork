@@ -1,4 +1,18 @@
-export const toastReducer = (state, action) => {
+import { SingleToastType } from "./Toasts";
+
+type ToastState = {
+  toasts: SingleToastType[];
+};
+
+interface CountAction {
+  type: "ADD_TOAST" | "DELETE_TOAST";
+  payload: {
+    id: string | number | undefined;
+    message?: string;
+    toastType?: "success" | "warning" | "error" | "";
+  };
+}
+export const toastReducer = (state: ToastState, action: CountAction) => {
   switch (action.type) {
     case "ADD_TOAST":
       return {
@@ -7,7 +21,7 @@ export const toastReducer = (state, action) => {
       };
     case "DELETE_TOAST": {
       const updatedToasts = state.toasts.filter(
-        (toast) => toast.id !== action.payload
+        (toast: SingleToastType) => toast.id !== action.payload.id
       );
       return {
         ...state,

@@ -31,7 +31,13 @@ const getSchemas = async (): Promise<SchemaType | null> => {
     const { text, multiVariableText, table, line } = await import(
       "@pdfme/schemas"
     );
-    return { text, multiVariableText, table, line };
+    return {
+      text: text as unknown as Plugin<TextType>,
+      multiVariableText:
+        multiVariableText as unknown as Plugin<MultiVariableTextType>,
+      table: table as unknown as Plugin<TableType>,
+      line: line as unknown as Plugin<LineType>,
+    };
   }
   return null;
 };
@@ -47,7 +53,7 @@ function isSchemaType(value: unknown): value is SchemaType {
   );
 }
 
-export const generatePdf = async (invoiceInputs: Record<string, unknown>[]) => {
+export const generatePdf = async (invoiceInputs: Record<string, unknown>) => {
   const generate = await getPdfMe();
   const BLANK_PDF = await getBlankPdf();
   const schemas = await getSchemas();

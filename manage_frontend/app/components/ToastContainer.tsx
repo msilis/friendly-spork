@@ -1,12 +1,12 @@
 import Toast from "./Toasts";
 
-type Toast = {
+export type Toast = {
   toastType: "success" | "warning" | "error" | "";
   message?: string;
-  id?: string;
+  id?: string | number | undefined;
 };
 
-interface ToastType {
+export interface ToastType {
   toasts: Toast[];
 }
 

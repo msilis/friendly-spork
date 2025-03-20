@@ -1,13 +1,12 @@
-type ToastType = {
+export type SingleToastType = {
   toastType: "success" | "warning" | "error" | "";
   text?: string;
-  id?: string | number;
+  id?: string | number | undefined;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Toast = ({ toastType, text, id }: ToastType) => {
+const Toast = ({ toastType, text, id }: SingleToastType) => {
   return (
-    <div role="alert" className={`alert alert-${toastType}`}>
+    <div role="alert" id={String(id)} className={`alert alert-${toastType}`}>
       {text ? text : ""}
     </div>
   );
