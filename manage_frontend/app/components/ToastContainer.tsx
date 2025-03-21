@@ -3,7 +3,7 @@ import Toast from "./Toasts";
 export type Toast = {
   toastType: "success" | "warning" | "error" | "";
   message?: string;
-  id?: string | number | undefined;
+  id: string | number;
 };
 
 export interface ToastType {
@@ -18,6 +18,7 @@ const ToastContainer = ({ toasts }: ToastType) => {
           key={String(index)}
           toastType={toast.toastType}
           text={toast.message}
+          id={toast.id}
         />
       ))}
     </div>

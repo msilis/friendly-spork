@@ -1,7 +1,7 @@
 export type SingleToastType = {
   toastType: "success" | "warning" | "error" | "";
   text?: string;
-  id?: string | number | undefined;
+  id: string | number;
 };
 
 const Toast = ({ toastType, text, id }: SingleToastType) => {

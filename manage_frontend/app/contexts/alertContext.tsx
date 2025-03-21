@@ -12,7 +12,7 @@ export interface AlertContextType {
   success: (message: string) => void;
   warning: (message: string) => void;
   error: (message: string) => void;
-  removeToast: (id: string | number | undefined) => void;
+  removeToast: (id: string | number) => void;
 }
 export const AlertContext = createContext<AlertContextType | undefined>(
   undefined
@@ -39,8 +39,8 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     addToast("error", message);
   };
 
-  const removeToast = (id: number | string | undefined) => {
-    dispatch({ type: "DELETE_TOAST", payload: { id: id } });
+  const removeToast = (id: number | string) => {
+    dispatch({ type: "DELETE_TOAST", payload: { id: id, toastType: "" } });
   };
 
   useEffect(() => {

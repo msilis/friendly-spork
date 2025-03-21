@@ -7,9 +7,9 @@ type ToastState = {
 interface CountAction {
   type: "ADD_TOAST" | "DELETE_TOAST";
   payload: {
-    id: string | number | undefined;
+    id: string | number;
     message?: string;
-    toastType?: "success" | "warning" | "error" | "";
+    toastType: "success" | "warning" | "error" | "";
   };
 }
 export const toastReducer = (state: ToastState, action: CountAction) => {
