@@ -1,5 +1,3 @@
-import "dotenv";
-
 import {
   ClassRecord,
   FamilyRecord,
@@ -11,6 +9,11 @@ import {
 } from "~/types/types";
 
 export const getStudents = async () => {
+  console.log(
+    typeof window === "undefined",
+    "typeof window is undefined from get all students"
+  );
+
   const allStudents = await fetch(
     `${process.env.MANAGE_BACKEND}/students`
   ).then((response) => response.json());
@@ -45,11 +48,24 @@ export const addStudent = async (data: StudentRecord) => {
     console.error(error, "Error adding student");
   }
 };
+console.log(typeof window === "undefined", "typeof window is undefined");
+// console.log(process.env.MANAGE_BACKEND, "from env");
+console.log(
+  typeof window === "undefined"
+    ? process.env.MANAGE_BACKEND
+    : window.ENV.MANAGE_BACKEND,
+  "checkin the env"
+);
 
 export const updateStudent = async (
   data: StudentRecord,
   params: string | undefined
 ) => {
+  console.log(
+    typeof window === "undefined",
+    "typeof window is undefined, from update"
+  );
+
   try {
     const updateStudent = await fetch(
       `${process.env.MANAGE_BACKEND}/students/${params}/edit`,
@@ -301,7 +317,7 @@ export const getTransaction = async (params: string | undefined) => {
 export const saveTransaction = async (data: TransactionRecord) => {
   try {
     const saveTransaction = await fetch(
-      "${process.env.MANAGE_BACKEND}/transactions/save",
+      `${process.env.MANAGE_BACKEND}/transactions/save`,
       {
         method: "POST",
         headers: {
@@ -312,7 +328,7 @@ export const saveTransaction = async (data: TransactionRecord) => {
     ).then((response) => response.json());
     return saveTransaction;
   } catch (error) {
-    console.error("There was an error savig the transaction: ", error);
+    console.error("There was an error saving the transaction: ", error);
   }
 };
 
@@ -373,7 +389,9 @@ export const getTransactionsForInvoice = async (data: DateRangeType) => {
     ).then((response) => response.json());
     return getTransactionsForInvoice;
   } catch (error) {
-    console.error("There was an error getting those transactions");
+    console.error(
+      "There was an error getting transactions to generate an invoice"
+    );
   }
 };
 
@@ -386,18 +404,18 @@ export const getTransactionsFromInvoice = async (
   }
   try {
     const invoiceTransactions = await fetch(
-      `${process.env.MANAGE_BACKEND}/transactions/invoices/recreate/${invoiceId}`
+      `http://localhost:3000/transactions/invoices/recreate/${invoiceId}`
     ).then((response) => response.json());
     return invoiceTransactions;
   } catch (error) {
-    console.error("Error retreiiving transactions for invoice");
+    console.error("Error retreiiving transactions from invoice: ", error);
   }
 };
 
 export const getLastInvoice = async () => {
   try {
     const retreiveLastInvoice = await fetch(
-      "${process.env.MANAGE_BACKEND}/transactions/invoices/get_last_record",
+      `${process.env.MANAGE_BACKEND}/transactions/invoices/get_last_record`,
       {
         method: "GET",
         headers: {

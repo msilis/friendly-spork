@@ -13,8 +13,6 @@ import "dotenv";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 
-console.log("Manage backend: ", process.env.MANAGE_BACKEND);
-
 const ABORT_DELAY = 5_000;
 
 export default function handleRequest(
