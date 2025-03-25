@@ -31,6 +31,29 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   return Response.json({ family, transactions, students, settings });
 };
 
+export const calculateTotal = (transactionArray: TransactionRecord[]) => {
+  let total = 0;
+  for (const transaction of transactionArray) {
+    const amount = Number(transaction.transaction_amount);
+    if (isNaN(amount)) {
+      throw new Error(
+        `Amount is not a valid number: ${transaction.transaction_amount}`
+      );
+    }
+    if (transaction.transaction_type === "payment") {
+      total += amount;
+    } else if (transaction.transaction_type === "charge") {
+      total -= amount;
+    } else if (transaction.transaction_type === "refund") {
+      total += amount;
+    } else if (transaction.transaction_type === "discount") {
+      total += amount;
+    }
+  }
+
+  return total;
+};
+
 const FamilyAccount = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,29 +108,6 @@ const FamilyAccount = () => {
     }
 
     setTransactionData({ ...transactionData, [name]: newValue });
-  };
-
-  const calculateTotal = (transactionArray: TransactionRecord[]) => {
-    let total = 0;
-    for (const transaction of transactionArray) {
-      const amount = Number(transaction.transaction_amount);
-      if (isNaN(amount)) {
-        throw new Error(
-          `Amount is not a valid number: ${transaction.transaction_amount}`
-        );
-      }
-      if (transaction.transaction_type === "payment") {
-        total += amount;
-      } else if (transaction.transaction_type === "charge") {
-        total -= amount;
-      } else if (transaction.transaction_type === "refund") {
-        total += amount;
-      } else if (transaction.transaction_type === "discount") {
-        total += amount;
-      }
-    }
-
-    return total;
   };
 
   const findTransactions = (id: number | undefined) => {
