@@ -303,6 +303,13 @@ const FamilyAccount = () => {
       <Link to={`/families/${param}`} viewTransition>
         <button className="btn-link">Back</button>
       </Link>
+      <Link
+        to={`/families/invoices/${
+          familyAccount.id
+        }?name=${familyAccount.family_last_name.toLowerCase()}`}
+      >
+        <button className="btn mt-4 btn-sm ml-2">Invoices</button>
+      </Link>
       <h2 className="mt-4 font-bold">{`Account for ${familyAccount.family_last_name} Family`}</h2>
       <div className="h-1 border-2 border-black mr-4"></div>
       <section className="mt-2 flex gap-2 items-center">

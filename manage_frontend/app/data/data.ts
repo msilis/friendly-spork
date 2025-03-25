@@ -375,7 +375,7 @@ export const getTransactionsFromInvoice = async (
   }
   try {
     const invoiceTransactions = await fetch(
-      `$${BACKEND_URL}/transactions/invoices/recreate/${invoiceId}`
+      `${BACKEND_URL}/transactions/invoices/recreate/${invoiceId}`
     ).then((response) => response.json());
     return invoiceTransactions;
   } catch (error) {
