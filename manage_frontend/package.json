@@ -2,6 +2,7 @@
   "name": "my-remix-app",
   "private": true,
   "sideEffects": false,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
