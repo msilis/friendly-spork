@@ -1,0 +1,23 @@
+name: Frontend Unit Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    timeout-minutes: 360
+    name: Build frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup project
+        run: yarn install
+        working-directory: manage_frontend
+
+      - name: Run unit tests
+        run: yarn vitest calculations.test.ts
+        working-directory: manage_frontend
