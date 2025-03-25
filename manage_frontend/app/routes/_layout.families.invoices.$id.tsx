@@ -48,7 +48,6 @@ const Invoices = () => {
     invoice_end_date: "",
   });
   const revalidator = useRevalidator();
-
   const { family, invoices, lastInvoice } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {

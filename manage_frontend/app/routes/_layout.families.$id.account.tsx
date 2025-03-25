@@ -310,7 +310,7 @@ const FamilyAccount = () => {
       <Link
         to={`/families/invoices/${
           familyAccount.id
-        }?name=${familyAccount.family_last_name.toLowerCase()}`}
+        }?name=${familyAccount.family_last_name.toLowerCase()}&referrer=account`}
       >
         <button className="btn mt-4 btn-sm ml-2">Invoices</button>
       </Link>
