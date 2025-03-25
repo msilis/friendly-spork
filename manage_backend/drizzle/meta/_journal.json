@@ -36,6 +36,13 @@
       "when": 1734902047014,
       "tag": "0004_far_power_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1742900757868,
+      "tag": "0005_flippant_mathemanic",
+      "breakpoints": true
     }
   ]
 }

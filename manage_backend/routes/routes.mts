@@ -400,7 +400,7 @@ router.get("/accompanists", async (req, res) => {
     const accompanists = await db
       .select()
       .from(teacherTable)
-      .where(eq(teacherTable.is_teacher_accompanist, "1.0"));
+      .where(eq(teacherTable.is_teacher_accompanist, 1.0));
     res.status(200).json(accompanists);
   } catch (error) {
     console.error(error, "There was an error getting the list of accompanists");
