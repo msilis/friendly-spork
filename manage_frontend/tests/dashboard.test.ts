@@ -6,4 +6,7 @@ test("Dashboard", async ({ page }) => {
   await expect(dashboardTitle).toBeVisible();
   await expect(page.getByText("Total outstanding invoices")).toBeVisible();
   await expect(page.getByText("Manage")).toBeVisible();
+  const menuButton = page.getByTestId("main-menu");
+  await menuButton.click();
+  await expect(page.getByText("Families")).toBeVisible();
 });

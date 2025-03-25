@@ -250,9 +250,11 @@ const FamilyAccount = () => {
         ),
         transaction_amount: convertAmount(theoryPrice.settings_value),
         transaction_type: "charge",
-        transaction_description: studentsInFamily.find(
-          (student: StudentRecord) => student.id === quickAddStudent
-        ).first_name,
+        transaction_description: `${
+          studentsInFamily.find(
+            (student: StudentRecord) => student.id === quickAddStudent
+          ).first_name
+        } - theory`,
       };
 
       saveTransaction(saveData);
@@ -266,9 +268,11 @@ const FamilyAccount = () => {
         ),
         transaction_amount: convertAmount(classPrice.settings_value),
         transaction_type: "charge",
-        transaction_description: studentsInFamily.find(
-          (student: StudentRecord) => student.id === quickAddStudent
-        ).first_name,
+        transaction_description: `${
+          studentsInFamily.find(
+            (student: StudentRecord) => student.id === quickAddStudent
+          ).first_name
+        } - class`,
       };
 
       saveTransaction(saveAddClassData);
@@ -289,7 +293,7 @@ const FamilyAccount = () => {
           studentsInFamily.find(
             (student: StudentRecord) => student.id === quickAddStudent
           ).first_name
-        } - siblind discount`,
+        } - sibling discount`,
       };
 
       saveTransaction(saveSiblingDiscountData);
@@ -450,6 +454,7 @@ const FamilyAccount = () => {
                             ? "text-blue-400"
                             : ""
                         } `}
+                        title="Click to edit"
                       >
                         £
                         {convertToCurrency(

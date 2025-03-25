@@ -17,7 +17,11 @@ const Navigation = () => {
   return (
     <div className="navbar bg-base-300 relative">
       <div className="flex-none">
-        <button className="btn btn-square btn-ghost" onClick={toggleMenu}>
+        <button
+          className="btn btn-square btn-ghost"
+          onClick={toggleMenu}
+          data-testid="main-menu"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
