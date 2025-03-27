@@ -55,78 +55,78 @@ const Students = () => {
   };
 
   return (
-    <div>
+    <div className="overflow-x-auto">
+      <h1 className="text-xl font-bold mb-4">Students</h1>
       <Link to={"/students/add"}>
-        <button className="btn-link">Add Student</button>
+        <button className="btn btn-outline btn-primary btn-sm mb-4">
+          Add Student
+        </button>
       </Link>
-      <div className="overflow-x-auto">
-        <h1 className="text-xl">Students</h1>
-        <table className="table table-xs">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Birthdate</th>
-              <th>Family</th>
-              <th>Teacher</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {students?.map((student: StudentRecord) => {
-              return (
-                <tr key={student.id}>
-                  <td>{student.id}</td>
-                  <td>
-                    <Link to={`/students/${student.id?.toString()}`}>
-                      {student.first_name}
-                    </Link>
-                  </td>
-                  <td>{student.last_name}</td>
-                  <td>{student.birthdate}</td>
-                  <td>{getFamilyLastName(student)}</td>
-                  <td>{getTeacherLastName(student)}</td>
-                  <td>
-                    <button onClick={() => handleDeleteClick(student.id)}>
-                      <img
-                        src="icons8-delete.svg"
-                        alt="delete student"
-                        className="hover:cursor-pointer"
-                      />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <dialog ref={confirmationRef} className="modal">
-          <div className="modal-box">
+      <table className="table table-xs">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Birthdate</th>
+            <th>Family</th>
+            <th>Teacher</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {students?.map((student: StudentRecord) => {
+            return (
+              <tr key={student.id}>
+                <td>{student.id}</td>
+                <td>
+                  <Link to={`/students/${student.id?.toString()}`}>
+                    {student.first_name}
+                  </Link>
+                </td>
+                <td>{student.last_name}</td>
+                <td>{student.birthdate}</td>
+                <td>{getFamilyLastName(student)}</td>
+                <td>{getTeacherLastName(student)}</td>
+                <td>
+                  <button onClick={() => handleDeleteClick(student.id)}>
+                    <img
+                      src="icons8-delete.svg"
+                      alt="delete student"
+                      className="hover:cursor-pointer"
+                    />
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <dialog ref={confirmationRef} className="modal">
+        <div className="modal-box">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onClick={() => confirmationRef.current?.close()}
+          >
+            ✕
+          </button>
+          <p>Are you sure you want to delete this student?</p>
+          <div className="flex gap-4 mt-4">
             <button
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              className="btn btn-secondary"
               onClick={() => confirmationRef.current?.close()}
             >
-              ✕
+              Cancel
             </button>
-            <p>Are you sure you want to delete this student?</p>
-            <div className="flex gap-4 mt-4">
-              <button
-                className="btn btn-secondary"
-                onClick={() => confirmationRef.current?.close()}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-accent"
-                onClick={handleDeleteConfirmation}
-              >
-                Yes
-              </button>
-            </div>
+            <button
+              className="btn btn-accent"
+              onClick={handleDeleteConfirmation}
+            >
+              Yes
+            </button>
           </div>
-        </dialog>
-      </div>
+        </div>
+      </dialog>
     </div>
   );
 };

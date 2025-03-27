@@ -33,6 +33,11 @@ const Menu = ({ setMenuOpen }: MenuProps) => {
           Classes
         </Link>
       </li>
+      <li>
+        <Link to={"/reports"} onClick={handleMenuClick}>
+          Reports
+        </Link>
+      </li>
     </ul>
   );
 };

@@ -46,82 +46,82 @@ const Classes = () => {
   };
 
   return (
-    <div>
+    <div className="overflow-x-auto">
+      <h1 className="text-xl font-bold mb-4">Classes</h1>
       <Link to={"/classes/add"}>
-        <button className="btn-link">Add Class</button>
+        <button className="btn btn-outline btn-primary btn-sm mb-4">
+          Add Class
+        </button>
       </Link>
-      <div className="overflow-x-auto">
-        <h1 className="text-xl">Classes</h1>
-        <table className="table table-xs">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Class Name</th>
-              <th>Class Location</th>
-              <th>Class Start Time</th>
-              <th>Class End Time</th>
-              <th>Class Students</th>
-              <th>No of Students</th>
-              <th>Class Teacher</th>
-              <th>Class Accompanist</th>
-            </tr>
-          </thead>
-          <tbody>
-            {classData.map((laud_class: ClassRecord) => {
-              return (
-                <tr key={laud_class.id}>
-                  <td>{laud_class.id}</td>
-                  <td>
-                    <Link to={`/classes/${laud_class.id?.toString()}`}>
-                      {laud_class.class_name}
-                    </Link>
+      <table className="table table-xs">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Class Name</th>
+            <th>Class Location</th>
+            <th>Class Start Time</th>
+            <th>Class End Time</th>
+            <th>Class Students</th>
+            <th>No of Students</th>
+            <th>Class Teacher</th>
+            <th>Class Accompanist</th>
+          </tr>
+        </thead>
+        <tbody>
+          {classData.map((laud_class: ClassRecord) => {
+            return (
+              <tr key={laud_class.id}>
+                <td>{laud_class.id}</td>
+                <td>
+                  <Link to={`/classes/${laud_class.id?.toString()}`}>
+                    {laud_class.class_name}
+                  </Link>
+                </td>
+                <td>{laud_class.class_location}</td>
+                <td>{laud_class.class_start_time}</td>
+                <td>{laud_class.class_end_time}</td>
+                {laud_class.class_students ? (
+                  <td
+                    onClick={() => handleModalShow(laud_class.class_students)}
+                    className="hover:cursor-pointer"
+                  >
+                    Click to see students
                   </td>
-                  <td>{laud_class.class_location}</td>
-                  <td>{laud_class.class_start_time}</td>
-                  <td>{laud_class.class_end_time}</td>
-                  {laud_class.class_students ? (
-                    <td
-                      onClick={() => handleModalShow(laud_class.class_students)}
-                      className="hover:cursor-pointer"
-                    >
-                      Click to see students
-                    </td>
-                  ) : (
-                    <td> None assigned</td>
-                  )}
-                  <td>{laud_class.class_students?.length}</td>
-                  <td>
-                    {laud_class.class_teacher
-                      ? teacherName(laud_class.class_teacher)
-                      : "None assigned"}
-                  </td>
-                  <td>
-                    {laud_class.class_teacher
-                      ? teacherName(laud_class.class_accompanist)
-                      : "None assigned"}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <dialog ref={studentRef} className="modal">
-          <div className="modal-box">
-            <button
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={() => studentRef.current?.close()}
-            >
-              ✕
-            </button>
+                ) : (
+                  <td> None assigned</td>
+                )}
+                <td>{laud_class.class_students?.length}</td>
+                <td>
+                  {laud_class.class_teacher
+                    ? teacherName(laud_class.class_teacher)
+                    : "None assigned"}
+                </td>
+                <td>
+                  {laud_class.class_teacher
+                    ? teacherName(laud_class.class_accompanist)
+                    : "None assigned"}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <dialog ref={studentRef} className="modal">
+        <div className="modal-box">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onClick={() => studentRef.current?.close()}
+          >
+            ✕
+          </button>
 
-            {currentClassStudents?.map((record: StudentRecord) => (
-              <p key={record.id}>
-                {record.first_name} {record.last_name}
-              </p>
-            ))}
-          </div>
-        </dialog>
-      </div>
+          {currentClassStudents?.map((record: StudentRecord) => (
+            <p key={record.id}>
+              {record.first_name} {record.last_name}
+            </p>
+          ))}
+        </div>
+      </dialog>
     </div>
   );
 };
