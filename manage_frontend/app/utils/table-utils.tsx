@@ -114,9 +114,34 @@ export const generateFamilyTable = (
   return (
     <div className="overflow-x-auto mt-6 mr-16" id={tableId}>
       <div className="flex mb-4 text-lg justify-center">
-        <h2>Teacher Report</h2>
+        <h2>Family Report</h2>
       </div>
-      <table className="table table-xs border border-1 border-gray-800"></table>
+      <table className="table table-xs border border-1 border-gray-800">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Family Last Name</th>
+            <th>Parent 1 First Name</th>
+            <th>Parent 1 Last Name</th>
+            <th>Parent 2 First Name</th>
+            <th>Parent 2 Last Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {familyData.map((family: FamilyRecord) => {
+            return (
+              <tr key={family.id}>
+                <td>{family.id}</td>
+                <td>{family.family_last_name}</td>
+                <td>{family.parent1_first_name}</td>
+                <td>{family.parent1_last_name}</td>
+                <td>{family.parent2_first_name}</td>
+                <td>{family.parent2_last_name}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };

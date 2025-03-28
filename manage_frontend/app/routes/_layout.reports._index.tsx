@@ -1,6 +1,7 @@
 import { useLoaderData } from "@remix-run/react";
 import { getFamilies, getStudents, getTeachers } from "~/data/data";
 import {
+  generateFamilyTable,
   generateStudentTable,
   generateTeacherTable,
 } from "~/utils/table-utils";
@@ -17,7 +18,7 @@ export const loader = async () => {
 
 const Reports = () => {
   const { families, students, teachers } = useLoaderData<typeof loader>();
-  const [dataToDisplay, setDataToDisplay] = useState();
+  const [dataToDisplay, setDataToDisplay] = useState<React.ReactElement>();
   const handleStudentClick = () => {
     const generatedTable = generateStudentTable(
       students,
@@ -36,6 +37,11 @@ const Reports = () => {
     setDataToDisplay(generatedTeacherTable);
   };
 
+  const handleFamilyClick = () => {
+    const generatedFamilyTable = generateFamilyTable(families, "family-table");
+    setDataToDisplay(generatedFamilyTable);
+  };
+
   return (
     <div>
       <h1 className="text-xl font-bold">Reports</h1>
@@ -47,7 +53,10 @@ const Reports = () => {
         >
           Student Report
         </button>
-        <button className="btn btn-outline btn-primary btn-sm ">
+        <button
+          className="btn btn-outline btn-primary btn-sm"
+          onClick={handleFamilyClick}
+        >
           Families Report
         </button>
         <button
