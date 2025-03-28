@@ -179,6 +179,7 @@ const Register = () => {
   });
 
   const currentDate = new Date();
+
   const handleClick = () => {
     handleSaveClick(
       "register-table",
