@@ -21,6 +21,16 @@ export const generateStudentTable = (
       )?.teacher_last_name || "Not assigned";
     return name;
   };
+
+  const getAge = (birthDate: string, currentDate: string) => {
+    const dateOne: Date = new Date(birthDate);
+    const dateTwo: Date = new Date(currentDate);
+
+    const years = dateTwo.getFullYear() - dateOne.getFullYear();
+    return years;
+  };
+
+  const currentDate = new Date();
   return (
     <div className="overflow-x-auto mt-6 mr-16" id={tableId}>
       <div className="flex mb-4 text-lg justify-center">
@@ -33,6 +43,7 @@ export const generateStudentTable = (
             <th>First Name</th>
             <th>Last Name</th>
             <th>Birthdate</th>
+            <th>Age</th>
             <th>Family</th>
             <th>Teacher</th>
           </tr>
@@ -45,6 +56,7 @@ export const generateStudentTable = (
                 <td>{student.first_name}</td>
                 <td>{student.last_name}</td>
                 <td>{student.birthdate}</td>
+                <td>{getAge(student.birthdate, currentDate.toString())}</td>
                 <td>{getFamilyLastName(student)}</td>
                 <td>{getTeacherLastName(student)}</td>
               </tr>
