@@ -1,0 +1,26 @@
+import { Authenticator } from "remix-auth";
+import { FormStrategy } from "remix-auth-form";
+import { User } from "./models/user.server";
+
+const authenticator = new Authenticator<User | Error | null>();
+
+authenticator.use(
+  new FormStrategy(async ({ form }) => {
+    const email = form.get("email") as string;
+    const password = form.get("password") as string;
+
+    let user = null;
+
+    if (email === "testemail" && password === "password") {
+      user = {
+        name: email,
+        token: `${password}-${new Date().getTime()}`,
+      };
+
+      return await Promise.resolve({ ...user });
+    } else {
+      throw new Error("Bad credentials");
+    }
+  }),
+  "email-pass"
+);

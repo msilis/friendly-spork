@@ -11,11 +11,9 @@ export const sessionStorage = createCookieSessionStorage({
   },
 });
 
+export const { getSession, commitSession, destroySession } = sessionStorage;
+
 export type User = {
   name: string;
   token: string;
-};
-
-export const authenticateUser = async (username: string, password: string) => {
-  return;
 };
