@@ -1,9 +1,20 @@
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/node";
 
 type MenuProps = {
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
+export const loader: LoaderFunction = async ({ request }) => {
+  console.log("from the loader");
+  const cookieHeader = request.headers.get("Cookie");
+  console.log(cookieHeader);
+  return Response.json(cookieHeader);
+};
+
 const Menu = ({ setMenuOpen }: MenuProps) => {
+  const user = useLoaderData<typeof loader>();
+  console.log(user);
   const handleMenuClick = () => {
     setMenuOpen(false);
   };

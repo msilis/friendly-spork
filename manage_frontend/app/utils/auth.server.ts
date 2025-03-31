@@ -1,8 +1,9 @@
 import { Authenticator } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { User } from "./models/user.server";
+// import { redirect } from "@remix-run/node";
 
-const authenticator = new Authenticator<User | Error | null>();
+export const authenticator = new Authenticator<User | Error | null>();
 
 authenticator.use(
   new FormStrategy(async ({ form }) => {
@@ -11,15 +12,15 @@ authenticator.use(
 
     let user = null;
 
-    if (email === "testemail" && password === "password") {
+    if (email === "testemail@email.com" && password === "password") {
       user = {
         name: email,
         token: `${password}-${new Date().getTime()}`,
       };
 
-      return await Promise.resolve({ ...user });
+      return user;
     } else {
-      throw new Error("Bad credentials");
+      throw new Error("Invalid credentials");
     }
   }),
   "email-pass"
