@@ -2,7 +2,11 @@ import { useState } from "react";
 import Menu from "./Menu";
 import ButtonMenu from "./ButtonMenu";
 
-const Navigation = () => {
+type NavigationProps = {
+  showLogout: boolean;
+};
+
+const Navigation = ({ showLogout }: NavigationProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [buttonMenuOpen, setButtonMenuOpen] = useState(false);
 
@@ -65,7 +69,10 @@ const Navigation = () => {
         </button>
         {buttonMenuOpen ? (
           <div className="absolute top-full right-0 z-50 mt-1">
-            <ButtonMenu setButtonMenuOpen={setButtonMenuOpen} />
+            <ButtonMenu
+              setButtonMenuOpen={setButtonMenuOpen}
+              showLogout={showLogout}
+            />
           </div>
         ) : null}
       </div>

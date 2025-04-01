@@ -2,9 +2,10 @@ import { Link } from "@remix-run/react";
 
 type ButtonMenuProps = {
   setButtonMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  showLogout: boolean;
 };
 
-const ButtonMenu = ({ setButtonMenuOpen }: ButtonMenuProps) => {
+const ButtonMenu = ({ setButtonMenuOpen, showLogout }: ButtonMenuProps) => {
   const handleMenuClick = () => {
     setButtonMenuOpen(false);
   };
@@ -23,10 +24,12 @@ const ButtonMenu = ({ setButtonMenuOpen }: ButtonMenuProps) => {
       document.documentElement.setAttribute("data-theme", "dark");
       document.body.setAttribute("data-theme", "dark");
       sessionStorage.setItem("colour-theme", "dark");
+      handleMenuClick();
     } else {
       document.documentElement.setAttribute("data-theme", "light");
       document.body.setAttribute("data-theme", "light");
       sessionStorage.setItem("colour-theme", "light");
+      handleMenuClick();
     }
   };
 
@@ -36,7 +39,7 @@ const ButtonMenu = ({ setButtonMenuOpen }: ButtonMenuProps) => {
       onMouseLeave={handleMenuClick}
     >
       <li>
-        <Link to={"/settings"} onClick={handleMenuClick}>
+        <Link to={"/settings"} onClick={handleMenuClick} className="max-w-xs">
           Settings
         </Link>
       </li>
@@ -51,6 +54,11 @@ const ButtonMenu = ({ setButtonMenuOpen }: ButtonMenuProps) => {
           onChange={(event) => handleColourThemeChange(event)}
         />
         <p>Dark</p>
+      </li>
+      <li>
+        {showLogout && (
+          <button className="btn btn-error btn-outline max-w-xs">Logout</button>
+        )}
       </li>
     </ul>
   );
