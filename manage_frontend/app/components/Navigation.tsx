@@ -9,6 +9,7 @@ type NavigationProps = {
 const Navigation = ({ showLogout }: NavigationProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [buttonMenuOpen, setButtonMenuOpen] = useState(false);
+  const handleLogout = () => {};
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -72,6 +73,7 @@ const Navigation = ({ showLogout }: NavigationProps) => {
             <ButtonMenu
               setButtonMenuOpen={setButtonMenuOpen}
               showLogout={showLogout}
+              handleLogout={handleLogout}
             />
           </div>
         ) : null}

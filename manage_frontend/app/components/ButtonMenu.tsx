@@ -1,8 +1,10 @@
 import { Link } from "@remix-run/react";
+import LogoutButton from "~/routes/logout";
 
 type ButtonMenuProps = {
   setButtonMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   showLogout: boolean;
+  handleLogout: () => void;
 };
 
 const ButtonMenu = ({ setButtonMenuOpen, showLogout }: ButtonMenuProps) => {
@@ -55,11 +57,7 @@ const ButtonMenu = ({ setButtonMenuOpen, showLogout }: ButtonMenuProps) => {
         />
         <p>Dark</p>
       </li>
-      <li>
-        {showLogout && (
-          <button className="btn btn-error btn-outline max-w-xs">Logout</button>
-        )}
-      </li>
+      <li>{showLogout && <LogoutButton />}</li>
     </ul>
   );
 };
