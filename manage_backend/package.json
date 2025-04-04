@@ -32,6 +32,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "supertest": "^7.0.0"
   },
   "vitest": {
