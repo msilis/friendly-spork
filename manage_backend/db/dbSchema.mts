@@ -92,6 +92,6 @@ export const invoiceItemTable = sqliteTable("invoice_item_table", {
 
 export const userTable = sqliteTable("user_table", {
   user_id: int("user_id").primaryKey({ autoIncrement: true }),
-  username: text("username").notNull(),
+  email: text("email").notNull(),
   hashedPassword: text("hashedPassword").notNull(),
 });
