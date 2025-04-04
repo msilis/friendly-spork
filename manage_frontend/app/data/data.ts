@@ -11,11 +11,6 @@ import {
 const BACKEND_URL = "http://localhost:3000";
 
 export const getStudents = async () => {
-  console.log(
-    typeof window === "undefined",
-    "typeof window is undefined from get all students"
-  );
-
   const allStudents = await fetch(`${BACKEND_URL}/students`).then((response) =>
     response.json()
   );

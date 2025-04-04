@@ -4,3 +4,4 @@ node_modules
 .env.development
 manage_database.db
 *.sql
+seed-pass.ts
