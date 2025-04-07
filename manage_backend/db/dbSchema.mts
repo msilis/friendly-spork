@@ -1,4 +1,4 @@
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+const { int, sqliteTable, text } = require("drizzle-orm/sqlite-core");
 
 export const familyTable = sqliteTable("family_table", {
   id: int("id").primaryKey({ autoIncrement: true }),
