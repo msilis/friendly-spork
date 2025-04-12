@@ -1,8 +1,6 @@
 import { Authenticator } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { User } from "./models/user.server";
-// import { redirect } from "@remix-run/node";
-
 export const authenticator = new Authenticator<User | Error | null>();
 
 authenticator.use(

@@ -3,6 +3,8 @@ import { drizzle } from "drizzle-orm/libsql";
 import { and, between, desc, sql } from "drizzle-orm";
 import dotenv from "dotenv";
 import { eq } from "drizzle-orm";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import {
   studentTable,
   familyTable,
@@ -12,6 +14,7 @@ import {
   transactionTable,
   invoiceTable,
   invoiceItemTable,
+  userTable,
 } from "../db/dbSchema.mts";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
@@ -30,7 +33,42 @@ router.get("/", (req, res) => {
 
 //Authentication/Authorisation
 
-router.post("/login", (req, res) => {});
+router.post("/login", async (req: Request, res: Response) => {
+  console.log(req.body, "body of request");
+  const { email, password } = req.body;
+
+  console.log(email, password);
+  try {
+    const userFromDb = await db
+      .selectDistinct()
+      .from(userTable)
+      .where(eq(email, userTable.email));
+    if (!userFromDb) {
+      res.status(404).json({ message: "User not found" });
+      throw new Error("Failed at email stage");
+    }
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      userFromDb[0].hashedPassword,
+    );
+
+    if (isPasswordValid) {
+      const userPayload = {
+        userId: userFromDb[0].user_id,
+        username: userFromDb[0].email,
+      };
+      const authToken = jwt.sign(userPayload, process.env.JWT_SECRET!, {
+        expiresIn: "24h",
+      });
+      res.status(200).json({ token: authToken });
+    } else {
+      throw new Error("Failed at password stage");
+    }
+  } catch (error) {
+    console.error("There was an error loggin in: ", error);
+    res.status(500).json({ message: "There was an error loggin in." });
+  }
+});
 
 router.get("/logout", (req, res) => {});
 
