@@ -22,13 +22,10 @@ export const login = async (data: { email: string; password: string }) => {
 
     const loginData = await performLogin.json();
     if (performLogin.ok) {
-      console.log("Login ok");
-      return { success: true, data: loginData };
+      return loginData;
     } else {
-      console.log("Login failed");
-      return { success: false, message: "Login failed" };
+      return null;
     }
-    // return performLogin;
   } catch (error) {
     console.error("There was an error logging in: ", error);
   }
