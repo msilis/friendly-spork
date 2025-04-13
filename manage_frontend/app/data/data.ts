@@ -10,6 +10,30 @@ import {
 
 const BACKEND_URL = "http://localhost:3000";
 
+export const login = async (data: { email: string; password: string }) => {
+  try {
+    const performLogin = await fetch(`${BACKEND_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const loginData = await performLogin.json();
+    if (performLogin.ok) {
+      console.log("Login ok");
+      return { success: true, data: loginData };
+    } else {
+      console.log("Login failed");
+      return { success: false, message: "Login failed" };
+    }
+    // return performLogin;
+  } catch (error) {
+    console.error("There was an error logging in: ", error);
+  }
+};
+
 export const getStudents = async () => {
   const allStudents = await fetch(`${BACKEND_URL}/students`).then((response) =>
     response.json()

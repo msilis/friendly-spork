@@ -34,19 +34,18 @@ router.get("/", (req, res) => {
 //Authentication/Authorisation
 
 router.post("/login", async (req: Request, res: Response) => {
-  console.log(req.body, "body of request");
   const { email, password } = req.body;
-
-  console.log(email, password);
+  console.log(req.body, "body");
   try {
     const userFromDb = await db
       .selectDistinct()
       .from(userTable)
       .where(eq(email, userTable.email));
-    if (!userFromDb) {
-      res.status(404).json({ message: "User not found" });
+    if (!userFromDb.length) {
+      // res.status(404).json({ message: "User not found" });
       throw new Error("Failed at email stage");
     }
+    console.log(userFromDb, "userFromDB");
     const isPasswordValid = await bcrypt.compare(
       password,
       userFromDb[0].hashedPassword,

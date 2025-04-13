@@ -1,6 +1,7 @@
 import { Authenticator } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { User } from "./models/user.server";
+import { login } from "~/data/data";
 export const authenticator = new Authenticator<User | Error | null>();
 
 authenticator.use(
@@ -8,15 +9,9 @@ authenticator.use(
     const email = form.get("email") as string;
     const password = form.get("password") as string;
 
-    let user = null;
-
-    if (email === "testemail@email.com" && password === "password") {
-      user = {
-        name: email,
-        token: `${password}-${new Date().getTime()}`,
-      };
-
-      return user;
+    const userLogin = await login({ email, password });
+    if (userLogin?.success) {
+      return userLogin;
     } else {
       throw new Error("Invalid credentials");
     }

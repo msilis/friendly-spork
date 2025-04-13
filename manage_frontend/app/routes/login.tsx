@@ -6,6 +6,7 @@ import { authenticator } from "~/utils/auth.server";
 export const action: ActionFunction = async ({ request }) => {
   try {
     const user = await authenticator.authenticate("email-pass", request);
+    console.log(user, "user");
     if (user) {
       const session = await sessionStorage.getSession(
         request.headers.get("Cookie")
@@ -20,6 +21,7 @@ export const action: ActionFunction = async ({ request }) => {
     console.error("There was an error loggin in, ", error);
     return redirect("/login?=login_error");
   }
+  return null;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
