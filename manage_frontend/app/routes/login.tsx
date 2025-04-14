@@ -18,6 +18,7 @@ export const action: ActionFunction = async ({ request }) => {
       });
     }
   } catch (error) {
+    console.log(request, "request");
     console.error("There was an error loggin in, ", error);
     return redirect("/login?=login_error");
   }
