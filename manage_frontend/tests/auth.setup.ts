@@ -9,7 +9,8 @@ const authFile = path.join(__dirname, "../playwright/.auth/user.json");
 setup("authenticate", async ({ page }) => {
   const testEmail = process.env.PLAYWRIGHT_TEST_EMAIL;
   const testPassword = process.env.PLAYWRIGHT_TEST_PASSWORD;
-
+  console.log(testEmail, "testEmail");
+  console.log(testPassword, "testPassword");
   if (!testEmail || !testPassword) {
     console.warn("Missing test email or password");
     return;
