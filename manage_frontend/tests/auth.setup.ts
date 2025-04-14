@@ -16,8 +16,8 @@ setup("authenticate", async ({ page }) => {
     return;
   }
   await page.goto("/login");
-  await page.getByTestId("email-input").fill(testEmail);
-  await page.getByTestId("password-input").fill(testPassword);
+  await page.getByTestId("email-input").fill("testemail@email.com");
+  await page.getByTestId("password-input").fill("testPassword123");
   await page.getByRole("button", { name: "Login" }).click();
 
   await page.waitForURL("/dashboard");
