@@ -39,7 +39,7 @@ jobs:
         working-directory: manage_frontend
 
       - name: Run Playwright tests
-        run: yarn run test
+        run: yarn run ci-test
         working-directory: manage_frontend
         env:
           MANAGE_BACKEND: ${{secrets.MANAGE_BACKEND}}
