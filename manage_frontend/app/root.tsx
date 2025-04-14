@@ -26,7 +26,11 @@ export const links: LinksFunction = () => [
 
 export const loader = async () => {
   return Response.json({
-    ENV: { MANAGE_BACKEND: process.env.MANAGE_BACKEND },
+    ENV: {
+      MANAGE_BACKEND: process.env.MANAGE_BACKEND,
+      PLAYWRIGHT_TEST_EMAIL: process.env.PLAYWRIGHT_TEST_EMAIL,
+      PLAYWRIGHT_TEST_PASSWORD: process.env.PLAYWRIGHT_TEST_PASSWORD,
+    },
   });
 };
 export function Layout({ children }: { children: React.ReactNode }) {
