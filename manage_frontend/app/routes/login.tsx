@@ -41,7 +41,12 @@ const Login = () => {
         <label htmlFor="email" className="mt-6">
           Email
         </label>
-        <input name="email" className="input input-primary" required />
+        <input
+          name="email"
+          className="input input-primary"
+          required
+          data-testid="email-input"
+        />
         <label htmlFor="password" className="mt-5">
           Password
         </label>
@@ -49,6 +54,7 @@ const Login = () => {
           className="input input-primary"
           type="password"
           name="password"
+          data-testid="password-input"
           required
         />
         <button className="btn btn-primary mt-4">Login</button>

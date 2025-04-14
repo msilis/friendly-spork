@@ -11,7 +11,7 @@
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "dotenv -e .env.production remix-serve ./build/server/index.js",
     "typecheck": "tsc",
-    "test": "yarn playwright test"
+    "test": "dotenv -e .env yarn playwright test"
   },
   "dependencies": {
     "@pdfme/common": "^5.3.1",
