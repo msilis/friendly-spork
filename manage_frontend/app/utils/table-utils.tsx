@@ -1,4 +1,9 @@
-import { StudentRecord, FamilyRecord, TeacherRecord } from "~/types/types";
+import {
+  StudentRecord,
+  FamilyRecord,
+  TeacherRecord,
+  ClassRecord,
+} from "~/types/types";
 
 export const generateStudentTable = (
   studentData: StudentRecord[],
@@ -142,6 +147,21 @@ export const generateFamilyTable = (
           })}
         </tbody>
       </table>
+    </div>
+  );
+};
+
+// TODO - this is still WIP
+export const generateClassTable = (
+  classData: ClassRecord,
+  teacherData: TeacherRecord,
+  tableId: string
+) => {
+  return (
+    <div className="overflow-x-auto mt-6 mr-16" id={tableId}>
+      <div className="flex mb-4 text-lg justify-center">
+        <h2>Class Report</h2>
+      </div>
     </div>
   );
 };

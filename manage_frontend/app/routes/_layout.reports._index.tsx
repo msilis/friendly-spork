@@ -1,25 +1,28 @@
 import { useLoaderData, useSearchParams } from "@remix-run/react";
-import { getFamilies, getStudents, getTeachers } from "~/data/data";
+import { getClasses, getFamilies, getStudents, getTeachers } from "~/data/data";
 import {
   generateFamilyTable,
   generateStudentTable,
   generateTeacherTable,
+  generateClassTable,
 } from "~/utils/table-utils";
 import { useState } from "react";
 import { handleSaveClick } from "~/utils/pdf-utils";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
-  const [families, students, teachers] = await Promise.all([
+  const [families, students, teachers, classes] = await Promise.all([
     getFamilies(),
     getStudents(),
     getTeachers(),
+    getClasses(),
   ]);
-  return Response.json({ families, students, teachers });
+  return Response.json({ families, students, teachers, classes });
 };
 
 const Reports = () => {
-  const { families, students, teachers } = useLoaderData<typeof loader>();
+  const { families, students, teachers, classes } =
+    useLoaderData<typeof loader>();
   const [dataToDisplay, setDataToDisplay] = useState<React.ReactElement>();
   const [searchParams, setSearchParams] = useSearchParams();
   const params = new URLSearchParams();
@@ -50,6 +53,17 @@ const Reports = () => {
     const generatedFamilyTable = generateFamilyTable(families, "family-table");
     setDataToDisplay(generatedFamilyTable);
     params.set("table", "family-table");
+    setSearchParams(params, { preventScrollReset: true });
+  };
+
+  const handleClassClick = () => {
+    const generatedClassTable = generateClassTable(
+      classes,
+      teachers,
+      "class-table"
+    );
+    setDataToDisplay(generatedClassTable);
+    params.set("table", "class-table");
     setSearchParams(params, { preventScrollReset: true });
   };
 
@@ -90,6 +104,12 @@ const Reports = () => {
           onClick={handleTeacherClick}
         >
           Teacher Report
+        </button>
+        <button
+          className="btn btn-outline btn-primary btn-sm"
+          onClick={handleClassClick}
+        >
+          Class Report
         </button>
         <button
           className="btn btn-outline btn-secondary btn-sm"
