@@ -10,11 +10,12 @@ authenticator.use(
     const password = form.get("password") as string;
 
     const userLogin = await login({ email, password });
-    console.log(userLogin, "userLogin");
     if (userLogin?.token) {
       return userLogin;
     } else {
-      throw new Error("Invalid credentials");
+      throw new Error(
+        `Invalid credentials: ${email} - email, ${password} - password`
+      );
     }
   }),
   "email-pass"

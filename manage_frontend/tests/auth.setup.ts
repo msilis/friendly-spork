@@ -10,13 +10,6 @@ setup("authenticate", async ({ page }) => {
   const testEmail = process.env.PLAYWRIGHT_TEST_EMAIL;
   const testPassword = process.env.PLAYWRIGHT_TEST_PASSWORD;
 
-  console.log(testEmail, "testEmail");
-  console.log(testPassword, "testPassword");
-
-  if (testEmail && testPassword) {
-    console.log("Test email and password present");
-  }
-
   if (!testEmail || !testPassword) {
     console.warn("Missing test email or password");
     return;

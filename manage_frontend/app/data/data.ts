@@ -22,6 +22,7 @@ export const login = async (data: { email: string; password: string }) => {
 
     const loginData = await performLogin.json();
     if (performLogin.ok) {
+      console.log(`Logged in with the following: ${data}`);
       return loginData;
     } else {
       return null;
