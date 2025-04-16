@@ -27,7 +27,10 @@ export const login = async (data: { email: string; password: string }) => {
       return null;
     }
   } catch (error) {
-    console.error("There was an error logging in: ", error);
+    console.error(
+      `There was an error logging in with the following information: ${data}`,
+      error
+    );
   }
 };
 
