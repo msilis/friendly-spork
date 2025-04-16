@@ -20,7 +20,7 @@ jobs:
 
       - run: yarn install
         working-directory: manage_backend
-      - run: yarn run start:ci &
+      - run: yarn run start:ci > backend.log 2>&1 &
         working-directory: manage_backend
         env:
           DB_FILE_NAME: file:test_db.db
@@ -51,3 +51,7 @@ jobs:
           name: playwright-report
           path: manage_frontend/playwright-report/
           retention-days: 30
+
+      - name: Output backend logs if there is a failure
+        if: failure()
+        run: cat manage_backend/backend.log
