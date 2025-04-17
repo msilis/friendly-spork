@@ -181,55 +181,64 @@ export const generateClassTable = (
 
   const currentDate = new Date();
 
-  return classData?.map((classItem: ClassRecord) => {
-    return (
-      <div
-        className="overflow-x-auto mt-6 mr-16"
-        id={tableId}
-        key={`${classItem.id}`}
-      >
-        <div className="flex mb-4 text-lg justify-center flex-col">
-          <h2>{`${classItem.class_name} - Report`}</h2>
-          <table className="table table-xs border border-1 border-gray-800">
-            <thead>
-              <tr className="border border-1 border-gray-800 bg-gray-300">
-                <th className="border border-1 border-gray-800">First Name</th>
-                <th className="border border-1 border-gray-800">Last Name</th>
-                <th className="border border-1 border-gray-800">Age</th>
-                <th className="border border-1 border-gray-800">Teacher</th>
-              </tr>
-            </thead>
-            <tbody>
-              {classItem?.class_students
-                .map((classStudent) => findStudent(Number(classStudent)))
-                .filter((student) => student !== undefined)
-                .sort((a, b) => a.last_name.localeCompare(b.last_name))
-                .map((student: StudentRecord) => {
-                  return (
-                    <tr
-                      key={student.id}
-                      className="text-center border border-1 border-gray-800"
-                    >
-                      <td className="border border-1 border-gray-800 bg-gray-100">
-                        {student?.first_name || ""}
-                      </td>
-                      <td className="border border-1 border-gray-800">
-                        {student?.last_name || ""}
-                      </td>
-                      <td className="border border-1 border-gray-800">
-                        {getAge(student?.birthdate, currentDate.toString())}
-                      </td>
-                      <td className="border border-1 border-gray-800">
-                        {findTeacher(student?.teacher_id)?.teacher_last_name ||
-                          ""}
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  });
+  return (
+    <div id={tableId}>
+      <h2 className="text-xl font-bold">Class Reports</h2>
+      {classData?.map((classItem: ClassRecord) => {
+        return (
+          <div
+            className="overflow-x-auto mt-6 mr-16"
+            id={tableId}
+            key={`${classItem.id}`}
+          >
+            <div className="flex mb-4 text-lg justify-center flex-col">
+              <h2>{`${classItem.class_name} - Report`}</h2>
+              <table className="table table-xs border border-1 border-gray-800">
+                <thead>
+                  <tr className="border border-1 border-gray-800 bg-gray-300">
+                    <th className="border border-1 border-gray-800">
+                      First Name
+                    </th>
+                    <th className="border border-1 border-gray-800">
+                      Last Name
+                    </th>
+                    <th className="border border-1 border-gray-800">Age</th>
+                    <th className="border border-1 border-gray-800">Teacher</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {classItem?.class_students
+                    .map((classStudent) => findStudent(Number(classStudent)))
+                    .filter((student) => student !== undefined)
+                    .sort((a, b) => a.last_name.localeCompare(b.last_name))
+                    .map((student: StudentRecord) => {
+                      return (
+                        <tr
+                          key={student.id}
+                          className=" border border-1 border-gray-800"
+                        >
+                          <td className="border text-left border-1 border-gray-800 bg-gray-100">
+                            {student?.first_name || ""}
+                          </td>
+                          <td className="border text-left border-1 border-gray-800">
+                            {student?.last_name || ""}
+                          </td>
+                          <td className="border text-left border-1 border-gray-800">
+                            {getAge(student?.birthdate, currentDate.toString())}
+                          </td>
+                          <td className="border text-left border-1 border-gray-800">
+                            {findTeacher(student?.teacher_id)
+                              ?.teacher_last_name || ""}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 };
