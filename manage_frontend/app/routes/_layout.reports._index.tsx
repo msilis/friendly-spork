@@ -60,6 +60,7 @@ const Reports = () => {
     const generatedClassTable = generateClassTable(
       classes,
       teachers,
+      students,
       "class-table"
     );
     setDataToDisplay(generatedClassTable);
