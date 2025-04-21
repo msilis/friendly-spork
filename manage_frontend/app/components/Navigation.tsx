@@ -26,6 +26,7 @@ const Navigation = ({ showLogout }: NavigationProps) => {
           className="btn btn-square btn-ghost"
           onClick={toggleMenu}
           data-testid="main-menu"
+          aria-label="Main menu"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +54,11 @@ const Navigation = ({ showLogout }: NavigationProps) => {
         </a>
       </div>
       <div className="flex-none">
-        <button className="btn btn-square btn-ghost" onClick={toggleButtonMenu}>
+        <button
+          className="btn btn-square btn-ghost"
+          onClick={toggleButtonMenu}
+          aria-label="Secondary menu"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

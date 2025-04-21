@@ -45,7 +45,7 @@ router.post("/login", async (req: Request, res: Response) => {
       // res.status(404).json({ message: "User not found" });
       throw new Error("Failed at email stage");
     }
-    console.log(userFromDb, "userFromDB");
+
     const isPasswordValid = await bcrypt.compare(
       password,
       userFromDb[0].hashedPassword,
