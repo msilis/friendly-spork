@@ -24,13 +24,14 @@ export const login = async (data: { email: string; password: string }) => {
     if (performLogin.ok) {
       return loginData;
     } else {
-      return null;
+      throw new Error(loginData?.message || "Login failed");
     }
   } catch (error) {
     console.error(
       `There was an error logging in with the following information: ${data}`,
       error
     );
+    throw error;
   }
 };
 

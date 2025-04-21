@@ -42,8 +42,7 @@ router.post("/login", async (req: Request, res: Response) => {
       .from(userTable)
       .where(eq(email, userTable.email));
     if (!userFromDb.length) {
-      // res.status(404).json({ message: "User not found" });
-      throw new Error("Failed at email stage");
+      throw new Error("Login failed");
     }
 
     const isPasswordValid = await bcrypt.compare(
