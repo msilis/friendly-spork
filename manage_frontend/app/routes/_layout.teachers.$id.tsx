@@ -46,6 +46,7 @@ const Teacher = () => {
     JSON.stringify(formState) !== JSON.stringify(teacherData) ? true : false;
 
   const handleSave = () => {
+    console.log(formState, "formState");
     let teacherId = formState.id;
     if (formState.id) {
       teacherId = Number(formState.id);
@@ -90,12 +91,14 @@ const Teacher = () => {
     if (name === "id" || name === "teacher_mobile_phone") {
       newValue = Number(value);
     }
-    if (event.target.checked) {
-      newValue = 1;
+    if (name === "is_teacher_accompanist") {
+      if (event.target.checked) {
+        newValue = 1;
+      } else {
+        newValue = 0;
+      }
     }
-    if (!event.target.checked) {
-      newValue = 0;
-    }
+
     setFormState({ ...formState, [name]: newValue });
   };
 
