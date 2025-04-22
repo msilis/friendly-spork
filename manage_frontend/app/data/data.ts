@@ -210,6 +210,23 @@ export const updateTeacher = async (
   }
 };
 
+export const deleteTeacher = async (teacherId: number | undefined) => {
+  if (teacherId) {
+    const deleteTeacher = await fetch(
+      `${BACKEND_URL}/teachers/${teacherId}/delete`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return deleteTeacher;
+  } else {
+    console.error("Nothing to delete, no id provided");
+  }
+};
+
 export const getClasses = async () => {
   const allClasses = await fetch(`${BACKEND_URL}/classes`).then((response) =>
     response.json()
