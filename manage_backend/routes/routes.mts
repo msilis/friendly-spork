@@ -563,9 +563,22 @@ router.post("/classes/getstudent/:studentId", async (req, res) => {
   }
 });
 
-router.delete("/classes/:classId/delete", (req, res) => {
+router.delete("/classes/:classId/delete", async (req, res) => {
   const classId = req.params.classId;
-  res.status(200).json({ message: "Class deleted successfully!" });
+  try {
+    const classExists = await db
+      .select()
+      .from(classesTable)
+      .where(eq(classesTable.id, Number(classId)));
+    if (classExists.length === 0) {
+      res.status(500).json({ message: "Class record not found" });
+    } else {
+      await db.delete(classesTable).where(eq(classesTable.id, Number(classId)));
+      res.status(200).json({ message: "Class deleted successfully!" });
+    }
+  } catch (error) {
+    console.error("There was an error deleting the record: ", error);
+  }
 });
 
 router.get("/transactions/:familyId", async (req, res) => {
