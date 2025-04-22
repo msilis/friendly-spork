@@ -1,7 +1,8 @@
-import { Link, useLoaderData } from "@remix-run/react";
-import { getClasses, getTeachers, getStudents } from "~/data/data";
+import { Link, useLoaderData, useRevalidator } from "@remix-run/react";
+import { getClasses, getTeachers, getStudents, deleteClass } from "~/data/data";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useRef, useState } from "react";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
   const [classData, teacherData, studentData] = await Promise.all([
@@ -20,7 +21,9 @@ const Classes = () => {
   const [currentClassStudents, setCurrentClassStudents] = useState<
     StudentRecord[]
   >([]);
-
+  const revalidate = useRevalidator();
+  const confirmationRef = useRef<HTMLDialogElement>(null);
+  const toast = useToast();
   const handleModalShow = (currentStudents: number[]) => {
     setCurrentClassStudents([]);
     const studentsWithNames = currentStudents.map((currentStudent) => {
@@ -44,6 +47,19 @@ const Classes = () => {
 
     return name;
   };
+  let classIdToDelete: number | undefined;
+  const handleDeleteClick = (id: number | undefined) => {
+    confirmationRef.current?.showModal();
+    classIdToDelete = id;
+  };
+
+  const handleDeleteConfirmation = () => {
+    deleteClass(classIdToDelete);
+    revalidate.revalidate();
+    classIdToDelete = undefined;
+    confirmationRef.current?.close();
+    toast.success("Class deleted successfully");
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -65,6 +81,7 @@ const Classes = () => {
             <th>No of Students</th>
             <th>Class Teacher</th>
             <th>Class Accompanist</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -101,6 +118,15 @@ const Classes = () => {
                     ? teacherName(laud_class.class_accompanist)
                     : "None assigned"}
                 </td>
+                <td>
+                  <button onClick={() => handleDeleteClick(laud_class.id)}>
+                    <img
+                      src="icons8-delete.svg"
+                      alt="delete student"
+                      className="hover:cursor-pointer"
+                    />
+                  </button>
+                </td>
               </tr>
             );
           })}
@@ -120,6 +146,31 @@ const Classes = () => {
               {record.first_name} {record.last_name}
             </p>
           ))}
+        </div>
+      </dialog>
+      <dialog ref={confirmationRef} className="modal">
+        <div className="modal-box">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onClick={() => confirmationRef.current?.close()}
+          >
+            ✕
+          </button>
+          <p>Are you sure you want to delete this class?</p>
+          <div className="flex gap-4 mt-4">
+            <button
+              className="btn btn-secondary"
+              onClick={() => confirmationRef.current?.close()}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-accent"
+              onClick={handleDeleteConfirmation}
+            >
+              Yes
+            </button>
+          </div>
         </div>
       </dialog>
     </div>

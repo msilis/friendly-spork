@@ -291,6 +291,23 @@ export const findStudentInClass = async (params: string | undefined) => {
   }
 };
 
+export const deleteClass = async (classId: number | undefined) => {
+  if (classId) {
+    const deleteClass = await fetch(
+      `${BACKEND_URL}/classes/${classId}/delete`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return deleteClass;
+  } else {
+    console.error("Nothing to delete, no id provided");
+  }
+};
+
 export const getFamilyTransactions = async (params: string | undefined) => {
   try {
     const findTransactions = await fetch(
