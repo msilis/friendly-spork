@@ -272,7 +272,7 @@ const Family = () => {
               className="input input-bordered w-full max-w-xs"
             />
             <button
-              className={showSecondParent ? "hidden" : "button mt-4"}
+              className={shouldShowSecondParent ? "hidden" : "button mt-4"}
               onClick={() => setShowSecondParent(true)}
             >
               Add Second Parent?
