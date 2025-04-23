@@ -80,7 +80,10 @@ const Students = () => {
               <tr key={student.id}>
                 <td>{student.id}</td>
                 <td>
-                  <Link to={`/students/${student.id?.toString()}`}>
+                  <Link
+                    to={`/students/${student.id?.toString()}`}
+                    className="hover:underline hover:text-blue-500"
+                  >
                     {student.first_name}
                   </Link>
                 </td>

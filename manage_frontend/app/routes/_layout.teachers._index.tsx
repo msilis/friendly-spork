@@ -52,7 +52,10 @@ const Teachers = () => {
               <tr key={teacher.id}>
                 <td>{teacher.id}</td>
                 <td>
-                  <Link to={`/teachers/${teacher.id?.toString()}`}>
+                  <Link
+                    to={`/teachers/${teacher.id?.toString()}`}
+                    className="hover:underline hover:text-blue-500"
+                  >
                     {teacher.teacher_first_name}
                   </Link>
                 </td>

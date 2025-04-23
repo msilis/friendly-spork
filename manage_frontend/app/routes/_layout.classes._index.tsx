@@ -90,7 +90,10 @@ const Classes = () => {
               <tr key={laud_class.id}>
                 <td>{laud_class.id}</td>
                 <td>
-                  <Link to={`/classes/${laud_class.id?.toString()}`}>
+                  <Link
+                    to={`/classes/${laud_class.id?.toString()}`}
+                    className="hover:underline hover:text-blue-500"
+                  >
                     {laud_class.class_name}
                   </Link>
                 </td>
@@ -100,7 +103,7 @@ const Classes = () => {
                 {laud_class.class_students ? (
                   <td
                     onClick={() => handleModalShow(laud_class.class_students)}
-                    className="hover:cursor-pointer"
+                    className="hover:cursor-pointer hover:underline hover:text-blue-500"
                   >
                     Click to see students
                   </td>
