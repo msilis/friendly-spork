@@ -153,6 +153,23 @@ export const updateFamily = async (
   }
 };
 
+export const deleteFamily = async (familyId: number | undefined) => {
+  if (familyId) {
+    const deleteFamily = await fetch(
+      `${BACKEND_URL}/families/${familyId}/delete`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ).then((response) => response.json());
+    return deleteFamily;
+  } else {
+    console.error("Nothing to delete, no id provided");
+  }
+};
+
 export const getTeachers = async () => {
   const allTeachers = await fetch(`${BACKEND_URL}/teachers`).then((response) =>
     response.json()

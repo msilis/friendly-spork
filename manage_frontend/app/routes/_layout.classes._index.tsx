@@ -119,7 +119,10 @@ const Classes = () => {
                     : "None assigned"}
                 </td>
                 <td>
-                  <button onClick={() => handleDeleteClick(laud_class.id)}>
+                  <button
+                    onClick={() => handleDeleteClick(laud_class.id)}
+                    title="Delete"
+                  >
                     <img
                       src="icons8-delete.svg"
                       alt="delete student"

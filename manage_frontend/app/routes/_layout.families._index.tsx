@@ -1,6 +1,8 @@
-import { useLoaderData, Link } from "@remix-run/react";
-import { getFamilies } from "~/data/data";
+import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
+import { deleteFamily, getFamilies } from "~/data/data";
 import { FamilyRecord } from "~/types/types";
+import { useRef } from "react";
+import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
   return await getFamilies();
@@ -8,6 +10,24 @@ export const loader = async () => {
 
 const Families = () => {
   const families = useLoaderData<typeof loader>();
+  const confirmationRef = useRef<HTMLDialogElement>(null);
+  const toast = useToast();
+  const revalidate = useRevalidator();
+  let familyIdToDelete: number | undefined;
+
+  const handleDeleteClick = (id: number | undefined) => {
+    confirmationRef.current?.showModal();
+    familyIdToDelete = id;
+  };
+
+  const handleDeleteConfirmation = () => {
+    deleteFamily(familyIdToDelete);
+    revalidate.revalidate();
+    familyIdToDelete = undefined;
+    confirmationRef.current?.close();
+    toast.success("Family deleted successfully");
+  };
+
   return (
     <div className={"overflow-x-auto"}>
       <h1 className="text-xl font-bold mb-4">Families</h1>
@@ -25,6 +45,7 @@ const Families = () => {
             <th>Parent 1 Last Name</th>
             <th>Parent 2 First Name</th>
             <th>Parent 2 Last Name</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -45,11 +66,48 @@ const Families = () => {
                 <td>{family.parent1_last_name}</td>
                 <td>{family.parent2_first_name}</td>
                 <td>{family.parent2_last_name}</td>
+                <td>
+                  <button
+                    onClick={() => handleDeleteClick(family.id)}
+                    title="Delete"
+                  >
+                    <img
+                      src="icons8-delete.svg"
+                      alt="delete student"
+                      className="hover:cursor-pointer"
+                    />
+                  </button>
+                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+      <dialog ref={confirmationRef} className="modal">
+        <div className="modal-box">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onClick={() => confirmationRef.current?.close()}
+          >
+            ✕
+          </button>
+          <p>Are you sure you want to delete this teacher?</p>
+          <div className="flex gap-4 mt-4">
+            <button
+              className="btn btn-secondary"
+              onClick={() => confirmationRef.current?.close()}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-accent"
+              onClick={handleDeleteConfirmation}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };

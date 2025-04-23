@@ -61,7 +61,10 @@ const Teachers = () => {
                 <td>{teacher.teacher_mobile_phone}</td>
                 <td>{teacher.teacher_address}</td>
                 <td>
-                  <button onClick={() => handleDeleteClick(teacher.id)}>
+                  <button
+                    onClick={() => handleDeleteClick(teacher.id)}
+                    title="Delete"
+                  >
                     <img
                       src="icons8-delete.svg"
                       alt="delete student"
