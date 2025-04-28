@@ -5,7 +5,7 @@ import {
   getStudents,
   getTeachers,
 } from "~/data/data";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
 
@@ -20,6 +20,7 @@ export const loader = async () => {
 
 const Students = () => {
   const { students, families, teachers } = useLoaderData<typeof loader>();
+  const [studentOrder, setStudentOrder] = useState<StudentRecord[]>(students);
   const getFamilyLastName = (student: StudentRecord) => {
     const name =
       families.find((family: FamilyRecord) => family.id === student.family_id)
@@ -46,6 +47,56 @@ const Students = () => {
     studentIdToDelete = id;
   };
 
+  const handleStudentReorder = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const currentValue = event.target?.value;
+    switch (currentValue) {
+      case "lastNameDescending": {
+        const sortedNames = [...students].sort(
+          (a: StudentRecord, b: StudentRecord) => {
+            return b.last_name.localeCompare(a.last_name);
+          }
+        );
+        setStudentOrder(sortedNames);
+        break;
+      }
+      case "lastNameAscending": {
+        const sortedNames = [...students].sort(
+          (a: StudentRecord, b: StudentRecord) => {
+            return a.last_name.localeCompare(b.last_name);
+          }
+        );
+        setStudentOrder(sortedNames);
+        break;
+      }
+      case "familyDescending": {
+        const sortedFamilies = [...students].sort(
+          (a: StudentRecord, b: StudentRecord) => {
+            const lastNameA = getFamilyLastName(a);
+            const lastNameB = getFamilyLastName(b);
+            return lastNameB.localeCompare(lastNameA);
+          }
+        );
+        setStudentOrder(sortedFamilies);
+        break;
+      }
+      case "familyAscending": {
+        const sortedFamilies = [...students].sort(
+          (a: StudentRecord, b: StudentRecord) => {
+            const lastNameA = getFamilyLastName(a);
+            const lastNameB = getFamilyLastName(b);
+            return lastNameA.localeCompare(lastNameB);
+          }
+        );
+        setStudentOrder(sortedFamilies);
+        break;
+      }
+      default:
+        setStudentOrder(students);
+    }
+  };
+
   const handleDeleteConfirmation = () => {
     deleteStudent(studentIdToDelete);
     revalidate.revalidate();
@@ -62,6 +113,20 @@ const Students = () => {
           Add Student
         </button>
       </Link>
+      <div className="mt-2 mb-2">
+        <label htmlFor="student-order-select">Order:</label>
+        <select
+          className="select select-sm ml-2"
+          defaultValue="default"
+          onChange={(event) => handleStudentReorder(event)}
+        >
+          <option value="default">Default</option>
+          <option value="lastNameDescending">Last Name &#x2193;</option>
+          <option value="lastNameAscending">Last Name &#x2191;</option>
+          <option value="familyDescending">Family &#x2193;</option>
+          <option value="familyAscending">Family &#x2191;</option>
+        </select>
+      </div>
       <table className="table table-xs">
         <thead>
           <tr>
@@ -75,7 +140,7 @@ const Students = () => {
           </tr>
         </thead>
         <tbody>
-          {students?.map((student: StudentRecord) => {
+          {studentOrder?.map((student: StudentRecord) => {
             return (
               <tr key={student.id}>
                 <td>{student.id}</td>
