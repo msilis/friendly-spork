@@ -55,6 +55,7 @@ const Teachers = () => {
                   <Link
                     to={`/teachers/${teacher.id?.toString()}`}
                     className="hover:underline hover:text-blue-500"
+                    title="Click to see teacher info"
                   >
                     {teacher.teacher_first_name}
                   </Link>

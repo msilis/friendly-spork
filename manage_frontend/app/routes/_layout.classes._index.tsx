@@ -93,6 +93,7 @@ const Classes = () => {
                   <Link
                     to={`/classes/${laud_class.id?.toString()}`}
                     className="hover:underline hover:text-blue-500"
+                    title="Click to see class info"
                   >
                     {laud_class.class_name}
                   </Link>

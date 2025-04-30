@@ -94,6 +94,8 @@ const Families = () => {
                 <td>
                   <Link
                     to={`/families/${family.family_last_name.toLowerCase()}`}
+                    className="hover:underline hover:text-blue-500"
+                    title="Click to see family info"
                   >
                     {family.family_last_name}
                   </Link>
