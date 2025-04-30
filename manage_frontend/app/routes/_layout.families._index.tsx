@@ -1,7 +1,7 @@
 import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
 import { deleteFamily, getFamilies } from "~/data/data";
 import { FamilyRecord } from "~/types/types";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
@@ -14,7 +14,7 @@ const Families = () => {
   const toast = useToast();
   const revalidate = useRevalidator();
   let familyIdToDelete: number | undefined;
-
+  const [familyOrder, setFamilyOrder] = useState<FamilyRecord[]>(families);
   const handleDeleteClick = (id: number | undefined) => {
     confirmationRef.current?.showModal();
     familyIdToDelete = id;
@@ -27,6 +27,31 @@ const Families = () => {
     confirmationRef.current?.close();
     toast.success("Family deleted successfully");
   };
+  const handleFamilyReorder = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const currentValue = event.target?.value;
+    switch (currentValue) {
+      case "lastNameDescending": {
+        const sortedNames = [...families].sort(
+          (a: FamilyRecord, b: FamilyRecord) => {
+            return b.family_last_name.localeCompare(a.family_last_name);
+          }
+        );
+        setFamilyOrder(sortedNames);
+        break;
+      }
+      case "lastNameAscending": {
+        const sortedNames = [...families].sort(
+          (a: FamilyRecord, b: FamilyRecord) => {
+            return a.family_last_name.localeCompare(b.family_last_name);
+          }
+        );
+        setFamilyOrder(sortedNames);
+        break;
+      }
+      default:
+        setFamilyOrder(families);
+    }
+  };
 
   return (
     <div className={"overflow-x-auto"}>
@@ -36,6 +61,18 @@ const Families = () => {
           Add Family
         </button>
       </Link>
+      <div className="mt-2 mb-2">
+        <label htmlFor="student-order-select">Order:</label>
+        <select
+          className="select select-sm ml-2"
+          defaultValue="default"
+          onChange={(event) => handleFamilyReorder(event)}
+        >
+          <option value="default">Default</option>
+          <option value="lastNameDescending">Last Name &#x2193;</option>
+          <option value="lastNameAscending">Last Name &#x2191;</option>
+        </select>
+      </div>
       <table className="table table-xs">
         <thead>
           <tr>
@@ -49,7 +86,7 @@ const Families = () => {
           </tr>
         </thead>
         <tbody>
-          {families.map((family: FamilyRecord) => {
+          {familyOrder.map((family: FamilyRecord) => {
             return (
               <tr key={family.id}>
                 <td>{family.id}</td>
