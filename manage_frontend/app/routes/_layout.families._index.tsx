@@ -86,25 +86,25 @@ const Families = () => {
           </tr>
         </thead>
         <tbody>
-          {familyOrder.map((family: FamilyRecord) => {
+          {familyOrder?.map((family: FamilyRecord) => {
             return (
-              <tr key={family.id}>
-                <td>{family.id}</td>
+              <tr key={family?.id}>
+                <td>{family?.id}</td>
 
                 <td>
                   <Link
-                    to={`/families/${family.family_last_name.toLowerCase()}`}
+                    to={`/families/${family?.family_last_name?.toLowerCase()}`}
                     className="hover:underline hover:text-blue-500"
                     title="Click to see family info"
                   >
-                    {family.family_last_name}
+                    {family?.family_last_name}
                   </Link>
                 </td>
 
-                <td>{family.parent1_first_name}</td>
-                <td>{family.parent1_last_name}</td>
-                <td>{family.parent2_first_name}</td>
-                <td>{family.parent2_last_name}</td>
+                <td>{family?.parent1_first_name}</td>
+                <td>{family?.parent1_last_name}</td>
+                <td>{family?.parent2_first_name}</td>
+                <td>{family?.parent2_last_name}</td>
                 <td>
                   <button
                     onClick={() => handleDeleteClick(family.id)}

@@ -122,10 +122,10 @@ const Family = () => {
 
   const studentsInClassMap: Record<number, ClassRecord[]> = {};
 
-  studentsInFamily.forEach((student: StudentRecord) => {
-    studentsInClassMap[Number(student.id)] = classes.filter(
+  studentsInFamily?.forEach((student: StudentRecord) => {
+    studentsInClassMap[Number(student.id)] = classes?.filter(
       (classItem: ClassRecord) =>
-        classItem.class_students.includes(Number(student.id))
+        classItem?.class_students?.includes(Number(student.id))
     );
   });
 
@@ -136,7 +136,7 @@ const Family = () => {
       </Link>
       <Link
         to={`/families/${
-          family.id
+          family?.id
         }/account?name=${family.family_last_name.toLowerCase()}`}
         viewTransition
       >
@@ -144,8 +144,8 @@ const Family = () => {
       </Link>
       <Link
         to={`/families/invoices/${
-          family.id
-        }?name=${family.family_last_name.toLowerCase()}`}
+          family?.id
+        }?name=${family?.family_last_name?.toLowerCase()}`}
       >
         <button className="btn mt-4 btn-sm ml-2">Invoices</button>
       </Link>
@@ -198,19 +198,19 @@ const Family = () => {
           <h2 className="font-bold pb-4">Students in family: </h2>
           <ul>
             {studentsInFamily
-              ? studentsInFamily.map((student: StudentRecord) => {
+              ? studentsInFamily?.map((student: StudentRecord) => {
                   return (
-                    <li key={student.id} className="font-light">
-                      {`${student.first_name} ${student.last_name}`}
+                    <li key={student?.id} className="font-light">
+                      {`${student?.first_name} ${student?.last_name}`}
                       <ul>
-                        {studentsInClassMap[Number(student.id)].map(
+                        {studentsInClassMap[Number(student.id)]?.map(
                           (classItem: ClassRecord) => {
                             return (
                               <li
-                                key={classItem.id}
+                                key={classItem?.id}
                                 className="ml-4 font-extralight text-s"
                               >
-                                {classItem.class_name}
+                                {classItem?.class_name}
                               </li>
                             );
                           }

@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Client } from "pg";
 import { and, between, desc, sql } from "drizzle-orm";
 import dotenv from "dotenv";
 import { eq } from "drizzle-orm";
@@ -15,7 +16,8 @@ import {
   invoiceTable,
   invoiceItemTable,
   userTable,
-} from "../db/dbSchema.mts";
+} from "../db/pgSchema.mts";
+import { Database, type SQLiteCloudConfig } from "@sqlitecloud/drivers";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -25,7 +27,31 @@ if (!dbFile) {
   throw new Error("Missing env for database file");
 }
 
-const db = drizzle(dbFile);
+const dbName = process.env.DB_NAME;
+const dbHost = process.env.DB_HOST;
+const dbPort = Number(process.env.DB_PORT) || 5432;
+const dbUser = process.env.DB_USER;
+const dbUserPassword = process.env.DB_PASSWORD;
+
+const client = new Client({
+  host: dbHost,
+  port: dbPort,
+  user: dbUser,
+  password: dbUserPassword,
+  database: dbName,
+});
+
+async function connectToDb() {
+  try {
+    await client.connect();
+    console.log("Successfully connected to Postgres database");
+  } catch (error) {
+    console.error("There was an error connecting to the database: ", error);
+  }
+}
+
+connectToDb();
+const db = drizzle(client);
 
 router.get("/", (req, res) => {
   res.status(200).send("You are at the right place");
@@ -35,13 +61,14 @@ router.get("/", (req, res) => {
 
 router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
-
+  console.log(req.body, "request body");
   try {
     const userFromDb = await db
       .selectDistinct()
       .from(userTable)
       .where(eq(email, userTable.email));
     if (!userFromDb.length) {
+      console.log("User not found in database");
       throw new Error("Login failed");
     }
 
@@ -60,6 +87,7 @@ router.post("/login", async (req: Request, res: Response) => {
       });
       res.status(200).json({ token: authToken });
     } else {
+      console.log("password validation failed");
       throw new Error("Failed at password stage");
     }
   } catch (error) {

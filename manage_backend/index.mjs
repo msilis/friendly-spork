@@ -1,15 +1,45 @@
 import express from "express";
 import router from "./routes/routes.mts";
 import dotenv from "dotenv";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Client } from "pg";
 import bodyParser from "body-parser";
 import cors from "cors";
+import { Database } from "@sqlitecloud/drivers";
 
 dotenv.config();
 
+const dbName = process.env.DB_NAME;
+const dbHost = process.env.DB_HOST;
+const dbPort = process.env.DB_PORT;
+const dbUser = process.env.DB_USER;
+const dbUserPassword = process.env.DB_PASSWORD;
+
+const client = new Client({
+  host: dbHost,
+  port: dbPort,
+  user: dbUser,
+  password: dbUserPassword,
+  database: dbName,
+});
+
 export const app = express();
 const port = process.env.BACKEND_PORT || 8080;
-const db = drizzle(process.env.DB_FILE_NAME);
+
+async function connectToDb() {
+  try {
+    await client.connect();
+    console.log("Successfully connected to database");
+  } catch (error) {
+    console.error("There was an error connecting to the database: ", error);
+  }
+}
+
+connectToDb();
+
+const dbFile = process.env.DB_FILE_NAME;
+
+const db = drizzle(client);
 
 app.use(
   cors({

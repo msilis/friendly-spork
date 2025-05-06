@@ -144,13 +144,17 @@ const Student = () => {
         <aside className="pt-4 ml-4">
           <h3 className="font-bold">Currently in the following classes:</h3>
           <ul className="pt-4">
-            {studentInClass.map((laudClass: ClassRecord) => {
-              return (
-                <li key={laudClass.id} className="font-light">
-                  {laudClass.class_name}
-                </li>
-              );
-            })}
+            {Array.isArray(studentInClass) && studentInClass.length > 0 ? (
+              studentInClass?.map((laudClass: ClassRecord) => {
+                return (
+                  <li key={laudClass?.id} className="font-light">
+                    {laudClass?.class_name}
+                  </li>
+                );
+              })
+            ) : (
+              <li className="font-light">No classes assigned</li>
+            )}
           </ul>
         </aside>
       </div>
