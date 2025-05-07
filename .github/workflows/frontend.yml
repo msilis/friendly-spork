@@ -52,7 +52,6 @@ jobs:
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./docker-compose.test.yml"
-          command: up -d
 
       - name: Wait for Postgres to be ready
         run: |
