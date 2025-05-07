@@ -35,23 +35,24 @@ jobs:
         run: npx playwright install --with-deps
         working-directory: manage_frontend
 
-      - name: Install Docker using Docker's official script
-        run: |
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sudo sh get-docker.sh
-        continue-on-error: false
+      # - name: Install Docker using Docker's official script
+      #   run: |
+      #     curl -fsSL https://get.docker.com -o get-docker.sh
+      #     sudo sh get-docker.sh
+      #   continue-on-error: false
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-        continue-on-error: false
+      # - name: Install Docker Compose
+      #   run: |
+      #     sudo curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      #     sudo chmod +x /usr/local/bin/docker-compose
+      #     docker-compose --version
+      #   continue-on-error: false
 
       - name: Start PostgreSQL with Docker
-        run: docker-compose up -d
+        uses: docker/compose-actions@v2
         with:
           compose-file: ./docker-compose.test.yml
+          command: up -d
 
       - name: Wait for Postgres to be ready
         run: |
