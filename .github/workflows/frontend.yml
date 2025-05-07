@@ -49,9 +49,9 @@ jobs:
       #   continue-on-error: false
 
       - name: Start PostgreSQL with Docker
-        uses: actions/compose-actions@v2
+        uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          compose-file: ./docker-compose.test.yml
+          compose-file: "./docker-compose.test.yml"
           command: up -d
 
       - name: Wait for Postgres to be ready
