@@ -51,6 +51,7 @@ jobs:
       - name: Start PostgreSQL with Docker
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
+          services: postgres
           compose-file: "docker-compose.test.yml"
 
       - name: Wait for Postgres to be ready
