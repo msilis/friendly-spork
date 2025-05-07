@@ -49,7 +49,7 @@ jobs:
       #   continue-on-error: false
 
       - name: Start PostgreSQL with Docker
-        uses: docker/compose-actions@v2
+        uses: actions/compose-actions@v2
         with:
           compose-file: ./docker-compose.test.yml
           command: up -d
