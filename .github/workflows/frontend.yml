@@ -50,6 +50,8 @@ jobs:
 
       - name: Start PostgreSQL with Docker
         run: docker-compose up -d
+        with:
+          compose-file: ./docker-compose.test.yml
 
       - name: Wait for Postgres to be ready
         run: |
