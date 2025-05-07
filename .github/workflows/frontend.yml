@@ -35,6 +35,11 @@ jobs:
         run: npx playwright install --with-deps
         working-directory: manage_frontend
 
+      - name: Install and setup Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+
       - name: Start PostgreSQL with Docker
         uses: docker/compose-action@v2
         with:
