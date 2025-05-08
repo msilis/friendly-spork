@@ -77,7 +77,7 @@ jobs:
           attempt=0
           max_attempts=5
           while [ "$attempt" -lt "$max_attempts" ]; do
-            psql -h localhost -U ${{ secrets.TEST_DB_USER }} -d test_manage -c "CREATE USER IF NOT EXISTS test_user WITH PASSWORD "${{ secrets.TEST_APP_PASSWORD }}";" && break
+            psql -h localhost -U ${{ secrets.TEST_DB_USER }} -d test_manage -c "CREATE USER IF NOT EXISTS test_user WITH PASSWORD '${{ secrets.TEST_APP_PASSWORD }}';" && break
             attempt=$((attempt+1))
             sleep 2
             echo 'Retrying to create user...'
