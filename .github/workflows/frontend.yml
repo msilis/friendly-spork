@@ -20,12 +20,6 @@ jobs:
 
       - run: yarn install
         working-directory: manage_backend
-      # - run: yarn run start:ci > backend.log 2>&1 &
-      #   working-directory: manage_backend
-      #   env:
-      #     DB_FILE_NAME: file:test_db.db
-      #     JWT_SECRET: ${{secrets.JWT_SECRET}}
-      #   timeout-minutes: 5
 
       - name: Setup frontend
         run: yarn install
@@ -34,19 +28,6 @@ jobs:
       - name: Setup Playwright
         run: npx playwright install --with-deps
         working-directory: manage_frontend
-
-      # - name: Install Docker using Docker's official script
-      #   run: |
-      #     curl -fsSL https://get.docker.com -o get-docker.sh
-      #     sudo sh get-docker.sh
-      #   continue-on-error: false
-
-      # - name: Install Docker Compose
-      #   run: |
-      #     sudo curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-      #     sudo chmod +x /usr/local/bin/docker-compose
-      #     docker-compose --version
-      #   continue-on-error: false
 
       - name: Start PostgreSQL with Docker
         uses: hoverkraft-tech/compose-action@v2.0.1
@@ -74,9 +55,45 @@ jobs:
       - name: Create test database and user
         run: |
           export PGPASSWORD=${{ secrets.TEST_DB_PASSWORD }}
-          psql -h localhost -U ${{ secrets.TEST_DB_USER }} -c "CREATE DATABASE IF NOT EXISTS test_manage;"
-          psql -h localhost -U ${{ secrets.TEST_DB_USER }} -d test_manage -c "CREATE USER IF NOT EXISTS test_user WITH PASSWORD '${{ secrets.TEST_APP_PASSWORD }}';"
-          psql -h localhost -U ${{ secrets.TEST_dB_USER}} -D test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;"
+          attempt=0
+          MAX_ATTEMPTS=5
+          while [ $attempt -lt MAX_ATTEMPTS]; do
+            psql -h localhost -U ${{ secrets.TEST_DB_USER }} -c "CREATE DATABASE IF NOT EXISTS test_manage;"
+            attempt=$((attempt+1))
+            sleep 2
+            echo 'Retrying database connection...'
+          done
+          if [$attempt -eq $MAX_ATTEMPTS]; do
+            echo 'Failed to connect to database after multiple attempts.'
+            exit 1
+          fi
+
+          attempt=0
+          MAX_ATTEMPTS=5
+          while [$attempt -lt $MAX_ATTEMPTS]; do
+            psql -h localhost -U ${{ secrets.TEST_DB_USER }} -d test_manage -c "CREATE USER IF NOT EXISTS test_user WITH PASSWORD '${{ secrets.TEST_APP_PASSWORD }}';"
+            attempt=$((attempt+1))
+            sleep 2
+            echo 'Retrying to create user...'
+          done
+          if [$attempt -eq MAX_ATTEMPTS]; do
+            echo "Failed to create user"
+            exit 1
+          fi
+
+          attempt=0
+          MAX_ATTEMPTS=5
+          while [$attempt -lt $MAX_ATTEMPTS]; do
+            psql -h localhost -U ${{ secrets.TEST_dB_USER}} -D test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;"
+
+            attempt=$((attempt+1))
+            sleep 2
+            echo 'Retrying to grant privileges...'
+          done
+          if [$attempt -eq MAX_ATTEMPTS]; do
+            echo "Failed to grant privileges"
+            exit 1
+          fi
 
       - name: Run Drizzle Kit migration
         run: |
