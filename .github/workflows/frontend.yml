@@ -20,6 +20,10 @@ jobs:
 
       - run: yarn install
         working-directory: manage_backend
+        env:
+          DB_USER: ${{secrets.TEST_DB_USER}}
+          DB_PASSWORD: ${{secrets.TEST_DB_PASSWORD}}
+          DB_NAME: ${{secrets.TEST_DB_NAME}}
 
       - name: Setup frontend
         run: yarn install
