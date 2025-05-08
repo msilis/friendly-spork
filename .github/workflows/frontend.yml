@@ -54,8 +54,6 @@ jobs:
 
       - name: Create test database and user
         run: |
-          echo ${{secrets.TEST_DB_USER}} | sed 's/./& /g'
-          echo ${{secrets.TEST_DB_NAME}} | sed 's/./& /g'
           export PGPASSWORD=${{ secrets.TEST_DB_PASSWORD }}
           attempt=0
           MAX_ATTEMPTS=5
