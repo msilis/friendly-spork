@@ -25,10 +25,6 @@ jobs:
         run: yarn install
         working-directory: manage_frontend
 
-      - name: Setup Playwright
-        run: npx playwright install --with-deps
-        working-directory: manage_frontend
-
       - name: Start PostgreSQL with Docker
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
@@ -105,6 +101,10 @@ jobs:
 
       - name: Wait for backend to be ready
         run: sleep 10
+
+      - name: Setup Playwright
+        run: npx playwright install --with-deps
+        working-directory: manage_frontend
 
       - name: Run Playwright tests
         run: yarn run ci-test
