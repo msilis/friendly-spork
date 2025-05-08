@@ -99,7 +99,7 @@ jobs:
         run: |
           export DATABASE_URL="postgresql://${{secrets.TEST_APP_USER}}:${{secrets.TEST_APP_PASSWORD}}@localhost:5432/test_manage"
           yarn run start:ci > backend.log 2>&1 &
-        working-directory: manage-backend
+        working-directory: manage_backend
         env:
           JWT_SECRET: ${{secrets.JWT_SECRET}}
         timeout-minutes: 5
