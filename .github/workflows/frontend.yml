@@ -84,7 +84,7 @@ jobs:
           attempt=0
           MAX_ATTEMPTS=5
           while [$attempt -lt $MAX_ATTEMPTS]; do
-            psql -h localhost -U ${{ secrets.TEST_dB_USER}} -D test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;"
+            psql -h localhost -U ${{ secrets.TEST_DB_USER}} -D test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;"
 
             attempt=$((attempt+1))
             sleep 2
@@ -97,7 +97,7 @@ jobs:
 
       - name: Run Drizzle Kit migration
         run: |
-          export DATABASE_URL="postgresql://${{secrets.TEST_APP_USER}}:${{secrets.TEST_APP_PASSWORD}}@localhost:5432/test_manage"
+          export DATABASE_URL="postgresql://${{secrets.TEST_DB_USER}}:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
           yarn run start:ci > backend.log 2>&1 &
         working-directory: manage_backend
         env:
@@ -114,7 +114,7 @@ jobs:
           MANAGE_BACKEND: ${{secrets.MANAGE_BACKEND}}
           PLAYWRIGHT_TEST_EMAIL: ${{secrets.PLAYWRIGHT_TEST_EMAIL}}
           PLAYWRIGHT_TEST_PASSWORD: ${{secrets.PLAYWRIGHT_TEST_PASSWORD}}
-          DATABASE_URL: "postgresql://${{secrets.TEST_APP_USER}}:${{secrets.TEST_APP_PASSWORD}}@localhost:5432/test_manage"
+          DATABASE_URL: "postgresql://${{secrets.TEST_DB_USER}}:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
