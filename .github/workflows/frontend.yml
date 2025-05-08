@@ -32,6 +32,7 @@ jobs:
           compose-file: "docker-compose.test.yml"
 
       - name: Wait for Postgres to be ready
+        id: wait-postgres
         run: |
           sleep 10
           set -e
@@ -48,6 +49,10 @@ jobs:
             exit 1
           fi
           echo "PostgreSQL database is ready"
+
+      - name: Get Docker logs if Postgres server fails
+        if: failure() && steps.wait-postgres.outcome != 'success'
+        run: docker logs postgres
 
       - name: Create test database and user
         run: |
