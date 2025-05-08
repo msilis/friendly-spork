@@ -33,16 +33,17 @@ jobs:
 
       - name: Wait for Postgres to be ready
         run: |
+          sleep 10
           set -e
           attempt=0
-          MAX_ATTEMPTS=10
-          while [ $attempt -lt MAX_ATTEMPTS ]; do
+          max_attempts=10
+          while [ "$attempt" -lt "$max_attempts" ]; do
             sleep 5
             pg_isready -h localhost -p 5432 && break
             attempt=$((attempt+1))
             echo "Waiting for Postgres..."
           done
-          if [ $attempt -eq $MAX_ATTEMPTS ]; then
+          if [ "$attempt" -eq "$max_attempts" ]; then
             echo "PostgreSQL did not start in time"
             exit 1
           fi
@@ -52,40 +53,40 @@ jobs:
         run: |
           export PGPASSWORD=${{ secrets.TEST_DB_PASSWORD }}
           attempt=0
-          MAX_ATTEMPTS=5
-          while [ "$attempt" -lt "MAX_ATTEMPTS" ]; do
+          max_attempts=5
+          while [ "$attempt" -lt "max_attempts" ]; do
             psql -h localhost -U ${{ secrets.TEST_DB_USER }} -c "CREATE DATABASE IF NOT EXISTS test_manage;" && break
             attempt=$((attempt+1))
             sleep 2
             echo 'Retrying database connection...'
           done
-          if [ "$attempt" -eq "$MAX_ATTEMPTS" ]; then
+          if [ "$attempt" -eq "$max_attempts" ]; then
             echo 'Failed to connect to database after multiple attempts.'
             exit 1
           fi
 
           attempt=0
-          MAX_ATTEMPTS=5
-          while [ "$attempt" -lt "$MAX_ATTEMPTS" ]; do
+          max_attempts=5
+          while [ "$attempt" -lt "$max_attempts" ]; do
             psql -h localhost -U ${{ secrets.TEST_DB_USER }} -d test_manage -c "CREATE USER IF NOT EXISTS test_user WITH PASSWORD "${{ secrets.TEST_APP_PASSWORD }}";" && break
             attempt=$((attempt+1))
             sleep 2
             echo 'Retrying to create user...'
           done
-          if [ "$attempt" -eq "MAX_ATTEMPTS" ]; then
+          if [ "$attempt" -eq "max_attempts" ]; then
             echo "Failed to create user"
             exit 1
           fi
 
           attempt=0
-          MAX_ATTEMPTS=5
-          while [ "$attempt" -lt "$MAX_ATTEMPTS" ]; do
+          max_attempts=5
+          while [ "$attempt" -lt "$max_attempts" ]; do
             psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;" && break
             attempt=$((attempt+1))
             sleep 2
             echo 'Retrying to grant privileges...'
           done
-          if [ "$attempt" -eq "MAX_ATTEMPTS" ]; then
+          if [ "$attempt" -eq "max_attempts" ]; then
             echo "Failed to grant privileges"
             exit 1
           fi
