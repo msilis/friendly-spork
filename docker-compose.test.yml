@@ -3,8 +3,8 @@ services:
   postgres:
     image: postgres:15.7-alpine
     environment:
-      POSTGRES_USER: ${{secrets.TEST_DB_USER}}
-      POSTGRES_PASSWORD: ${{secrets.TEST_DB_PASSWORD}}
-      POSTGRES_DATABASE: ${{secrets.TEST_DB_NAME}}
+      POSTGRES_USER: POSTGRES_USER
+      POSTGRES_PASSWORD: POSTGRES_PASSWORD
+      POSTGRES_DATABASE: POSTGRES_DATABASE
     ports:
       - "5432:5432"
