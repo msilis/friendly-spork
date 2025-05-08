@@ -61,7 +61,7 @@ jobs:
           attempt=0
           max_attempts=5
           while [ "$attempt" -lt "max_attempts" ]; do
-            psql -h localhost -U postgres -c "CREATE DATABASE IF NOT EXISTS test_manage;"
+            psql -h localhost -U postgres -c "CREATE DATABASE IF NOT EXISTS 'test_manage';"
             attempt=$((attempt+1))
             sleep 2
             echo 'Retrying database connection...'
