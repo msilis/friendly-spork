@@ -84,7 +84,7 @@ jobs:
           attempt=0
           MAX_ATTEMPTS=5
           while [ "$attempt" -lt "$MAX_ATTEMPTS" ]; do
-            psql -h localhost -U postgres -D test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;" && break
+            psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;" && break
 
             attempt=$((attempt+1))
             sleep 2
