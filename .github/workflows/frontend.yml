@@ -82,7 +82,7 @@ jobs:
           #   echo 'Retrying to create user...'
           # done
           #
-          psql -h localhost -U postgres -d test_manage -c "CREATE USER IF NOT EXISTS test_db_user WITH PASSWORD '${{ secrets.TEST_DB_PASSWORD }}';"
+          psql -h localhost -U postgres -d test_manage -c "CREATE USER test_db_user WITH PASSWORD '${{ secrets.TEST_DB_PASSWORD }}';"
 
           # if [ "$attempt" -eq "max_attempts" ]; then
           #   echo "Failed to create user"
