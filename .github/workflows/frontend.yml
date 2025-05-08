@@ -32,7 +32,6 @@ jobs:
           compose-file: "docker-compose.test.yml"
         env:
           POSTGRES_PASSWORD: ${{secrets.TEST_DB_PASSWORD}}
-          POSTGRES_DATABASE: ${{secrets.TEST_DB_NAME}}
 
       - name: Wait for Postgres to be ready
         id: wait-postgres
