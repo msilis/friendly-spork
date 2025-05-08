@@ -37,6 +37,7 @@ jobs:
 
       - name: Wait for Postgres to be ready
         run: |
+          sleep 10
           set -e
           attempt=0
           max_attempts=10
