@@ -63,7 +63,7 @@ jobs:
             sleep 2
             echo 'Retrying database connection...'
           done
-          if [$attempt -eq $MAX_ATTEMPTS]; do
+          if [$attempt -eq $MAX_ATTEMPTS]; then
             echo 'Failed to connect to database after multiple attempts.'
             exit 1
           fi
@@ -76,7 +76,7 @@ jobs:
             sleep 2
             echo 'Retrying to create user...'
           done
-          if [$attempt -eq MAX_ATTEMPTS]; do
+          if [$attempt -eq MAX_ATTEMPTS]; then
             echo "Failed to create user"
             exit 1
           fi
@@ -90,7 +90,7 @@ jobs:
             sleep 2
             echo 'Retrying to grant privileges...'
           done
-          if [$attempt -eq MAX_ATTEMPTS]; do
+          if [$attempt -eq MAX_ATTEMPTS]; then
             echo "Failed to grant privileges"
             exit 1
           fi
