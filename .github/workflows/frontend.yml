@@ -42,7 +42,7 @@ jobs:
           max_attempts=10
           while [ $attempt -lt $max_attempts ]; do
             sleep 5
-            nc -z localhost 5432 && break
+            pg_isready -h localhost -p 5432 && break
             attempt=$((attempt+1))
             echo "Waiting for Postgres..."
           done
