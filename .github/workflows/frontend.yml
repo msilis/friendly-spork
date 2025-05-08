@@ -60,7 +60,7 @@ jobs:
           attempt=0
           MAX_ATTEMPTS=5
           while [ $attempt -lt MAX_ATTEMPTS ]; do
-            psql -h localhost -U ${{ secrets.TEST_DB_USER }} -c "CREATE DATABASE IF NOT EXISTS test_manage;"
+            psql -h localhost -U ${{ secrets.TEST_DB_USER }} -c "CREATE DATABASE IF NOT EXISTS test_manage;" && break
             attempt=$((attempt+1))
             sleep 2
             echo 'Retrying database connection...'
@@ -73,7 +73,7 @@ jobs:
           attempt=0
           MAX_ATTEMPTS=5
           while [ $attempt -lt $MAX_ATTEMPTS ]; do
-            psql -h localhost -U ${{ secrets.TEST_DB_USER }} -d test_manage -c "CREATE USER IF NOT EXISTS test_user WITH PASSWORD '${{ secrets.TEST_APP_PASSWORD }}';"
+            psql -h localhost -U ${{ secrets.TEST_DB_USER }} -d test_manage -c "CREATE USER IF NOT EXISTS test_user WITH PASSWORD '${{ secrets.TEST_APP_PASSWORD }}';" && break
             attempt=$((attempt+1))
             sleep 2
             echo 'Retrying to create user...'
@@ -86,7 +86,7 @@ jobs:
           attempt=0
           MAX_ATTEMPTS=5
           while [ $attempt -lt $MAX_ATTEMPTS ]; do
-            psql -h localhost -U postgres -D test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;"
+            psql -h localhost -U postgres -D test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_user;" && break
 
             attempt=$((attempt+1))
             sleep 2
