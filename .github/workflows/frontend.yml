@@ -66,7 +66,7 @@ jobs:
           #   sleep 2
           #   echo 'Retrying database connection...'
           # done
-          # psql -h localhost -U postgres -c "CREATE DATABASE IF NOT EXISTS test_manage;"
+          psql -h localhost -U postgres -c "CREATE DATABASE test_manage;"
 
           # if [ "$attempt" -eq "$max_attempts" ]; then
           #   echo 'Failed to connect to database after multiple attempts.'
