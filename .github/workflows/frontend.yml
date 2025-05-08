@@ -52,7 +52,7 @@ jobs:
 
       - name: Get Docker logs if Postgres server fails
         if: failure() && steps.wait-postgres.outcome != 'success'
-        run: docker logs postgres
+        run: docker logs friendly-spork-postgres-1
 
       - name: Create test database and user
         run: |
