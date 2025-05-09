@@ -1,6 +1,4 @@
 node_modules
-
 .env
 .env.development
 manage_database.db
-seed-pass.cjs

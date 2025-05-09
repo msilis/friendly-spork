@@ -86,6 +86,12 @@ jobs:
         env:
           DB_URL: "postgresql://test_db_user:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
 
+      - name: Seed database
+        env:
+          DATABASE_URL: "postgresql://test_db_user:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
+        run: yarn run seed
+        working-directory: manage_backend
+
       - name: Wait for backend to be ready
         run: sleep 10
 
