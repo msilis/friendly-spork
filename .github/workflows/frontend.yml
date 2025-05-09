@@ -51,8 +51,8 @@ jobs:
       - name: Create test database and user
         run: |
           export PGPASSWORD=${{ secrets.TEST_DB_PASSWORD }}
-          psql -h localhost -U postgres -c "CREATE DATABASE \\"${{ secrets.TEST_DB_NAME }}\\";"
-          psql -h localhost -U postgres -d ${{ secrets.TEST_DB_NAME }} -c "CREATE USER test_db_user WITH PASSWORD \\"${{ secrets.TEST_DB_PASSWORD }}\\";"
+          psql -h localhost -U postgres -c "CREATE DATABASE ${{ secrets.TEST_DB_NAME }};"
+          psql -h localhost -U postgres -d ${{ secrets.TEST_DB_NAME }} -c "CREATE USER test_db_user WITH PASSWORD ${{ secrets.TEST_DB_PASSWORD }};"
           psql -h localhost -U postgres -d ${{ secrets.TEST_DB_NAME }} -c "GRANT ALL PRIVILEGES ON DATABASE \\"${{ secrets.TEST_DB_NAME }}\\" TO \\"${{ secrets.TEST_DB_USER }}\\";"
           psql -h localhost -U postgres -d ${{ secrets.TEST_DB_NAME }} -c "GRANT ALL PRIVILEGES ON DATABASE \\"${{ secrets.TEST_DB_NAME }}\\" TO \\"${{ secrets.TEST_DB_USER }}\\";"
           psql -h localhost -U postgres -d ${{ secrets.TEST_DB_NAME }} -c "GRANT USAGE ON SCHEMA public TO \\"${{ secrets.TEST_DB_USER }}\\";"
