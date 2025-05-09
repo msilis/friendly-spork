@@ -30,9 +30,9 @@
   "scripts": {
     "start": "export NODE_ENV=production&& tsx index.mjs",
     "serve": "export NODE_ENV=development&& tsx watch index.mjs",
-    "start:ci": "export NODE_ENV=test&& tsx index.mjs",
+    "start:ci": "tsx index.mjs",
     "eslint": "npx eslint",
-    "seed": "export NODE_ENV=test&& node scripts/seed-pass.cjs",
+    "seed": "node scripts/seed-pass.cjs",
     "test": "vitest"
   },
   "devDependencies": {
