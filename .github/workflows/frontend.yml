@@ -57,11 +57,11 @@ jobs:
         run: |
           export PGPASSWORD=${{ secrets.TEST_DB_PASSWORD }}
           psql -h localhost -U postgres -c "CREATE DATABASE $TEST_DB_NAME;"
-          psql -h localhost -U postgres -d "$TEST_DB_NAME" -c "CREATE USER '$TEST_DB_NAME' WITH PASSWORD '$TEST_DB_PASSWORD';"
-          psql -h localhost -U postgres -d '$TEST_DB_NAME' -c "GRANT ALL PRIVILEGES ON DATABASE '$TEST_DB_NAME' TO '$TEST_DB_USER';"
-          psql -h localhost -U postgres -d '$TEST_DB_NAME' -c "GRANT ALL PRIVILEGES ON DATABASE '$TEST_DB_NAME' TO '$TEST_DB_USER';"
-          psql -h localhost -U postgres -d '$TEST_DB_NAME' -c "GRANT USAGE ON SCHEMA public TO '$TEST_DB_USER';"
-          psql -h localhost -U postgres -d '$TEST_DB_NAME' -c "GRANT CREATE ON SCHEMA public TO '$TEST_DB_USER';"
+          psql -h localhost -U postgres -d "$TEST_DB_NAME" -c "CREATE USER $TEST_DB_NAME WITH PASSWORD $TEST_DB_PASSWORD;"
+          psql -h localhost -U postgres -d "$TEST_DB_NAME" -c "GRANT ALL PRIVILEGES ON DATABASE '$TEST_DB_NAME' TO '$TEST_DB_USER';"
+          psql -h localhost -U postgres -d "$TEST_DB_NAME" -c "GRANT ALL PRIVILEGES ON DATABASE '$TEST_DB_NAME' TO '$TEST_DB_USER';"
+          psql -h localhost -U postgres -d "$TEST_DB_NAME" -c "GRANT USAGE ON SCHEMA public TO '$TEST_DB_USER';"
+          psql -h localhost -U postgres -d "$TEST_DB_NAME" -c "GRANT CREATE ON SCHEMA public TO '$TEST_DB_USER';"
 
       - run: yarn install
         working-directory: manage_backend
