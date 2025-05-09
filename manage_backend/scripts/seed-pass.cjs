@@ -25,7 +25,7 @@ const dbConfig = {
 async function seedUsers() {
   const pool = new Pool(dbConfig);
   const client = await pool.connect();
-  if (!client.connectionString) throw new Error("No connection string!");
+  // if (!client.connectionString) throw new Error("No connection string!");
   const db = drizzle(client);
   const usersToCreate = [
     { email: "testemail@email.com", password: "testPassword123" },
