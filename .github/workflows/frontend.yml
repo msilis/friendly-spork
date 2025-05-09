@@ -18,17 +18,6 @@ jobs:
         with:
           node-version: 20.x
 
-      - run: yarn install
-        working-directory: manage_backend
-        env:
-          DB_USER: ${{secrets.TEST_DB_USER}}
-          DB_PASSWORD: ${{secrets.TEST_DB_PASSWORD}}
-          DB_NAME: ${{secrets.TEST_DB_NAME}}
-
-      - name: Setup frontend
-        run: yarn install
-        working-directory: manage_frontend
-
       - name: Start PostgreSQL with Docker
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
@@ -107,6 +96,19 @@ jobs:
           #   exit 1
           # fi
           psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_db_user;"
+
+      - run: yarn install
+        working-directory: manage_backend
+        env:
+          DB_USER: ${{secrets.TEST_DB_USER}}
+          DB_PASSWORD: ${{secrets.TEST_DB_PASSWORD}}
+          DB_NAME: ${{secrets.TEST_DB_NAME}}
+          DB_HOST: "localhost"
+          DB_PORT: "5432"
+
+      - name: Setup frontend
+        run: yarn install
+        working-directory: manage_frontend
 
       - name: Run Drizzle Kit migration
         run: |
