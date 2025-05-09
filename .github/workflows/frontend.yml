@@ -52,11 +52,11 @@ jobs:
         run: |
           export PGPASSWORD=${{ secrets.TEST_DB_PASSWORD }}
           psql -h localhost -U postgres -c "CREATE DATABASE test_manage;"
-          psql -h localhost -U postgres -d test_manage -c "CREATE USER test_db_user WITH PASSWORD '${{ secrets.TEST_DB_PASSWORD }}';"
-          psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_db_user;"
-          psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_db_user;"
-          psql -h localhost -U postgres -d test_manage -c "GRANT USAGE ON SCHEMA public TO test_db_user;"
-          psql -h localhost -U postgres -d test_manage -c "GRANT CREATE ON SCHEMA public TO test_db_user;"
+          psql -h localhost -U postgres -d test_manage -c "CREATE USER '${{secrets.TEST_DB_USER}}' WITH PASSWORD '${{ secrets.TEST_DB_PASSWORD }}';"
+          psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO '${{secrets.TEST_DB_USER}}';"
+          psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO '${{secrets.TEST_DB_USER}}';"
+          psql -h localhost -U postgres -d test_manage -c "GRANT USAGE ON SCHEMA public TO '${{secrets.TEST_DB_USER}}';"
+          psql -h localhost -U postgres -d test_manage -c "GRANT CREATE ON SCHEMA public TO '${{secrets.TEST_DB_USER}}';"
 
       - run: yarn install
         working-directory: manage_backend
@@ -74,7 +74,7 @@ jobs:
           yarn run start:ci > backend.log 2>&1 &
         working-directory: manage_backend
         env:
-          DB_URL: "postgresql://test_db_user:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
+          DB_URL: "postgresql://${{secrets.TEST_DB_USER}}:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
           JWT_SECRET: ${{secrets.JWT_SECRET}}
         timeout-minutes: 5
 
@@ -82,13 +82,14 @@ jobs:
         run: yarn run drizzle-kit migrate
         working-directory: manage_backend
         env:
-          DB_URL: "postgresql://test_db_user:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
+          DB_URL: "postgresql://${{secrets.TEST_DB_USER}}:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
 
       - name: Seed database
         env:
-          DB_URL: "postgresql://test_db_user:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/${{secrets.TEST_DB_NAME}}"
+          DB_URL: "postgresql://${{secrets.TEST_DB_USER}}:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/${{secrets.TEST_DB_NAME}}"
           DB_HOST: "localhost"
           DB_PORT: "5432"
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
         run: yarn run seed
         working-directory: manage_backend
 
