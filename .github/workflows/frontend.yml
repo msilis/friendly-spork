@@ -83,6 +83,8 @@ jobs:
       - name: Drizzle kit migration
         run: yarn run drizzle-kit migrate
         working-directory: manage_backend
+        env:
+          DB_URL: "postgresql://test_db_user:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
 
       - name: Wait for backend to be ready
         run: sleep 10
