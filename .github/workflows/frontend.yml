@@ -78,6 +78,7 @@ jobs:
         working-directory: manage_backend
         env:
           DB_URL: "postgresql://test_db_user:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
         timeout-minutes: 5
 
       - name: Drizzle kit migration
