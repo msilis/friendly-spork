@@ -52,7 +52,7 @@ jobs:
         run: |
           export PGPASSWORD=${{ secrets.TEST_DB_PASSWORD }}
           psql -h localhost -U postgres -c "CREATE DATABASE test_manage;"
-          psql -h localhost -U postgres -d test_manage -c "CREATE USER test_manage WITH PASSWORD testpassword;"
+          psql -h localhost -U postgres -d test_manage -c "CREATE USER test_db_user WITH PASSWORD '${{ secrets.TEST_DB_PASSWORD }}';"
           psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_db_user;"
           psql -h localhost -U postgres -d test_manage -c "GRANT ALL PRIVILEGES ON DATABASE test_manage TO test_db_user;"
           psql -h localhost -U postgres -d test_manage -c "GRANT USAGE ON SCHEMA public TO test_db_user;"
