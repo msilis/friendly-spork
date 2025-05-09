@@ -22,10 +22,6 @@ import { Database, type SQLiteCloudConfig } from "@sqlitecloud/drivers";
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 const router = express.Router();
-const dbFile = process.env.DB_FILE_NAME;
-if (!dbFile) {
-  throw new Error("Missing env for database file");
-}
 
 const dbName = process.env.DB_NAME;
 const dbHost = process.env.DB_HOST;
