@@ -133,7 +133,7 @@ jobs:
           MANAGE_BACKEND: ${{secrets.MANAGE_BACKEND}}
           PLAYWRIGHT_TEST_EMAIL: ${{secrets.PLAYWRIGHT_TEST_EMAIL}}
           PLAYWRIGHT_TEST_PASSWORD: ${{secrets.PLAYWRIGHT_TEST_PASSWORD}}
-          DATABASE_URL: "postgresql://${{secrets.TEST_DB_USER}}:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
+          DATABASE_URL: "postgresql://test_db_user:${{secrets.TEST_DB_PASSWORD}}@localhost:5432/test_manage"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

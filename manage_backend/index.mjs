@@ -31,7 +31,10 @@ async function connectToDb() {
     await client.connect();
     console.log("Successfully connected to database");
   } catch (error) {
-    console.error("There was an error connecting to the database: ", error);
+    console.error(
+      "There was an error connecting to the database (from main connect): ",
+      error,
+    );
   }
 }
 

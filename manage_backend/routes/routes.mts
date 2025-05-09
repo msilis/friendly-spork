@@ -49,7 +49,10 @@ async function connectToDb() {
     console.log(client.port, "port");
     console.log(client.user, "user");
     console.log(client.database, "database");
-    console.error("There was an error connecting to the database: ", error);
+    console.error(
+      "There was an error connecting to the database (from route): ",
+      error,
+    );
   }
 }
 
