@@ -1,4 +1,4 @@
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, Link } from "@remix-run/react";
 import { getUsers } from "~/data/data";
 
 export const loader = async () => {
@@ -10,20 +10,35 @@ const UserAdmin = () => {
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">User settings</h1>
+      <Link to={"/useradmin/add"}>
+        <button className="btn btn-outline btn-primary btn-sm mb-4">
+          Add User
+        </button>
+      </Link>
       <div className="h-1 border-2 border-black mr-4"></div>
       <h2>Current users</h2>
       <table className="table table-xs">
         <thead>
           <tr>
             <td>Email</td>
+            <td></td>
+            <td></td>
           </tr>
         </thead>
         <tbody>
           {users ? (
-            users.map((user: { email: string }, index: number) => {
+            users.map((user: { user_id: number; email: string }) => {
               return (
-                <tr key={index}>
-                  <td>{user?.email}</td>
+                <tr key={user.user_id}>
+                  <td>{user.email}</td>
+                  <td>
+                    <button className="btn btn-soft btn-info btn-sm mr-4">
+                      Change Password
+                    </button>
+                    <button className="btn btn-soft btn-error btn-sm">
+                      Delete user
+                    </button>
+                  </td>
                 </tr>
               );
             })

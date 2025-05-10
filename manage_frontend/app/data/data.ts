@@ -604,3 +604,18 @@ export const getUsers = async () => {
   );
   return getUsers;
 };
+
+export const createUser = async (data: { email: string; password: string }) => {
+  try {
+    const createUser = await fetch(`${BACKEND_URL}/useradmin/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((response) => response.json());
+    return createUser;
+  } catch (error) {
+    console.error("Error creating user: ", error);
+  }
+};
