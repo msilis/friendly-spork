@@ -45,6 +45,11 @@ const ButtonMenu = ({ setButtonMenuOpen, showLogout }: ButtonMenuProps) => {
           Settings
         </Link>
       </li>
+      <li>
+        <Link to={"/useradmin"} onClick={handleMenuClick} className="max-w-xs">
+          User settings
+        </Link>
+      </li>
       <li className="flex flex-row cursor-default">
         <h2 className="font-bold">Set colour theme</h2>
         <p>Light</p>

@@ -597,3 +597,10 @@ export const saveSettings = async (data: unknown) => {
     console.error("There was an error saving your settings: ", error);
   }
 };
+
+export const getUsers = async () => {
+  const getUsers = await fetch(`${BACKEND_URL}/useradmin`).then((response) =>
+    response.json()
+  );
+  return getUsers;
+};

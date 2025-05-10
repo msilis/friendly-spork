@@ -95,10 +95,6 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/logout", (req, res) => {});
-
-router.post("/signup", (req, res) => {});
-
 //Student Management
 
 router.post("/students/add", async (req: Request, res: Response) => {
@@ -969,5 +965,17 @@ router
     );
     res.status(200).json({ message: "Setting saved successfully" });
   });
+
+// Admin settings
+
+router.get("/useradmin", async (req, res) => {
+  try {
+    const getAllUsers = await db.select().from(userTable);
+    res.status(200).json(getAllUsers);
+  } catch (error) {
+    console.error("Error getting users: ", error);
+    res.status(500).json({ message: `Error getting users: ${error}` });
+  }
+});
 
 export default router;
