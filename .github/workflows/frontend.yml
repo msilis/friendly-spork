@@ -92,6 +92,8 @@ jobs:
           DB_HOST: "localhost"
           DB_PORT: "5432"
           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          TEST_EMAIL: ${{secrets.TEST_EMAIL}}
+          TEST_PASSWORD: ${{secrets.TEST_PASSWORD}}
         run: yarn run seed
         working-directory: manage_backend
 

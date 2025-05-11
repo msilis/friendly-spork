@@ -27,7 +27,7 @@ async function seedUsers() {
   const client = await pool.connect();
   const db = drizzle(client);
   const usersToCreate = [
-    { email: "testemail@email.com", password: "testPassword123" },
+    { email: process.env.TEST_EMAIL, password: process.env.TEST_PASSWORD },
   ];
 
   const saltRounds = 10;
