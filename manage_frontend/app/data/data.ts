@@ -621,8 +621,8 @@ export const createUser = async (data: { email: string; password: string }) => {
 };
 
 export const updatePassword = async (data: {
-  id: string | number;
-  password: string;
+  id: string | number | undefined;
+  password: string | undefined;
 }) => {
   try {
     const updatePassword = await fetch(`${BACKEND_URL}/useradmin/update`, {

@@ -1,6 +1,6 @@
 import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
 import { useRef } from "react";
-import { deleteUser, getUsers } from "~/data/data";
+import { deleteUser, getUsers, updatePassword } from "~/data/data";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
@@ -19,6 +19,7 @@ const UserAdmin = () => {
   const toast = useToast();
   const handleUpdatePassword = (id: string | number | undefined) => {
     passwordRef.current?.show();
+    userToUpdate = id;
   };
   const confirmUpdatePassword = () => {
     if (
@@ -26,6 +27,11 @@ const UserAdmin = () => {
     ) {
       toast.error("Passwords do not match");
     } else {
+      const dataToUpdate = {
+        id: userToUpdate,
+        password: passwordInputRef.current?.value,
+      };
+      updatePassword(dataToUpdate);
       passwordInputRef?.current?.value && (passwordInputRef.current.value = "");
       confirmPasswordInputRef?.current?.value &&
         (confirmPasswordInputRef.current.value = "");
