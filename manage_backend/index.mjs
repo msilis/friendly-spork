@@ -21,6 +21,9 @@ const client = new Client({
   user: dbUser,
   password: dbUserPassword,
   database: dbName,
+  ssl: {
+    rejectUnauthorized: true,
+  },
 });
 
 export const app = express();

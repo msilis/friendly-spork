@@ -34,6 +34,9 @@ const client = new Client({
   user: dbUser,
   password: dbUserPassword,
   database: dbName,
+  ssl: {
+    rejectUnauthorized: true,
+  },
 });
 
 async function connectToDb() {
@@ -59,7 +62,6 @@ router.get("/", (req, res) => {
 
 router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log(req.body, "request body");
   try {
     const userFromDb = await db
       .selectDistinct()
