@@ -995,4 +995,49 @@ router.post("/useradmin/create", async (req, res) => {
   }
 });
 
+router.post("/useradmin/update", async (req, res) => {
+  const password = req.body.password;
+  const userId = req.body.userId;
+  const saltRounds = 10;
+
+  try {
+    const checkIfUserExists = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.user_id, Number(userId)));
+    if (checkIfUserExists.length === 0) {
+      res.status(404).json({ message: "User not found" });
+    }
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    await db
+      .update(userTable)
+      .set({ hashedPassword: hashedPassword })
+      .where(eq(userTable.user_id, Number(userId)));
+    res.status(204).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error updating password: ", error);
+  }
+});
+
+router.delete("/useradmin/delete", async (req, res) => {
+  console.log(req, "request");
+  const userId = req.body.userId;
+  try {
+    console.log("From the try block of delete");
+    const checkIfUserExists = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.user_id, Number(userId)));
+    if (checkIfUserExists.length === 0) {
+      console.log(`User for this id: ${userId} was not found`);
+      res.status(404).json({ messasge: "User not found" });
+    }
+    await db.delete(userTable).where(eq(userTable.user_id, userId));
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user: ", error);
+    res.status(500).json({ message: "Error deleting user" });
+  }
+});
+
 export default router;

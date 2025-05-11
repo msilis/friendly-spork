@@ -619,3 +619,39 @@ export const createUser = async (data: { email: string; password: string }) => {
     console.error("Error creating user: ", error);
   }
 };
+
+export const updatePassword = async (data: {
+  id: string | number;
+  password: string;
+}) => {
+  try {
+    const updatePassword = await fetch(`${BACKEND_URL}/useradmin/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return updatePassword;
+  } catch (error) {
+    console.error("Error updating password: ", error);
+  }
+};
+
+export const deleteUser = async (data: {
+  userId: number | string | undefined;
+}) => {
+  console.log(data, "data sent to delete");
+  try {
+    const deleteUser = await fetch(`${BACKEND_URL}/useradmin/delete`, {
+      method: "DELETE",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return deleteUser;
+  } catch (error) {
+    console.error("Error deleting user: ", error);
+  }
+};
