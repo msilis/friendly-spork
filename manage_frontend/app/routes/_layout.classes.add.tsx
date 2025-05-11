@@ -103,9 +103,17 @@ const AddClass = () => {
     };
 
   return (
-    <div>
+    <div className="ml-8">
       <Link to={"/classes"}>
-        <button className="btn-link">Back</button>
+        <button className="btn btn-sm mt-1 mb-1">
+          <img
+            src="../arrow-left.svg"
+            alt="back-arrow"
+            height="20"
+            width="25"
+          />
+          Back
+        </button>
       </Link>
       <form className="flex flex-col gap-3 ml-8 w-4/12" onSubmit={handleSubmit}>
         <h2>Add Class</h2>

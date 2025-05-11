@@ -83,7 +83,16 @@ const AddFamily = () => {
   return (
     <div className="ml-8">
       <Link to={"/families"}>
-        <button className="btn-link">Back</button>
+        <button className="btn mt-1 mb-1 btn-sm">
+          {" "}
+          <img
+            src="../arrow-left.svg"
+            alt="back-arrow"
+            height="20"
+            width="25"
+          />
+          Back
+        </button>
       </Link>
       <Form className="flex flex-col gap-3" method="POST">
         <h2>Add Family</h2>

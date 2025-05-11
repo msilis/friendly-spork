@@ -17,7 +17,6 @@ import {
   invoiceItemTable,
   userTable,
 } from "../db/pgSchema.mts";
-import { Database, type SQLiteCloudConfig } from "@sqlitecloud/drivers";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 

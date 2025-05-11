@@ -38,9 +38,17 @@ const AddStudent = () => {
   const familyLastNames = useLoaderData<typeof loader>();
 
   return (
-    <div>
+    <div className="ml-8">
       <Link to={"/students"}>
-        <button className="btn-link">Back</button>
+        <button className="btn btn-sm mt-1 mb-1">
+          <img
+            src="../arrow-left.svg"
+            alt="back-arrow"
+            height="20"
+            width="25"
+          />
+          Back
+        </button>
       </Link>
       <Form className="flex flex-col gap-3 ml-8" method="POST">
         <h2>Add Student</h2>
