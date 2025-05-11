@@ -10,4 +10,4 @@ Dev instructions in relevant folder README
 - Remix.js frontend
 - Express backend served with NodeJS
 - Drizzle used as an ORM
-- SQLite database
+- Postgres database
