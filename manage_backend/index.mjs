@@ -29,23 +29,23 @@ const client = new Client({
 export const app = express();
 const port = process.env.BACKEND_PORT || 8080;
 
-async function connectToDb() {
-  try {
-    await client.connect();
-    console.log("Successfully connected to database");
-  } catch (error) {
-    console.error(
-      "There was an error connecting to the database (from main connect): ",
-      error,
-    );
-  }
-}
+// async function connectToDb() {
+//   try {
+//     await client.connect();
+//     console.log("Successfully connected to database");
+//   } catch (error) {
+//     console.error(
+//       "There was an error connecting to the database (from main connect): ",
+//       error,
+//     );
+//   }
+// }
 
-connectToDb();
+// connectToDb();
 
-const dbFile = process.env.DB_FILE_NAME;
+// const dbFile = process.env.DB_FILE_NAME;
 
-const db = drizzle(client);
+// const db = drizzle(client);
 
 app.use(
   cors({
