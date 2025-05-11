@@ -55,9 +55,9 @@ const Classes = () => {
 
   const handleDeleteConfirmation = () => {
     deleteClass(classIdToDelete);
-    revalidate.revalidate();
     classIdToDelete = undefined;
     confirmationRef.current?.close();
+    revalidate.revalidate();
     toast.success("Class deleted successfully");
   };
 

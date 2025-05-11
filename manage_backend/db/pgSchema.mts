@@ -50,7 +50,7 @@ export const classesTable = pgTable("classes_table", {
   class_end_time: t.varchar("class_end_time"),
   class_accompanist: t
     .integer("class_accompanist")
-    .references((): AnyPgColumn => teacherTable.id),
+    .references(() => teacherTable.id),
   class_students: jsonb("class_students"),
   class_teacher: jsonb("class_teacher"),
 });

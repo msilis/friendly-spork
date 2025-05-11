@@ -247,7 +247,9 @@ const Settings = () => {
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
             <h3>Current amount </h3>
             <h2 className="font-bold text-center text-xl">
-              {`£${settingsMap["per_student_price"]}` || ""}
+              {settingsMap["per_student_price"]
+                ? `£${settingsMap["per_student_price"]}`
+                : "£0"}
             </h2>
             <h3 className="text-center">per term</h3>
           </div>
@@ -269,7 +271,9 @@ const Settings = () => {
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
             <h3>Current amount </h3>
             <h2 className="font-bold text-center text-xl">
-              {`£${settingsMap["theory_price"]}` || ""}
+              {settingsMap["theory_price"]
+                ? `£${settingsMap["theory_price"]}`
+                : "£0"}
             </h2>
             <h3 className="text-center">per term</h3>
           </div>
