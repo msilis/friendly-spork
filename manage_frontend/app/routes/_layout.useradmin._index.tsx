@@ -4,11 +4,29 @@ import { deleteUser, getUsers, updatePassword } from "~/data/data";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
-  return await getUsers();
+  try {
+    const users = await getUsers();
+    return Response.json({ users });
+  } catch (error) {
+    console.error("Error fetching users: ", error);
+    return Response.json(
+      {
+        message:
+          "Sorry, there was an error getting users, please try again later",
+      },
+      { status: 500 }
+    );
+  }
 };
 
 const UserAdmin = () => {
-  const users = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<{
+    message?: string;
+    users?: { email: string; user_id: number }[];
+  }>();
+  const users: { email: string; user_id: number }[] | undefined =
+    loaderData.users;
+  const errorMessage = loaderData.message;
   const confirmationRef = useRef<HTMLDialogElement>(null);
   const passwordRef = useRef<HTMLDialogElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -51,9 +69,30 @@ const UserAdmin = () => {
     confirmationRef.current?.close();
     toast.success("User deleted successfully");
   };
+
+  if (errorMessage) {
+    return (
+      <div className="alert alert-error">
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          className="w-6 h-6 stroke-current mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          ></path>
+        </svg>
+        <span>{errorMessage}</span>
+      </div>
+    );
+  }
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">User settings</h1>
+
       <Link to={"/useradmin/add"}>
         <button className="btn btn-outline btn-primary btn-sm mb-4">
           Add User
