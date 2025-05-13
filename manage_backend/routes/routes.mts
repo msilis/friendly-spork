@@ -37,10 +37,19 @@ const client = new Client({
   user: dbUser,
   password: dbUserPassword,
   database: dbName,
-  ssl: {
-    rejectUnauthorized: sslValue === "true" ? true : false,
-  },
 });
+
+if (sslValue === "true") {
+  client.ssl = {
+    rejectUnauthorized: true,
+  };
+} else if (sslValue === "false") {
+  () => {};
+} else if (process.env.NODE_ENV === "production") {
+  client.ssl = {
+    rejectUnauthorized: true,
+  };
+}
 
 async function connectToDb() {
   try {
