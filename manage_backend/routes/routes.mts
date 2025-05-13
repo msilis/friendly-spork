@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Client } from "pg";
+import { Client, ClientConfig } from "pg";
 import { and, between, desc, sql } from "drizzle-orm";
 import dotenv from "dotenv";
 import { eq } from "drizzle-orm";
@@ -31,25 +31,27 @@ const sslValue = process.env.SSL_VALUE;
 
 console.log(sslValue, "sslValue");
 
-const client = new Client({
+const initialClientConfig: Partial<ClientConfig> = {
   host: dbHost,
   port: dbPort,
   user: dbUser,
   password: dbUserPassword,
   database: dbName,
-});
+};
 
 if (sslValue === "true") {
-  client.ssl = {
+  initialClientConfig.ssl = {
     rejectUnauthorized: true,
   };
 } else if (sslValue === "false") {
   () => {};
 } else if (process.env.NODE_ENV === "production") {
-  client.ssl = {
+  initialClientConfig.ssl = {
     rejectUnauthorized: true,
   };
 }
+
+const client = new Client(initialClientConfig as ClientConfig);
 
 async function connectToDb() {
   try {

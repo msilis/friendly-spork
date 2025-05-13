@@ -16,27 +16,27 @@ const dbUser = process.env.DB_USER;
 const dbUserPassword = process.env.DB_PASSWORD;
 const sslValue = process.env.SSL_VALUE;
 
-const client = new Client({
+const initialClientConfig = {
   host: dbHost,
   port: dbPort,
   user: dbUser,
   password: dbUserPassword,
   database: dbName,
-});
-
-console.log(sslValue, "sslVale from index");
+};
 
 if (sslValue === "true") {
-  client.ssl = {
+  initialClientConfig.ssl = {
     rejectUnauthorized: true,
   };
 } else if (sslValue === "false") {
   () => {};
 } else if (process.env.NODE_ENV === "production") {
-  client.ssl = {
+  initialClientConfig.ssl = {
     rejectUnauthorized: true,
   };
 }
+
+const client = new Client(initialClientConfig);
 
 export const app = express();
 const port = process.env.BACKEND_PORT || 8080;
