@@ -78,7 +78,7 @@ jobs:
           JWT_SECRET: ${{secrets.JWT_SECRET}}
           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
           DB_USER: ${{secrets.DB_USER}}
-          SSL_VALUE: "false"
+          SSL_VALUE: false
         timeout-minutes: 5
 
       - name: Drizzle kit migration
