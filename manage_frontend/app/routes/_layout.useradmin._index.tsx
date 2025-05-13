@@ -72,7 +72,7 @@ const UserAdmin = () => {
 
   if (errorMessage) {
     return (
-      <div className="alert alert-error">
+      <div className="alert alert-error w-5/6 mt-8">
         <svg
           fill="none"
           viewBox="0 0 24 24"

@@ -10,20 +10,39 @@ import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
-  const [students, families, teachers] = await Promise.all([
-    getStudents(),
-    getFamilies(),
-    getTeachers(),
-  ]);
-  return Response.json({ students, families, teachers });
+  try {
+    const [students, families, teachers] = await Promise.all([
+      getStudents(),
+      getFamilies(),
+      getTeachers(),
+    ]);
+    return Response.json({ students, families, teachers });
+  } catch (error) {
+    console.error("There was an error getting info from the database: ", error);
+    return Response.json(
+      { message: "There was an error getting info from the database" },
+      { status: 500 }
+    );
+  }
 };
 
 const Students = () => {
-  const { students, families, teachers } = useLoaderData<typeof loader>();
-  const [studentOrder, setStudentOrder] = useState<StudentRecord[]>(students);
+  const loaderData = useLoaderData<{
+    message?: string;
+    students?: StudentRecord[];
+    families?: FamilyRecord[];
+    teachers?: TeacherRecord[];
+  }>();
+  const students = loaderData.students;
+  const families = loaderData.families;
+  const teachers = loaderData.teachers;
+  const errorMessage = loaderData.message;
+  const [studentOrder, setStudentOrder] = useState<StudentRecord[] | undefined>(
+    students
+  );
   const getFamilyLastName = (student: StudentRecord) => {
     const name =
-      families.find((family: FamilyRecord) => family.id === student.family_id)
+      families?.find((family: FamilyRecord) => family.id === student.family_id)
         ?.family_last_name || "Not assigned";
 
     return name;
@@ -31,7 +50,7 @@ const Students = () => {
 
   const getTeacherLastName = (student: StudentRecord) => {
     const name =
-      teachers.find(
+      teachers?.find(
         (teacher: TeacherRecord) => teacher.id === student.teacher_id
       )?.teacher_last_name || "Not assigned";
     return name;
@@ -50,6 +69,7 @@ const Students = () => {
   const handleStudentReorder = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
+    if (!students) return null;
     const currentValue = event.target?.value;
     switch (currentValue) {
       case "lastNameDescending": {
@@ -104,6 +124,26 @@ const Students = () => {
     confirmationRef.current?.close();
     toast.success("Student deleted successfully");
   };
+
+  if (errorMessage) {
+    return (
+      <div className="alert alert-error w-5/6 mt-8">
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          className="w-6 h-6 stroke-current mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          ></path>
+        </svg>
+        <span>{errorMessage}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">

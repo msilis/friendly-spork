@@ -66,16 +66,13 @@ const checkDatabaseHealth = async () => {
   }
 };
 
-const runHealthCheck = () => {
-  const interval = 300 * 1000;
-  const timeStamp = Date.now();
-  setInterval(() => {
-    checkDatabaseHealth();
-  }, interval);
-  console.info(`Database health check started: ${timeStamp}`);
-};
+const interval = 100 * 1000;
 
-runHealthCheck();
+setInterval(() => {
+  const timestamp = Date.now();
+  checkDatabaseHealth();
+  console.log(`Starting database health check: ${timestamp}`);
+}, interval);
 
 //Authentication/Authorisation
 

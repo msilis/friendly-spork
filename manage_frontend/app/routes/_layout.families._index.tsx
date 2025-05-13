@@ -5,16 +5,38 @@ import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
-  return await getFamilies();
+  try {
+    const families = await getFamilies();
+    return Response.json({ families });
+  } catch (error) {
+    console.error(
+      "There was an error getting the list of families from the database: ",
+      error
+    );
+    return Response.json(
+      {
+        message:
+          "Sorry, there was an error getting the list of families from the database. Please try again later.",
+      },
+      { status: 500 }
+    );
+  }
 };
 
 const Families = () => {
-  const families = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<{
+    message?: string;
+    families?: FamilyRecord[];
+  }>();
+  const families = loaderData.families;
+  const errorMessage = loaderData.message;
   const confirmationRef = useRef<HTMLDialogElement>(null);
   const toast = useToast();
   const revalidate = useRevalidator();
   let familyIdToDelete: number | undefined;
-  const [familyOrder, setFamilyOrder] = useState<FamilyRecord[]>(families);
+  const [familyOrder, setFamilyOrder] = useState<FamilyRecord[] | undefined>(
+    families
+  );
   const handleDeleteClick = (id: number | undefined) => {
     confirmationRef.current?.showModal();
     familyIdToDelete = id;
@@ -28,6 +50,7 @@ const Families = () => {
     toast.success("Family deleted successfully");
   };
   const handleFamilyReorder = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!families) return null;
     const currentValue = event.target?.value;
     switch (currentValue) {
       case "lastNameDescending": {
@@ -52,6 +75,26 @@ const Families = () => {
         setFamilyOrder(families);
     }
   };
+
+  if (loaderData.message) {
+    return (
+      <div className="alert alert-error w-5/6 mt-8">
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          className="w-6 h-6 stroke-current mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          ></path>
+        </svg>
+        <span>{errorMessage}</span>
+      </div>
+    );
+  }
 
   return (
     <div className={"overflow-x-auto"}>

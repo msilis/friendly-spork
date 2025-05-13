@@ -5,39 +5,60 @@ import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
-  const [classData, teacherData, studentData] = await Promise.all([
-    getClasses(),
-    getTeachers(),
-    getStudents(),
-  ]);
-  return Response.json({ classData, teacherData, studentData });
+  try {
+    const [classData, teacherData, studentData] = await Promise.all([
+      getClasses(),
+      getTeachers(),
+      getStudents(),
+    ]);
+    return Response.json({ classData, teacherData, studentData });
+  } catch (error) {
+    console.error(
+      "There was an error getting information from the database: ",
+      error
+    );
+    return Response.json(
+      {
+        message:
+          "Sorry, there was an error getting info from the database. Please try again later.",
+      },
+      { status: 500 }
+    );
+  }
 };
 
 const Classes = () => {
-  const { classData, teacherData, studentData } =
-    useLoaderData<typeof loader>();
+  const { classData, teacherData, studentData, message } = useLoaderData<{
+    message?: string;
+    classData?: ClassRecord[];
+    teacherData?: TeacherRecord[];
+    studentData?: StudentRecord[];
+  }>();
 
   const studentRef = useRef<HTMLDialogElement>(null);
   const [currentClassStudents, setCurrentClassStudents] = useState<
-    StudentRecord[]
+    StudentRecord[] | undefined
   >([]);
+  const errorMessage = message;
   const revalidate = useRevalidator();
   const confirmationRef = useRef<HTMLDialogElement>(null);
   const toast = useToast();
   const handleModalShow = (currentStudents: number[]) => {
     setCurrentClassStudents([]);
-    const studentsWithNames = currentStudents.map((currentStudent) => {
-      return studentData.find((student: StudentRecord) => {
-        return student.id === Number(currentStudent);
-      });
-    });
+    const studentsWithNames = currentStudents
+      .map((currentStudent) => {
+        return studentData?.find((student: StudentRecord | undefined) => {
+          return student?.id === Number(currentStudent);
+        });
+      })
+      .filter((student) => student !== undefined);
 
     setCurrentClassStudents(studentsWithNames);
     studentRef.current?.showModal();
   };
 
   const teacherName = (id: number) => {
-    const teacherName = teacherData.find((teacher: TeacherRecord) => {
+    const teacherName = teacherData?.find((teacher: TeacherRecord) => {
       return teacher.id === id;
     });
     let name;
@@ -60,6 +81,26 @@ const Classes = () => {
     revalidate.revalidate();
     toast.success("Class deleted successfully");
   };
+
+  if (errorMessage) {
+    return (
+      <div className="alert alert-error w-5/6 mt-8">
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          className="w-6 h-6 stroke-current mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          ></path>
+        </svg>
+        <span>{errorMessage}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -85,7 +126,7 @@ const Classes = () => {
           </tr>
         </thead>
         <tbody>
-          {classData.map((laud_class: ClassRecord) => {
+          {classData?.map((laud_class: ClassRecord) => {
             return (
               <tr key={laud_class.id}>
                 <td>{laud_class.id}</td>

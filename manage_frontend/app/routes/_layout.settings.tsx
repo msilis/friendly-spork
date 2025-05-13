@@ -4,8 +4,19 @@ import { getSettings, saveSettings } from "~/data/data";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
-  const settings = await getSettings();
-  return Response.json(settings);
+  try {
+    const settings = await getSettings();
+    return Response.json({ settings });
+  } catch (error) {
+    console.error("There was an error getting info from the database: ", error);
+    return Response.json(
+      {
+        message:
+          "Sorry, there was an error getting info from the databae. Please try again later.",
+      },
+      { status: 500 }
+    );
+  }
 };
 
 type SettingsType = {
@@ -14,11 +25,16 @@ type SettingsType = {
 };
 
 const Settings = () => {
-  const settings: SettingsType[] = useLoaderData<typeof loader>();
+  const { settings, message } = useLoaderData<{
+    settings?: SettingsType[];
+    message?: string;
+  }>();
+
   const revalidator = useRevalidator();
   const toast = useToast();
+  const errorMessage = message;
 
-  const settingsMap = settings.reduce<Record<string, string>>(
+  const settingsMap = settings?.reduce<Record<string, string>>(
     (acc, { settings_key, settings_value }) => {
       acc[settings_key] = settings_value;
       return acc;
@@ -77,6 +93,26 @@ const Settings = () => {
     revalidator.revalidate();
   };
 
+  if (errorMessage) {
+    return (
+      <div className="alert alert-error w-5/6 mt-8">
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          className="w-6 h-6 stroke-current mr-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          ></path>
+        </svg>
+        <span>{errorMessage}</span>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold">Settings</h1>
@@ -94,7 +130,7 @@ const Settings = () => {
               id="term1_start_date"
               name="term1_start_date"
               type="date"
-              defaultValue={settingsMap["term1_start_date"] || ""}
+              defaultValue={settingsMap?.["term1_start_date"] || ""}
               className="bg-base-300"
               onChange={handleTermChange}
             />
@@ -104,7 +140,7 @@ const Settings = () => {
               name="term1_end_date"
               type="date"
               className="bg-base-300"
-              defaultValue={settingsMap["term1_end_date"] || ""}
+              defaultValue={settingsMap?.["term1_end_date"] || ""}
               onChange={handleTermChange}
             />
             <label htmlFor="term2_end_date">Term 2 Start Date</label>
@@ -113,7 +149,7 @@ const Settings = () => {
               name="term2_start_date"
               type="date"
               className="bg-base-300"
-              defaultValue={settingsMap["term2_start_date"] || ""}
+              defaultValue={settingsMap?.["term2_start_date"] || ""}
               onChange={handleTermChange}
             />
             <label htmlFor="term2_end_date">Term 2 End Date</label>
@@ -122,7 +158,7 @@ const Settings = () => {
               name="term2_end_date"
               type="date"
               className="bg-base-300"
-              defaultValue={settingsMap["term2_end_date"] || ""}
+              defaultValue={settingsMap?.["term2_end_date"] || ""}
               onChange={handleTermChange}
             />
             <label htmlFor="term3_start_date">Term 3 Start Date</label>
@@ -131,7 +167,7 @@ const Settings = () => {
               name="term3_start_date"
               type="date"
               className="bg-base-300"
-              defaultValue={settingsMap["term3_start_date"] || ""}
+              defaultValue={settingsMap?.["term3_start_date"] || ""}
               onChange={handleTermChange}
             />
             <label htmlFor="term3_end_date">Term 3 End Date</label>
@@ -140,7 +176,7 @@ const Settings = () => {
               name="term3_end_date"
               type="date"
               className="bg-base-300"
-              defaultValue={settingsMap["term3_end_date"] || ""}
+              defaultValue={settingsMap?.["term3_end_date"] || ""}
               onChange={handleTermChange}
             />
             <button
@@ -161,7 +197,7 @@ const Settings = () => {
             <input
               id="term1_halfterm_startdate"
               name="term1_halfterm_startdate"
-              defaultValue={settingsMap["term1_halfterm_startdate"] || ""}
+              defaultValue={settingsMap?.["term1_halfterm_startdate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -172,7 +208,7 @@ const Settings = () => {
             <input
               id="term1_halfterm_enddate"
               name="term1_halfterm_enddate"
-              defaultValue={settingsMap["term1_halfterm_enddate"] || ""}
+              defaultValue={settingsMap?.["term1_halfterm_enddate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -183,7 +219,7 @@ const Settings = () => {
             <input
               id="term2_halfterm_startdate"
               name="term2_halfterm_startdate"
-              defaultValue={settingsMap["term2_halfterm_startdate"] || ""}
+              defaultValue={settingsMap?.["term2_halfterm_startdate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -194,7 +230,7 @@ const Settings = () => {
             <input
               id="term2_halfterm_enddate"
               name="term2_halfterm_enddate"
-              defaultValue={settingsMap["term2_halfterm_enddate"] || ""}
+              defaultValue={settingsMap?.["term2_halfterm_enddate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -205,7 +241,7 @@ const Settings = () => {
             <input
               id="term3_halfterm_startdate"
               name="term3_halfterm_startdate"
-              defaultValue={settingsMap["term3_halfterm_startdate"] || ""}
+              defaultValue={settingsMap?.["term3_halfterm_startdate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -216,7 +252,7 @@ const Settings = () => {
             <input
               id="term3_halfterm_enddate"
               name="term3_halfterm_enddate"
-              defaultValue={settingsMap["term3_halfterm_enddate"] || ""}
+              defaultValue={settingsMap?.["term3_halfterm_enddate"] || ""}
               type="date"
               className="bg-base-300"
               onChange={handleHalfTermChange}
@@ -247,8 +283,8 @@ const Settings = () => {
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
             <h3>Current amount </h3>
             <h2 className="font-bold text-center text-xl">
-              {settingsMap["per_student_price"]
-                ? `£${settingsMap["per_student_price"]}`
+              {settingsMap?.["per_student_price"]
+                ? `£${settingsMap?.["per_student_price"]}`
                 : "£0"}
             </h2>
             <h3 className="text-center">per term</h3>
@@ -271,7 +307,7 @@ const Settings = () => {
           <div className="flex flex-col gap-2 border-2 p-2 rounded-box">
             <h3>Current amount </h3>
             <h2 className="font-bold text-center text-xl">
-              {settingsMap["theory_price"]
+              {settingsMap?.["theory_price"]
                 ? `£${settingsMap["theory_price"]}`
                 : "£0"}
             </h2>
@@ -296,7 +332,7 @@ const Settings = () => {
             <h3>Current discount </h3>
             <h2 className="font-bold text-center text-xl">
               {`${
-                settingsMap["sibling_discount"]
+                settingsMap?.["sibling_discount"]
                   ? settingsMap["sibling_discount"]
                   : "0"
               }%`}
