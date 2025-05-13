@@ -58,6 +58,25 @@ router.get("/", (req, res) => {
   res.status(200).send("You are at the right place");
 });
 
+const checkDatabaseHealth = async () => {
+  try {
+    await db.select().from(userTable);
+  } catch (error) {
+    console.error("Health check failed: ", error);
+  }
+};
+
+const runHealthCheck = () => {
+  const interval = 300 * 1000;
+  const timeStamp = Date.now();
+  setInterval(() => {
+    checkDatabaseHealth();
+  }, interval);
+  console.info(`Database health check started: ${timeStamp}`);
+};
+
+runHealthCheck();
+
 //Authentication/Authorisation
 
 router.post("/login", async (req: Request, res: Response) => {

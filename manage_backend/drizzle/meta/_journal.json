@@ -15,6 +15,20 @@
       "when": 1746562855320,
       "tag": "0001_awesome_praxagora",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1747134379266,
+      "tag": "0002_pale_angel",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1747134529282,
+      "tag": "0003_groovy_gravity",
+      "breakpoints": true
     }
   ]
 }
