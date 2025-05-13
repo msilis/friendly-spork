@@ -27,6 +27,8 @@ const client = new Client({
   },
 });
 
+console.log(sslValue, "sslVale from index");
+
 // if (sslValue === "true") {
 //   client.ssl = {
 //     rejectUnauthorized: true,

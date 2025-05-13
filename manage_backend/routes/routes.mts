@@ -29,6 +29,8 @@ const dbUser = process.env.DB_USER;
 const dbUserPassword = process.env.DB_PASSWORD;
 const sslValue = process.env.SSL_VALUE;
 
+console.log(sslValue, "sslValue");
+
 const client = new Client({
   host: dbHost,
   port: dbPort,
