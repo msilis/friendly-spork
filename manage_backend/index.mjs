@@ -23,9 +23,23 @@ const client = new Client({
   password: dbUserPassword,
   database: dbName,
   ssl: {
-    rejectUnauthorized: sslValue,
+    rejectUnauthorized: sslValue === "true" ? true : false,
   },
 });
+
+// if (sslValue === "true") {
+//   client.ssl = {
+//     rejectUnauthorized: true,
+//   };
+// } else if (sslValue === "false") {
+//   client.ssl = {
+//     rejectUnauthorized: false,
+//   };
+// } else if (process.env.NODE_ENV === "production") {
+//   client.ssl = {
+//     rejectUnauthorized: true,
+//   };
+// }
 
 export const app = express();
 const port = process.env.BACKEND_PORT || 8080;

@@ -36,7 +36,7 @@ const client = new Client({
   password: dbUserPassword,
   database: dbName,
   ssl: {
-    rejectUnauthorized: sslValue,
+    rejectUnauthorized: sslValue === "true" ? true : false,
   },
 });
 
