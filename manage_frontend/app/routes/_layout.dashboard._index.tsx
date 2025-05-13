@@ -74,16 +74,17 @@ const Dashboard = () => {
       <section className="flex flex-col gap-2 mt-4">
         <h2 className="text-xl font-bold">At a glance...</h2>
         <div className="flex gap-4">
-          {totalOutstandingAmount ? (
-            <div className="stats shadow">
-              <div className="stat">
-                <div className="stat-title">Total outstanding invoices</div>
-                <div className="stat-value">{`£${convertToCurrency(
-                  totalOutstandingAmount
-                )}`}</div>
+          <div className="stats shadow">
+            <div className="stat">
+              <div className="stat-title">Total outstanding invoices</div>
+              <div className="stat-value">
+                {totalOutstandingAmount
+                  ? `£${convertToCurrency(totalOutstandingAmount)}`
+                  : "£0"}
               </div>
             </div>
-          ) : null}
+          </div>
+
           <div className="stats shadow">
             <div className="stat">
               <div className="stat-title">Total Current Students</div>
