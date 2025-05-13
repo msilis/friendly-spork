@@ -14,6 +14,7 @@ const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT;
 const dbUser = process.env.DB_USER;
 const dbUserPassword = process.env.DB_PASSWORD;
+const sslValue = process.env.SSL_VALUE;
 
 const client = new Client({
   host: dbHost,
@@ -22,7 +23,7 @@ const client = new Client({
   password: dbUserPassword,
   database: dbName,
   ssl: {
-    rejectUnauthorized: true,
+    rejectUnauthorized: sslValue,
   },
 });
 
