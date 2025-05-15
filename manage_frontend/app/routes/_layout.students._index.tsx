@@ -180,37 +180,39 @@ const Students = () => {
           </tr>
         </thead>
         <tbody>
-          {studentOrder?.map((student: StudentRecord) => {
-            return (
-              <tr key={student.id}>
-                <td>{student.id}</td>
-                <td>
-                  <Link
-                    to={`/students/${student.id?.toString()}`}
-                    className="hover:underline hover:text-blue-500"
-                  >
-                    {student.first_name}
-                  </Link>
-                </td>
-                <td>{student.last_name}</td>
-                <td>{student.birthdate}</td>
-                <td>{getFamilyLastName(student)}</td>
-                <td>{getTeacherLastName(student)}</td>
-                <td>
-                  <button
-                    onClick={() => handleDeleteClick(student.id)}
-                    title="Delete"
-                  >
-                    <img
-                      src="icons8-delete.svg"
-                      alt="delete student"
-                      className="hover:cursor-pointer"
-                    />
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
+          {studentOrder?.length
+            ? studentOrder?.map((student: StudentRecord) => {
+                return (
+                  <tr key={student.id}>
+                    <td>{student.id}</td>
+                    <td>
+                      <Link
+                        to={`/students/${student.id?.toString()}`}
+                        className="hover:underline hover:text-blue-500"
+                      >
+                        {student.first_name}
+                      </Link>
+                    </td>
+                    <td>{student.last_name}</td>
+                    <td>{student.birthdate}</td>
+                    <td>{getFamilyLastName(student)}</td>
+                    <td>{getTeacherLastName(student)}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteClick(student.id)}
+                        title="Delete"
+                      >
+                        <img
+                          src="icons8-delete.svg"
+                          alt="delete student"
+                          className="hover:cursor-pointer"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            : null}
         </tbody>
       </table>
       <dialog ref={confirmationRef} className="modal">

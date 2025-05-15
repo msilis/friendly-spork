@@ -109,8 +109,8 @@ const UserAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {users ? (
-            users.map((user: { user_id: number; email: string }) => {
+          {users?.length ? (
+            users?.map((user: { user_id: number; email: string }) => {
               return (
                 <tr key={user.user_id}>
                   <td>{user.email}</td>

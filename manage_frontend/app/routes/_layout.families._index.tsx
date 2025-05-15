@@ -50,11 +50,11 @@ const Families = () => {
     toast.success("Family deleted successfully");
   };
   const handleFamilyReorder = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!families) return null;
+    if (!families?.length) return;
     const currentValue = event.target?.value;
     switch (currentValue) {
       case "lastNameDescending": {
-        const sortedNames = [...families].sort(
+        const sortedNames: FamilyRecord[] | undefined = [...families]?.sort(
           (a: FamilyRecord, b: FamilyRecord) => {
             return b.family_last_name.localeCompare(a.family_last_name);
           }
@@ -76,7 +76,7 @@ const Families = () => {
     }
   };
 
-  if (loaderData.message) {
+  if (loaderData?.message) {
     return (
       <div className="alert alert-error w-5/6 mt-8">
         <svg
@@ -129,40 +129,40 @@ const Families = () => {
           </tr>
         </thead>
         <tbody>
-          {familyOrder?.map((family: FamilyRecord) => {
-            return (
-              <tr key={family?.id}>
-                <td>{family?.id}</td>
-
-                <td>
-                  <Link
-                    to={`/families/${family?.family_last_name?.toLowerCase()}`}
-                    className="hover:underline hover:text-blue-500"
-                    title="Click to see family info"
-                  >
-                    {family?.family_last_name}
-                  </Link>
-                </td>
-
-                <td>{family?.parent1_first_name}</td>
-                <td>{family?.parent1_last_name}</td>
-                <td>{family?.parent2_first_name}</td>
-                <td>{family?.parent2_last_name}</td>
-                <td>
-                  <button
-                    onClick={() => handleDeleteClick(family.id)}
-                    title="Delete"
-                  >
-                    <img
-                      src="icons8-delete.svg"
-                      alt="delete student"
-                      className="hover:cursor-pointer"
-                    />
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
+          {Array.isArray(familyOrder) && familyOrder.length > 0
+            ? familyOrder?.map((family: FamilyRecord) => {
+                return (
+                  <tr key={family?.id}>
+                    <td>{family?.id}</td>
+                    <td>
+                      <Link
+                        to={`/families/${family?.family_last_name?.toLowerCase()}`}
+                        className="hover:underline hover:text-blue-500"
+                        title="Click to see family info"
+                      >
+                        {family?.family_last_name}
+                      </Link>
+                    </td>
+                    <td>{family?.parent1_first_name}</td>
+                    <td>{family?.parent1_last_name}</td>
+                    <td>{family?.parent2_first_name}</td>
+                    <td>{family?.parent2_last_name}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteClick(family.id)}
+                        title="Delete"
+                      >
+                        <img
+                          src="icons8-delete.svg"
+                          alt="delete student"
+                          className="hover:cursor-pointer"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            : null}
         </tbody>
       </table>
       <dialog ref={confirmationRef} className="modal">

@@ -33,6 +33,7 @@ const Dashboard = () => {
     teachers?: TeacherRecord[];
     message?: string;
   }>();
+
   const filteredInvoices: InvoiceRecord[] | undefined = invoices?.filter(
     (invoice: InvoiceRecord) => invoice.invoice_status !== "paid"
   );

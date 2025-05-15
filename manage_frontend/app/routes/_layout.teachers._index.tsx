@@ -83,38 +83,40 @@ const Teachers = () => {
           </tr>
         </thead>
         <tbody>
-          {teachers?.map((teacher: TeacherRecord) => {
-            return (
-              <tr key={teacher.id}>
-                <td>{teacher.id}</td>
-                <td>
-                  <Link
-                    to={`/teachers/${teacher.id?.toString()}`}
-                    className="hover:underline hover:text-blue-500"
-                    title="Click to see teacher info"
-                  >
-                    {teacher.teacher_first_name}
-                  </Link>
-                </td>
-                <td>{teacher.teacher_last_name}</td>
-                <td>{teacher.teacher_email}</td>
-                <td>{teacher.teacher_mobile_phone}</td>
-                <td>{teacher.teacher_address}</td>
-                <td>
-                  <button
-                    onClick={() => handleDeleteClick(teacher.id)}
-                    title="Delete"
-                  >
-                    <img
-                      src="icons8-delete.svg"
-                      alt="delete student"
-                      className="hover:cursor-pointer"
-                    />
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
+          {teachers?.length
+            ? teachers?.map((teacher: TeacherRecord) => {
+                return (
+                  <tr key={teacher.id}>
+                    <td>{teacher.id}</td>
+                    <td>
+                      <Link
+                        to={`/teachers/${teacher.id?.toString()}`}
+                        className="hover:underline hover:text-blue-500"
+                        title="Click to see teacher info"
+                      >
+                        {teacher.teacher_first_name}
+                      </Link>
+                    </td>
+                    <td>{teacher.teacher_last_name}</td>
+                    <td>{teacher.teacher_email}</td>
+                    <td>{teacher.teacher_mobile_phone}</td>
+                    <td>{teacher.teacher_address}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteClick(teacher.id)}
+                        title="Delete"
+                      >
+                        <img
+                          src="icons8-delete.svg"
+                          alt="delete student"
+                          className="hover:cursor-pointer"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            : null}
         </tbody>
       </table>
       <dialog ref={confirmationRef} className="modal">

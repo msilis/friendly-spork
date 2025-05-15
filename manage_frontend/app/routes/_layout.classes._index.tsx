@@ -126,58 +126,62 @@ const Classes = () => {
           </tr>
         </thead>
         <tbody>
-          {classData?.map((laud_class: ClassRecord) => {
-            return (
-              <tr key={laud_class.id}>
-                <td>{laud_class.id}</td>
-                <td>
-                  <Link
-                    to={`/classes/${laud_class.id?.toString()}`}
-                    className="hover:underline hover:text-blue-500"
-                    title="Click to see class info"
-                  >
-                    {laud_class.class_name}
-                  </Link>
-                </td>
-                <td>{laud_class.class_location}</td>
-                <td>{laud_class.class_start_time}</td>
-                <td>{laud_class.class_end_time}</td>
-                {laud_class.class_students ? (
-                  <td
-                    onClick={() => handleModalShow(laud_class.class_students)}
-                    className="hover:cursor-pointer hover:underline hover:text-blue-500"
-                  >
-                    Click to see students
-                  </td>
-                ) : (
-                  <td> None assigned</td>
-                )}
-                <td>{laud_class.class_students?.length}</td>
-                <td>
-                  {laud_class.class_teacher
-                    ? teacherName(laud_class.class_teacher)
-                    : "None assigned"}
-                </td>
-                <td>
-                  {laud_class.class_teacher
-                    ? teacherName(laud_class.class_accompanist)
-                    : "None assigned"}
-                </td>
-                <td>
-                  <button
-                    onClick={() => handleDeleteClick(laud_class.id)}
-                    title="Delete"
-                  >
-                    <img
-                      src="icons8-delete.svg"
-                      alt="delete student"
-                      className="hover:cursor-pointer"
-                    />
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
+          {classData?.length
+            ? classData?.map((laud_class: ClassRecord) => {
+                return (
+                  <tr key={laud_class.id}>
+                    <td>{laud_class.id}</td>
+                    <td>
+                      <Link
+                        to={`/classes/${laud_class.id?.toString()}`}
+                        className="hover:underline hover:text-blue-500"
+                        title="Click to see class info"
+                      >
+                        {laud_class.class_name}
+                      </Link>
+                    </td>
+                    <td>{laud_class.class_location}</td>
+                    <td>{laud_class.class_start_time}</td>
+                    <td>{laud_class.class_end_time}</td>
+                    {laud_class.class_students ? (
+                      <td
+                        onClick={() =>
+                          handleModalShow(laud_class.class_students)
+                        }
+                        className="hover:cursor-pointer hover:underline hover:text-blue-500"
+                      >
+                        Click to see students
+                      </td>
+                    ) : (
+                      <td> None assigned</td>
+                    )}
+                    <td>{laud_class.class_students?.length}</td>
+                    <td>
+                      {laud_class.class_teacher
+                        ? teacherName(laud_class.class_teacher)
+                        : "None assigned"}
+                    </td>
+                    <td>
+                      {laud_class.class_teacher
+                        ? teacherName(laud_class.class_accompanist)
+                        : "None assigned"}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteClick(laud_class.id)}
+                        title="Delete"
+                      >
+                        <img
+                          src="icons8-delete.svg"
+                          alt="delete student"
+                          className="hover:cursor-pointer"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            : null}
         </tbody>
       </table>
       <dialog ref={studentRef} className="modal">

@@ -315,7 +315,7 @@ const Invoices = () => {
       <section>
         <h2 className="mt-4 font-bold">Previous Invoices</h2>
         <div className="h-1 border-2 border-black mr-4"></div>
-        {invoices.length === 0 ? (
+        {invoices?.length === 0 ? (
           <div className="w-fit mr-auto ml-auto mt-5 font-bold text-cyan-500">
             ...no invoices found
           </div>

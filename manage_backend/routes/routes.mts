@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Client, ClientConfig } from "pg";
+import { Pool, PoolConfig } from "pg";
 import { and, between, desc, sql } from "drizzle-orm";
 import dotenv from "dotenv";
 import { eq } from "drizzle-orm";
@@ -28,10 +28,7 @@ const dbPort = Number(process.env.DB_PORT) || 5432;
 const dbUser = process.env.DB_USER;
 const dbUserPassword = process.env.DB_PASSWORD;
 const sslValue = process.env.SSL_VALUE;
-
-console.log(sslValue, "sslValue");
-
-const initialClientConfig: Partial<ClientConfig> = {
+const initialPoolConfig: Partial<PoolConfig> = {
   host: dbHost,
   port: dbPort,
   user: dbUser,
@@ -40,22 +37,22 @@ const initialClientConfig: Partial<ClientConfig> = {
 };
 
 if (sslValue === "true") {
-  initialClientConfig.ssl = {
+  initialPoolConfig.ssl = {
     rejectUnauthorized: true,
   };
 } else if (sslValue === "false") {
   () => {};
 } else if (process.env.NODE_ENV === "production") {
-  initialClientConfig.ssl = {
+  initialPoolConfig.ssl = {
     rejectUnauthorized: true,
   };
 }
 
-const client = new Client(initialClientConfig as ClientConfig);
+const pool = new Pool(initialPoolConfig as PoolConfig);
 
 async function connectToDb() {
   try {
-    await client.connect();
+    await pool.connect();
     console.log("Successfully connected to Postgres database");
   } catch (error) {
     console.error(
@@ -66,7 +63,7 @@ async function connectToDb() {
 }
 
 connectToDb();
-const db = drizzle(client);
+const db = drizzle(pool);
 
 router.get("/", (req, res) => {
   res.status(200).send("You are at the right place");
