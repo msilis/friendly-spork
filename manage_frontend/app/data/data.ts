@@ -8,7 +8,8 @@ import {
   TransactionRecord,
 } from "~/types/types";
 
-const BACKEND_URL = "http://localhost:3000";
+// const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = process.env.MANAGE_BACKEND;
 
 export const login = async (data: { email: string; password: string }) => {
   try {
