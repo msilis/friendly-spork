@@ -155,6 +155,7 @@ export const updateFamily = async (
 };
 
 export const deleteFamily = async (familyId: number | undefined) => {
+  console.log(familyId, "familyID from delete");
   if (familyId) {
     const deleteFamily = await fetch(
       `${BACKEND_URL}/families/${familyId}/delete`,
@@ -165,6 +166,7 @@ export const deleteFamily = async (familyId: number | undefined) => {
         },
       }
     ).then((response) => response.json());
+    console.log(deleteFamily, "deleteFamily");
     return deleteFamily;
   } else {
     console.error("Nothing to delete, no id provided");

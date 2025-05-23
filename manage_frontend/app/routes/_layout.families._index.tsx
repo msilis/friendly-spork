@@ -1,7 +1,7 @@
 import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
 import { deleteFamily, getFamilies } from "~/data/data";
 import { FamilyRecord } from "~/types/types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {
@@ -29,6 +29,7 @@ const Families = () => {
     families?: FamilyRecord[];
   }>();
   const families = loaderData.families;
+  console.log(loaderData, "loaderData");
   const errorMessage = loaderData.message;
   const confirmationRef = useRef<HTMLDialogElement>(null);
   const toast = useToast();
@@ -42,8 +43,14 @@ const Families = () => {
     familyIdToDelete = id;
   };
 
-  const handleDeleteConfirmation = () => {
-    deleteFamily(familyIdToDelete);
+  useEffect(() => {
+    if (loaderData.families) {
+      setFamilyOrder(loaderData.families);
+    }
+  }, [loaderData.families]);
+
+  const handleDeleteConfirmation = async () => {
+    await deleteFamily(familyIdToDelete);
     revalidate.revalidate();
     familyIdToDelete = undefined;
     confirmationRef.current?.close();
