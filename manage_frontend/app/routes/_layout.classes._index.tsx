@@ -1,4 +1,9 @@
-import { Link, useLoaderData, useRevalidator } from "@remix-run/react";
+import {
+  Link,
+  useLoaderData,
+  useRevalidator,
+  useFetcher,
+} from "@remix-run/react";
 import {
   getClasses,
   getTeachers,
@@ -8,6 +13,38 @@ import {
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
+import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (intent === "delete") {
+    const classToDelete = formData.get("class_id");
+    if (typeof classToDelete === "string" && classToDelete) {
+      try {
+        const result = await deleteClass(parseInt(classToDelete, 10));
+        if (result?.success) {
+          return Response.json({ success: true, message: "Class deleted." });
+        } else {
+          return Response.json({
+            success: false,
+            message: "There was an error deleting class",
+          });
+        }
+      } catch (error) {
+        console.error("There was an error deleting this class: ", error);
+        return Response.json({
+          success: false,
+          message: "Server error deleting class",
+        });
+      }
+    } else {
+      return Response.json({ success: false, message: "Invalid form intent" });
+    }
+  }
+};
 
 export const loader = async () => {
   try {
@@ -46,6 +83,7 @@ const Classes = () => {
   >([]);
   const errorMessage = message;
   const revalidate = useRevalidator();
+  const fetcher = useFetcher();
   const confirmationRef = useRef<HTMLDialogElement>(null);
   const toast = useToast();
   const handleModalShow = (currentStudents: number[]) => {
@@ -80,11 +118,21 @@ const Classes = () => {
   };
 
   const handleDeleteConfirmation = () => {
-    deleteClass(classIdToDelete);
-    classIdToDelete = undefined;
-    confirmationRef.current?.close();
-    revalidate.revalidate();
-    toast.success("Class deleted successfully");
+    if (classIdToDelete !== undefined) {
+      fetcher.submit(
+        {
+          intent: "delete",
+          class_id: classIdToDelete.toString(),
+        },
+        { method: "POST" }
+      );
+      classIdToDelete = undefined;
+      confirmationRef.current?.close();
+      revalidate.revalidate();
+      toast.success("Class deleted successfully");
+    } else {
+      toast.error("Sorry, there was a problem deleting this class.");
+    }
   };
 
   if (errorMessage) {
