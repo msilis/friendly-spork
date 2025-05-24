@@ -4,7 +4,7 @@ import {
   getFamilies,
   getStudents,
   getTeachers,
-} from "~/data/data";
+} from "~/data/data.server";
 import { useRef, useState } from "react";
 import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";

@@ -1,7 +1,7 @@
 import { Form, Link } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { createUser } from "~/data/data";
+import { createUser } from "~/data/data.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const body = await request.formData();

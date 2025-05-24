@@ -1,7 +1,7 @@
 import { Form, Link } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { addTeacher } from "~/data/data";
+import { addTeacher } from "~/data/data.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const body = await request.formData();

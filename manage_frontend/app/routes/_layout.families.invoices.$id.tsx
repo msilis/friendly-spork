@@ -17,7 +17,7 @@ import {
   getTransactionsFromInvoice,
   saveInvoice,
   updateInvoice,
-} from "~/data/data";
+} from "~/data/data.server";
 import { FamilyRecord, TransactionRecord, InvoiceRecord } from "~/types/types";
 import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";

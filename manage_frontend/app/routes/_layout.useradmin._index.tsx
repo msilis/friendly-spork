@@ -1,6 +1,6 @@
 import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
 import { useRef } from "react";
-import { deleteUser, getUsers, updatePassword } from "~/data/data";
+import { deleteUser, getUsers, updatePassword } from "~/data/data.server";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {

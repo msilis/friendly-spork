@@ -1,5 +1,10 @@
 import { Link, useLoaderData, useRevalidator } from "@remix-run/react";
-import { getClasses, getTeachers, getStudents, deleteClass } from "~/data/data";
+import {
+  getClasses,
+  getTeachers,
+  getStudents,
+  deleteClass,
+} from "~/data/data.server";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";

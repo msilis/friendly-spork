@@ -1,5 +1,5 @@
 import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
-import { deleteTeacher, getTeachers } from "~/data/data";
+import { deleteTeacher, getTeachers } from "~/data/data.server";
 import { TeacherRecord } from "~/types/types";
 import { useRef } from "react";
 import { useToast } from "~/hooks/hooks";

@@ -1,8 +1,47 @@
-import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
-import { deleteFamily, getFamilies } from "~/data/data";
+import {
+  useLoaderData,
+  Link,
+  useRevalidator,
+  useFetcher,
+} from "@remix-run/react";
+import { deleteFamily, getFamilies } from "~/data/data.server";
 import { FamilyRecord } from "~/types/types";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
+import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (intent === "delete") {
+    const familyId = formData.get("family_id");
+    if (typeof familyId === "string" && familyId) {
+      try {
+        const result = await deleteFamily(parseInt(familyId, 10));
+        if (result?.success) {
+          return Response.json({ success: true, message: "Family deleted." });
+        } else {
+          return Response.json({
+            success: false,
+            message: "There was an error deleting the family.",
+          });
+        }
+      } catch (error) {
+        console.error("There was an error deleting the family: ", error);
+        return Response.json({
+          success: false,
+          message: "Server error deleting family.",
+        });
+      }
+    } else {
+      return Response.json({ message: "Invalid family ID" });
+    }
+  } else {
+    return Response.json({ success: false, message: "Invalid form intent" });
+  }
+};
 
 export const loader = async () => {
   try {
@@ -29,11 +68,11 @@ const Families = () => {
     families?: FamilyRecord[];
   }>();
   const families = loaderData.families;
-  console.log(loaderData, "loaderData");
   const errorMessage = loaderData.message;
   const confirmationRef = useRef<HTMLDialogElement>(null);
   const toast = useToast();
   const revalidate = useRevalidator();
+  const fetcher = useFetcher();
   let familyIdToDelete: number | undefined;
   const [familyOrder, setFamilyOrder] = useState<FamilyRecord[] | undefined>(
     families
@@ -50,11 +89,19 @@ const Families = () => {
   }, [loaderData.families]);
 
   const handleDeleteConfirmation = async () => {
-    await deleteFamily(familyIdToDelete);
-    revalidate.revalidate();
-    familyIdToDelete = undefined;
-    confirmationRef.current?.close();
-    toast.success("Family deleted successfully");
+    if (familyIdToDelete !== undefined) {
+      fetcher.submit(
+        {
+          intent: "delete",
+          family_id: familyIdToDelete.toString(),
+        },
+        { method: "POST" }
+      );
+      familyIdToDelete = undefined;
+      confirmationRef.current?.close();
+      revalidate.revalidate();
+      toast.success("Family deleted successfully");
+    }
   };
   const handleFamilyReorder = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (!families?.length) return;

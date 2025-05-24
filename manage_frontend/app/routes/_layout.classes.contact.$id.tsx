@@ -1,7 +1,7 @@
 import { useNavigate, useParams, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import { useClassContext } from "~/contexts/classContext";
-import { getFamilies } from "~/data/data";
+import { getFamilies } from "~/data/data.server";
 import { TeacherRecord, StudentRecord, FamilyRecord } from "~/types/types";
 import { handleSaveClick } from "~/utils/pdf-utils";
 

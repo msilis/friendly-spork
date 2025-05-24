@@ -12,7 +12,7 @@ import {
   getFamilies,
   updateStudent,
   findStudentInClass,
-} from "~/data/data";
+} from "~/data/data.server";
 import { ClassRecord, FamilyRecord, TeacherRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
 import { AlertContextType } from "~/contexts/alertContext";

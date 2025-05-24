@@ -6,7 +6,7 @@ import {
   getTeachers,
   getStudents,
   getAccompanists,
-} from "~/data/data";
+} from "~/data/data.server";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 

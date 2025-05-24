@@ -2,7 +2,7 @@ import { Form, Link, useActionData, useSubmit } from "@remix-run/react";
 import { useRef, useState } from "react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { addFamily } from "~/data/data";
+import { addFamily } from "~/data/data.server";
 import { useToast } from "~/hooks/hooks";
 
 export const action = async ({ request }: ActionFunctionArgs) => {

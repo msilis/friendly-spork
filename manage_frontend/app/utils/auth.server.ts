@@ -1,7 +1,7 @@
 import { Authenticator } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { User } from "./models/user.server";
-import { login } from "~/data/data";
+import { login } from "~/data/data.server";
 export const authenticator = new Authenticator<User | Error | null>();
 
 authenticator.use(

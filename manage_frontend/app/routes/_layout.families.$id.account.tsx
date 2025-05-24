@@ -15,7 +15,7 @@ import {
   updateTransaction,
   getStudents,
   getSettings,
-} from "~/data/data";
+} from "~/data/data.server";
 import { FamilyRecord, StudentRecord, TransactionRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
 

@@ -1,5 +1,10 @@
 import { useLoaderData, useSearchParams } from "@remix-run/react";
-import { getClasses, getFamilies, getStudents, getTeachers } from "~/data/data";
+import {
+  getClasses,
+  getFamilies,
+  getStudents,
+  getTeachers,
+} from "~/data/data.server";
 import {
   generateFamilyTable,
   generateStudentTable,

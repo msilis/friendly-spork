@@ -1,6 +1,11 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
-import { getClasses, getFamily, getStudents, updateFamily } from "~/data/data";
+import {
+  getClasses,
+  getFamily,
+  getStudents,
+  updateFamily,
+} from "~/data/data.server";
 import React, { useRef, useState } from "react";
 import { FamilyRecord, StudentRecord, ClassRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";

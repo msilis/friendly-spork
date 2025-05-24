@@ -7,7 +7,12 @@ import {
 } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { getClass, getStudents, getTeachers, updateClass } from "~/data/data";
+import {
+  getClass,
+  getStudents,
+  getTeachers,
+  updateClass,
+} from "~/data/data.server";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import Select, { MultiValue } from "react-select";
 import { useClassContext } from "~/contexts/classContext";

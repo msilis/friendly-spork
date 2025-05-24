@@ -1,7 +1,7 @@
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { addStudent, getFamilies } from "~/data/data";
+import { addStudent, getFamilies } from "~/data/data.server";
 import { FamilyRecord } from "~/types/types";
 
 export const action = async ({ request }: ActionFunctionArgs) => {

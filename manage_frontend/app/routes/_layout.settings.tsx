@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLoaderData, useRevalidator } from "@remix-run/react";
-import { getSettings, saveSettings } from "~/data/data";
+import { getSettings, saveSettings } from "~/data/data.server";
 import { useToast } from "~/hooks/hooks";
 
 export const loader = async () => {

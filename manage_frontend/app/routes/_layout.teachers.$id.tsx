@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { getTeacher, updateTeacher } from "~/data/data";
+import { getTeacher, updateTeacher } from "~/data/data.server";
 import {
   json,
   useLoaderData,

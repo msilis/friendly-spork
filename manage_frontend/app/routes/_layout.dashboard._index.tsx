@@ -1,5 +1,5 @@
 import { useLoaderData } from "@remix-run/react";
-import { getAllInvoices, getStudents, getTeachers } from "~/data/data";
+import { getAllInvoices, getStudents, getTeachers } from "~/data/data.server";
 import { InvoiceRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { convertToCurrency } from "~/utils/pdf-utils";
 

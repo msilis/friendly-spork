@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useLoaderData, Link } from "@remix-run/react";
 import { useClassContext } from "~/contexts/classContext";
-import { getSettings } from "~/data/data";
+import { getSettings } from "~/data/data.server";
 import { useState, useEffect } from "react";
 import { handleSaveClick } from "~/utils/pdf-utils";
 import { getWednesdays } from "~/utils/utils";
