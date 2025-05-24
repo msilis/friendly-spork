@@ -1,8 +1,49 @@
-import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
+import {
+  useLoaderData,
+  Link,
+  useRevalidator,
+  useFetcher,
+} from "@remix-run/react";
 import { deleteTeacher, getTeachers } from "~/data/data.server";
 import { TeacherRecord } from "~/types/types";
 import { useRef } from "react";
 import { useToast } from "~/hooks/hooks";
+import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (intent === "delete") {
+    const teacherId = formData.get("teacher_id");
+    if (typeof teacherId === "string" && teacherId) {
+      try {
+        const result = await deleteTeacher(parseInt(teacherId, 10));
+        if (result?.success) {
+          return Response.json({
+            success: true,
+            message: "Teacher deleted successfully",
+          });
+        } else {
+          return Response.json({
+            success: false,
+            message: "There was an error deleting the teacher",
+          });
+        }
+      } catch (error) {
+        console.error("There was an error deleting this teacher: ", error);
+        return Response.json({
+          success: false,
+          message: "Server error deleting teacher",
+        });
+      }
+    } else
+      return Response.json({ success: false, message: "Invalid teacher ID" });
+  } else {
+    return Response.json({ success: false, message: "Invalid form intent" });
+  }
+};
 
 export const loader = async () => {
   try {
@@ -28,6 +69,7 @@ const Teachers = () => {
   const confirmationRef = useRef<HTMLDialogElement>(null);
   let teacherIdToDelete: number | undefined;
   const revalidate = useRevalidator();
+  const fetcher = useFetcher();
   const toast = useToast();
   const handleDeleteClick = (id: number | undefined) => {
     confirmationRef.current?.showModal();
@@ -35,11 +77,19 @@ const Teachers = () => {
   };
 
   const handleDeleteConfirmation = () => {
-    deleteTeacher(teacherIdToDelete);
-    revalidate.revalidate();
-    teacherIdToDelete = undefined;
-    confirmationRef.current?.close();
-    toast.success("Teacher deleted successfully");
+    if (teacherIdToDelete !== undefined) {
+      fetcher.submit(
+        {
+          intent: "delete",
+          teacher_id: teacherIdToDelete.toString(),
+        },
+        { method: "POST" }
+      );
+      revalidate.revalidate();
+      teacherIdToDelete = undefined;
+      confirmationRef.current?.close();
+      toast.success("Teacher deleted successfully");
+    } else return toast.error("There was an error deleting the teacher");
   };
 
   if (loaderData.message) {
