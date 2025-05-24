@@ -1,7 +1,83 @@
 import { useState } from "react";
-import { useLoaderData, useRevalidator } from "@remix-run/react";
+import { useLoaderData, useRevalidator, useFetcher } from "@remix-run/react";
 import { getSettings, saveSettings } from "~/data/data.server";
 import { useToast } from "~/hooks/hooks";
+import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  console.log(formData, "formData");
+  console.log(intent, "intent");
+  if (intent === "save_term_dates") {
+    const saveTermData = formData.get("term_date_data");
+    if (typeof saveTermData === "string" && saveTermData) {
+      const parsedData = JSON.parse(saveTermData);
+      try {
+        const result = await saveSettings(parsedData);
+        if (result?.success) {
+          return Response.json({ success: true, message: "Term dates saved" });
+        } else
+          return Response.json({
+            success: false,
+            message: "There was an error saving term dates",
+          });
+      } catch (error) {
+        console.error("Error savinv term dates: ", error);
+        return Response.json({
+          success: false,
+          message: "Error saving term dates",
+        });
+      }
+    }
+  } else if (intent === "save_half_term_dates") {
+    const saveHalfTermData = formData.get("half_term_data");
+    if (typeof saveHalfTermData === "string" && saveHalfTermData) {
+      const parsedHalfTermData = JSON.parse(saveHalfTermData);
+      try {
+        const result = await saveSettings(parsedHalfTermData);
+        if (result?.success) {
+          return Response.json({
+            success: true,
+            message: "Half-term dates saved",
+          });
+        } else
+          return Response.json({
+            success: false,
+            message: "Error saving half-term dates",
+          });
+      } catch (error) {
+        console.error("Error saving half-term dates: ", error);
+        return Response.json({
+          success: false,
+          message: "Error saving half-term dates",
+        });
+      }
+    }
+  } else if (intent === "save_price_settings") {
+    const priceData = formData.get("price_data");
+    if (typeof priceData === "string" && priceData) {
+      const parsedPriceData = JSON.parse(priceData);
+      console.log(parsedPriceData, "parsedPriceData");
+      try {
+        const result = await saveSettings(parsedPriceData);
+        if (result?.success) {
+          return Response.json({ success: true, message: "Price info saved" });
+        } else
+          return Response.json({
+            success: false,
+            message: "Error saving price info",
+          });
+      } catch (error) {
+        console.error("Error saving price info: ", error);
+      }
+    }
+  } else {
+    return Response.json({ message: "Invalid form intent" });
+  }
+};
 
 export const loader = async () => {
   try {
@@ -33,6 +109,7 @@ const Settings = () => {
   const revalidator = useRevalidator();
   const toast = useToast();
   const errorMessage = message;
+  const fetcher = useFetcher();
 
   const settingsMap = settings?.reduce<Record<string, string>>(
     (acc, { settings_key, settings_value }) => {
@@ -62,9 +139,17 @@ const Settings = () => {
         settings_value: value,
       })
     );
-    await saveSettings(settingsArray);
-    revalidator.revalidate();
-    toast.success("Term dates saved");
+    if (settingsArray !== undefined) {
+      fetcher.submit(
+        {
+          intent: "save_term_dates",
+          term_date_data: JSON.stringify(settingsArray),
+        },
+        { method: "POST" }
+      );
+      revalidator.revalidate();
+      toast.success("Term dates saved");
+    } else return toast.error("Error savin term dates");
   };
 
   const handleHalfTermSave = async () => {
@@ -75,9 +160,14 @@ const Settings = () => {
       })
     );
 
-    await saveSettings(halfTermArray);
-    revalidator.revalidate();
-    toast.success("Half-term dates saved");
+    if (halfTermArray !== undefined) {
+      fetcher.submit({
+        intent: "save_half_term_dates",
+        half_term_data: JSON.stringify(halfTermArray),
+      });
+      revalidator.revalidate();
+      toast.success("Half-term dates saved");
+    } else return toast.error("Error saving half-term dates");
   };
 
   const savePriceSetting = async (
@@ -88,9 +178,20 @@ const Settings = () => {
     const name = input?.name;
     const value = input?.value;
     const priceToSave = [{ settings_key: name, settings_value: value }];
-    await saveSettings(priceToSave);
-    input.value = "";
-    revalidator.revalidate();
+    if (priceToSave !== undefined) {
+      console.log(priceToSave, "priceToSave");
+      console.log(JSON.stringify(priceToSave), "stringified price");
+      fetcher.submit(
+        {
+          intent: "save_price_settings",
+          price_data: JSON.stringify(priceToSave),
+        },
+        { method: "POST" }
+      );
+      input.value = "";
+      revalidator.revalidate();
+      toast.success("Price info saved");
+    } else return toast.error("Error saving price info");
   };
 
   if (errorMessage) {
