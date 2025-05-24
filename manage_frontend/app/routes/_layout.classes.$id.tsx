@@ -107,6 +107,7 @@ const LauderdaleClass = () => {
       setClassStudents(studentsWithNames);
     };
     classStudentNames();
+    // eslint-disable-next-line
   }, [studentData, lauderdaleClass?.class_students]);
 
   const handleOpenModal = () => {

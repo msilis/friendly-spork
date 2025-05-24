@@ -1,13 +1,52 @@
-import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
+import {
+  useLoaderData,
+  Link,
+  useRevalidator,
+  useFetcher,
+} from "@remix-run/react";
 import {
   deleteStudent,
   getFamilies,
   getStudents,
   getTeachers,
 } from "~/data/data.server";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FamilyRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
+import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (intent === "delete") {
+    const studentToDelete = formData.get("student_id");
+
+    if (typeof studentToDelete === "string" && studentToDelete) {
+      try {
+        const result = await deleteStudent(parseInt(studentToDelete, 10));
+        if (result?.success) {
+          return Response.json({
+            success: true,
+            message: "Student deleted sucessfully",
+          });
+        } else {
+          return Response.json({
+            success: false,
+            message: "There was an error deleting the student",
+          });
+        }
+      } catch (error) {
+        console.error("There was an error deleting the student");
+        return Response.json({
+          status: false,
+          message: "There was server error deleting the student",
+        });
+      }
+    }
+  }
+};
 
 export const loader = async () => {
   try {
@@ -37,6 +76,7 @@ const Students = () => {
   const families = loaderData.families;
   const teachers = loaderData.teachers;
   const errorMessage = loaderData.message;
+  const fetcher = useFetcher();
   const [studentOrder, setStudentOrder] = useState<StudentRecord[] | undefined>(
     students
   );
@@ -55,6 +95,12 @@ const Students = () => {
       )?.teacher_last_name || "Not assigned";
     return name;
   };
+
+  useEffect(() => {
+    if (students) {
+      setStudentOrder(students);
+    }
+  }, [students]);
 
   const revalidate = useRevalidator();
   const toast = useToast();
@@ -118,11 +164,24 @@ const Students = () => {
   };
 
   const handleDeleteConfirmation = () => {
-    deleteStudent(studentIdToDelete);
-    revalidate.revalidate();
-    studentIdToDelete = undefined;
-    confirmationRef.current?.close();
-    toast.success("Student deleted successfully");
+    if (studentIdToDelete !== undefined) {
+      fetcher.submit(
+        {
+          intent: "delete",
+          student_id: studentIdToDelete?.toString(),
+        },
+        {
+          method: "POST",
+        }
+      );
+      revalidate.revalidate();
+      studentIdToDelete = undefined;
+      confirmationRef.current?.close();
+      toast.success("Student deleted successfully");
+    } else {
+      toast.error("There was an issue deleting this student.");
+      return;
+    }
   };
 
   if (errorMessage) {
