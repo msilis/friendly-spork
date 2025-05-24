@@ -1,7 +1,79 @@
-import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
+import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+import {
+  useLoaderData,
+  Link,
+  useRevalidator,
+  useFetcher,
+} from "@remix-run/react";
 import { useRef } from "react";
 import { deleteUser, getUsers, updatePassword } from "~/data/data.server";
 import { useToast } from "~/hooks/hooks";
+
+interface ActionResponse {
+  success: boolean;
+  message: string;
+}
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (intent === "update") {
+    const userIdToUpdate = formData.get("id");
+    const passwordToUpdate = formData.get("password");
+    if (
+      typeof userIdToUpdate === "string" &&
+      typeof passwordToUpdate === "string" &&
+      userIdToUpdate &&
+      passwordToUpdate
+    ) {
+      try {
+        const updatedData = {
+          id: userIdToUpdate.toString(),
+          password: passwordToUpdate.toString(),
+        };
+        const result = await updatePassword(updatedData);
+        if (result?.success) {
+          return Response.json({ success: true, message: "Password updated" });
+        } else
+          return Response.json({
+            success: false,
+            message: "There was an error updating the password",
+          });
+      } catch (error) {
+        console.log("Error updating password: ", error);
+        return Response.json({
+          success: false,
+          message: "Error updating password",
+        });
+      }
+    } else
+      return Response.json({ success: false, message: "Invalid form data" });
+  } else if (intent === "delete") {
+    const userToDelete = formData.get("user_id");
+    if (typeof userToDelete === "string" && userToDelete) {
+      try {
+        const result = await deleteUser({
+          userId: userToDelete,
+        });
+        if (result?.success) {
+          return Response.json({ success: true, message: "User deleted" });
+        } else
+          return Response.json({
+            success: false,
+            message: "Error deleting user",
+          });
+      } catch (error) {
+        console.error("Network error ", error);
+        return Response.json({
+          success: false,
+          message: "There was a network error",
+        });
+      }
+    }
+  }
+};
 
 export const loader = async () => {
   try {
@@ -34,6 +106,7 @@ const UserAdmin = () => {
   const revalidate = useRevalidator();
   let userToDelete: number | string | undefined;
   let userToUpdate: number | string | undefined;
+  const fetcher = useFetcher<ActionResponse | undefined>();
   const toast = useToast();
   const handleUpdatePassword = (id: string | number | undefined) => {
     passwordRef.current?.show();
@@ -45,16 +118,24 @@ const UserAdmin = () => {
     ) {
       toast.error("Passwords do not match");
     } else {
-      const dataToUpdate = {
-        id: userToUpdate,
-        password: passwordInputRef.current?.value,
-      };
-      updatePassword(dataToUpdate);
-      passwordInputRef?.current?.value && (passwordInputRef.current.value = "");
-      confirmPasswordInputRef?.current?.value &&
-        (confirmPasswordInputRef.current.value = "");
-      passwordRef.current?.close();
-      toast.success("Password has been updated");
+      if (
+        userToUpdate !== undefined &&
+        passwordInputRef.current?.value !== undefined
+      ) {
+        fetcher.submit(
+          {
+            id: userToUpdate,
+            password: passwordInputRef.current?.value,
+          },
+          { method: "POST" }
+        );
+        passwordInputRef?.current?.value &&
+          (passwordInputRef.current.value = "");
+        confirmPasswordInputRef?.current?.value &&
+          (confirmPasswordInputRef.current.value = "");
+        passwordRef.current?.close();
+        toast.success("Password has been updated");
+      } else toast.error("There was an error updating the password");
     }
   };
   const handleDeleteUser = (id: number | string | undefined) => {
@@ -63,11 +144,19 @@ const UserAdmin = () => {
   };
 
   const handleDeleteConfirmation = () => {
-    deleteUser({ userId: userToDelete });
-    revalidate.revalidate();
-    userToDelete = undefined;
-    confirmationRef.current?.close();
-    toast.success("User deleted successfully");
+    if (userToDelete !== undefined) {
+      fetcher.submit(
+        {
+          intent: "delete",
+          user_id: userToDelete.toString(),
+        },
+        { method: "POST" }
+      );
+      userToDelete = undefined;
+      confirmationRef.current?.close();
+      revalidate.revalidate();
+      toast.success("User deleted successfully");
+    } else return toast.error("There was an error deleting the user");
   };
 
   if (errorMessage) {

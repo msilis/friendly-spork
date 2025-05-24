@@ -634,7 +634,7 @@ export const updatePassword = async (data: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    });
+    }).then((response) => response.json());
     return updatePassword;
   } catch (error) {
     console.error("Error updating password: ", error);
@@ -644,7 +644,6 @@ export const updatePassword = async (data: {
 export const deleteUser = async (data: {
   userId: number | string | undefined;
 }) => {
-  console.log(data, "data sent to delete");
   try {
     const deleteUser = await fetch(`${BACKEND_URL}/useradmin/delete`, {
       method: "DELETE",
@@ -652,7 +651,7 @@ export const deleteUser = async (data: {
         "Content-type": "application/json",
       },
       body: JSON.stringify(data),
-    });
+    }).then((response) => response.json());
     return deleteUser;
   } catch (error) {
     console.error("Error deleting user: ", error);
