@@ -440,7 +440,9 @@ router
           .set(filteredTeacherData)
           .where(eq(teacherTable.id, Number(teacherId)));
 
-        res.status(200).json(filteredTeacherData);
+        res
+          .status(200)
+          .json({ success: true, message: "Teacher info updated" });
       }
     } catch (error) {
       console.error("There was an error updating the teacher record: ", error);
@@ -463,7 +465,9 @@ router.delete("/teachers/:teacherId/delete", async (req, res) => {
       await db
         .delete(teacherTable)
         .where(eq(teacherTable.id, Number(teacherId)));
-      res.status(200).json({ message: "Teacher deleted successfully!" });
+      res
+        .status(200)
+        .json({ success: true, message: "Teacher deleted successfully!" });
     }
   } catch (error) {
     console.error("There was an error deleting the record: ", error);

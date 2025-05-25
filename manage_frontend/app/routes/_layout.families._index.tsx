@@ -20,6 +20,7 @@ export const action: ActionFunction = async ({
     if (typeof familyId === "string" && familyId) {
       try {
         const result = await deleteFamily(parseInt(familyId, 10));
+        console.log(result, "result");
         if (result?.success) {
           return Response.json({ success: true, message: "Family deleted." });
         } else {

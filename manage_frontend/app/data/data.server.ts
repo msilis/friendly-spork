@@ -140,14 +140,14 @@ export const updateFamily = async (
   id: string | undefined
 ) => {
   try {
-    const updateTeacher = await fetch(`${BACKEND_URL}/families/${id}/edit`, {
+    const updateFamily = await fetch(`${BACKEND_URL}/families/${id}/edit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     }).then((response) => response.json());
-    return updateTeacher;
+    return updateFamily;
   } catch (error) {
     console.error(error, "There was an error updating the family record.");
   }
@@ -165,7 +165,6 @@ export const deleteFamily = async (familyId: number | undefined) => {
         },
       }
     ).then((response) => response.json());
-    console.log(deleteFamily, "deleteFamily");
     return deleteFamily;
   } else {
     console.error("Nothing to delete, no id provided");
@@ -223,9 +222,11 @@ export const updateTeacher = async (
         body: JSON.stringify(data),
       }
     ).then((response) => response.json());
+    console.log(updateTeacher, "update teacher from data");
     return updateTeacher;
   } catch (error) {
     console.error(error, "Error updating teacher");
+    return { success: false, message: "Error updating teacher" };
   }
 };
 

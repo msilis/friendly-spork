@@ -1,4 +1,8 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import {
+  LoaderFunctionArgs,
+  ActionFunction,
+  ActionFunctionArgs,
+} from "@remix-run/node";
 import { getTeacher, updateTeacher } from "~/data/data.server";
 import {
   json,
@@ -6,10 +10,55 @@ import {
   useParams,
   Link,
   useRevalidator,
+  useFetcher,
 } from "@remix-run/react";
 import { useRef, useState } from "react";
 import { TeacherRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (intent === "update") {
+    const id = formData.get("id");
+    const updatedData = formData.get("updated_data");
+    if (
+      typeof id === "string" &&
+      typeof updatedData === "string" &&
+      id &&
+      updatedData
+    ) {
+      const parsedData = JSON.parse(updatedData);
+      try {
+        const result = await updateTeacher(parsedData, id);
+        console.log(result, "result");
+        if (result?.success) {
+          return Response.json({
+            success: true,
+            message: "Teacher info updated",
+          });
+        } else
+          return Response.json({
+            success: false,
+            message: "Error updating teacher info. Request failed.",
+          });
+      } catch (error) {
+        console.error("Error updating teacher info");
+        return Response.json({
+          success: false,
+          message: "Error updating teacher info",
+        });
+      }
+    } else
+      return Response.json({ success: false, message: "Invalid form data" });
+  } else
+    return Response.json({
+      success: false,
+      message: "Server error updating teacher data",
+    });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [teacherData] = await getTeacher(params.id);
@@ -20,6 +69,7 @@ const Teacher = () => {
   const teacherData = useLoaderData<typeof loader>();
   const modalRef = useRef<HTMLDialogElement>(null);
   const toast = useToast();
+  const fetcher = useFetcher();
 
   const [formState, setFormState] = useState<TeacherRecord>({
     id: teacherData.id,
@@ -46,11 +96,6 @@ const Teacher = () => {
     JSON.stringify(formState) !== JSON.stringify(teacherData) ? true : false;
 
   const handleSave = () => {
-    console.log(formState, "formState");
-    let teacherId = formState.id;
-    if (formState.id) {
-      teacherId = Number(formState.id);
-    }
     let isAccompanist = formState.is_teacher_accompanist;
     if (formState.is_teacher_accompanist === "on") {
       isAccompanist = Number(1);
@@ -67,22 +112,28 @@ const Teacher = () => {
     ) {
       throw new Error("Invalid form data");
     }
+    const updatedData = {
+      teacher_first_name: formState.teacher_first_name,
+      teacher_last_name: formState.teacher_last_name,
+      teacher_email: formState.teacher_email,
+      teacher_mobile_phone: formState.teacher_mobile_phone,
+      teacher_address: formState.teacher_address,
+      is_teacher_accompanist: isAccompanist,
+    };
 
-    updateTeacher(
-      {
-        id: teacherId,
-        teacher_first_name: formState.teacher_first_name,
-        teacher_last_name: formState.teacher_last_name,
-        teacher_email: formState.teacher_email,
-        teacher_mobile_phone: formState.teacher_mobile_phone,
-        teacher_address: formState.teacher_address,
-        is_teacher_accompanist: isAccompanist,
-      },
-      params.id
-    );
-    revalidator.revalidate();
-    handleModalClose();
-    toast.success("Teacher information updated");
+    if (updatedData !== undefined && params.id !== undefined) {
+      fetcher.submit(
+        {
+          intent: "update",
+          updated_data: JSON.stringify(updatedData),
+          id: params.id,
+        },
+        { method: "POST" }
+      );
+      handleModalClose();
+      revalidator.revalidate();
+      toast.success(fetcher?.data.message);
+    } else return toast.error("Error updating teacer information");
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
