@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import type { UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { netlifyPlugin } from "@netlify/remix-adapter/plugin";
 
 declare module "@remix-run/node" {
   interface Future {
@@ -24,6 +25,7 @@ export default defineConfig({
       : react(),
 
     tsconfigPaths(),
+    netlifyPlugin(),
   ],
   build: {
     sourcemap: false,
