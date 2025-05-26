@@ -222,7 +222,6 @@ export const updateTeacher = async (
         body: JSON.stringify(data),
       }
     ).then((response) => response.json());
-    console.log(updateTeacher, "update teacher from data");
     return updateTeacher;
   } catch (error) {
     console.error(error, "Error updating teacher");

@@ -181,7 +181,7 @@ router
         .from(studentTable)
         .where(eq(studentTable.id, Number(studentId)));
       if (studentExists.length === 0) {
-        res.status(404).json({ message: "Student not found" });
+        res.status(404).json({ sucess: false, message: "Student not found" });
       } else {
         const filteredStudentData = Object.fromEntries(
           Object.entries(updatedStudentData).filter(
@@ -193,11 +193,15 @@ router
           .set(filteredStudentData)
           .where(eq(studentTable.id, Number(studentId)));
 
-        res.status(200).json(updatedData);
+        res
+          .status(200)
+          .json({ success: true, message: "Student info updated" });
       }
     } catch (error) {
       console.error("There was an error updating the student record: ", error);
-      res.status(500).json({ message: "Error updating the student" });
+      res
+        .status(500)
+        .json({ success: false, message: "Error updating the student" });
     }
   });
 
@@ -318,7 +322,7 @@ router
         .from(familyTable)
         .where(eq(familyTable.id, Number(familyId)));
       if (familyExists.length === 0) {
-        res.status(500).json({ message: "Family not found" });
+        res.status(500).json({ success: false, message: "Family not found" });
       } else {
         const filteredFamilyData = Object.fromEntries(
           Object.entries(updatedFamilyData).filter(
@@ -329,13 +333,14 @@ router
           .update(familyTable)
           .set(filteredFamilyData)
           .where(eq(familyTable.id, Number(familyId)));
-        res.status(200).json(filteredFamilyData);
+        res.status(200).json({ sucess: true, message: "Family updated" });
       }
     } catch (error) {
       console.error("There was an error updating the record: ", error);
-      res
-        .status(500)
-        .json({ message: "There was an error updating the record" });
+      res.status(500).json({
+        success: false,
+        message: "There was an error updating the record",
+      });
     }
   });
 
@@ -428,7 +433,9 @@ router
         .from(teacherTable)
         .where(eq(teacherTable.id, Number(teacherId)));
       if (teacherExists.length === 0) {
-        res.status(500).json({ message: "Teache record not found" });
+        res
+          .status(500)
+          .json({ success: false, message: "Teache record not found" });
       } else {
         const filteredTeacherData = Object.fromEntries(
           Object.entries(updatedTeacherData).filter(
@@ -446,9 +453,10 @@ router
       }
     } catch (error) {
       console.error("There was an error updating the teacher record: ", error);
-      res
-        .status(500)
-        .json({ message: "There was an error updating the teacher record" });
+      res.status(500).json({
+        success: false,
+        message: "There was an error updating the teacher record",
+      });
     }
   });
 
@@ -577,7 +585,9 @@ router
         .from(classesTable)
         .where(eq(classesTable.id, Number(classId)));
       if (classExists.length === 0) {
-        res.status(500).json({ message: "Class record not found" });
+        res
+          .status(500)
+          .json({ success: false, message: "Class record not found" });
       } else {
         const filteredClassData = Object.fromEntries(
           Object.entries(updatedClassData).filter(
@@ -589,13 +599,14 @@ router
           .set(updatedClassData)
           .where(eq(classesTable.id, Number(classId)));
 
-        res.status(200).json(filteredClassData);
+        res.status(200).json({ success: true, message: "Class updated" });
       }
     } catch (error) {
       console.error("There was an error updating the class record", error);
-      res
-        .status(500)
-        .json({ message: "There was an error updating the class record." });
+      res.status(500).json({
+        success: false,
+        message: "There was an error updating the class record.",
+      });
     }
   });
 
@@ -699,13 +710,14 @@ router
           .set(filteredTransactionData)
           .where(eq(transactionTable.id, Number(transactionId)));
 
-        res.status(200).json(updatedData);
+        res.status(200).json({ success: true, message: "Transaction updated" });
       }
     } catch (error) {
       console.error("There was an error updting the transaction: ", error);
-      res
-        .status(500)
-        .json({ message: "There was an error updating the transaction" });
+      res.status(500).json({
+        sucess: false,
+        message: "There was an error updating the transaction",
+      });
     }
   });
 
@@ -844,7 +856,7 @@ router.post("/transactions/invoices/update/:invoiceId", async (req, res) => {
         .set(filteredInvoiceData)
         .where(eq(invoiceTable.invoice_id, Number(invoiceId)));
 
-      res.status(200).json(updatedData);
+      res.status(200).json({ success: true, message: "Invoice updated" });
     }
   } catch (error) {
     console.error("There was an error updting the invoice: ", error);
@@ -995,7 +1007,9 @@ router
           }),
       ),
     );
-    res.status(200).json({ message: "Setting saved successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Setting saved successfully" });
   });
 
 // Admin settings
@@ -1006,7 +1020,9 @@ router.get("/useradmin", async (req, res) => {
     res.status(200).json(getAllUsers);
   } catch (error) {
     console.error("Error getting users: ", error);
-    res.status(500).json({ message: `Error getting users: ${error}` });
+    res
+      .status(500)
+      .json({ success: false, message: `Error getting users: ${error}` });
   }
 });
 
@@ -1023,7 +1039,9 @@ router.post("/useradmin/create", async (req, res) => {
     res.status(200).json({ message: "User created successfully" });
   } catch (error) {
     console.error("Error creating user", error);
-    res.status(500).json({ message: `Error creating user: ${error}` });
+    res
+      .status(500)
+      .json({ success: false, message: `Error creating user: ${error}` });
   }
 });
 
@@ -1038,16 +1056,21 @@ router.post("/useradmin/update", async (req, res) => {
       .from(userTable)
       .where(eq(userTable.user_id, Number(userId)));
     if (checkIfUserExists.length === 0) {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ success: false, message: "User not found" });
     }
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     await db
       .update(userTable)
       .set({ hashedPassword: hashedPassword })
       .where(eq(userTable.user_id, Number(userId)));
-    res.status(204).json({ message: "Password updated successfully" });
+    res
+      .status(204)
+      .json({ success: true, message: "Password updated successfully" });
   } catch (error) {
     console.error("Error updating password: ", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error updating password" });
   }
 });
 
