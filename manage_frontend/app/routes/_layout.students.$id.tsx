@@ -3,9 +3,14 @@ import {
   useLoaderData,
   useParams,
   useRevalidator,
+  useFetcher,
 } from "@remix-run/react";
 import { useRef, useState } from "react";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import {
   getStudent,
   getTeachers,
@@ -13,9 +18,54 @@ import {
   updateStudent,
   findStudentInClass,
 } from "~/data/data.server";
-import { ClassRecord, FamilyRecord, TeacherRecord } from "~/types/types";
+import {
+  ClassRecord,
+  FamilyRecord,
+  FetcherData,
+  TeacherRecord,
+} from "~/types/types";
 import { useToast } from "~/hooks/hooks";
 import { AlertContextType } from "~/contexts/alertContext";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (!intent)
+    return Response.json({
+      success: false,
+      message: "Server error updating student",
+    });
+  const id = formData.get("id");
+  const updateData = formData.get("update_data");
+
+  if (
+    typeof id === "string" &&
+    typeof updateData === "string" &&
+    id &&
+    updateData
+  ) {
+    const parsedData = JSON.parse(updateData);
+    try {
+      const result = await updateStudent(parsedData, id);
+      if (result?.success) {
+        return Response.json({
+          success: true,
+          message: "Student info updated",
+        });
+      } else
+        return Response.json({
+          success: false,
+          message: "Error updating student",
+        });
+    } catch (error) {
+      console.error("Error updating student: ", error);
+      Response.json({ success: false, message: "Error updating student" });
+    }
+  } else return Response.json({ success: false, message: "Invalid form data" });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [studentData, families, teachers, studentInClass] = await Promise.all([
@@ -44,6 +94,7 @@ const Student = () => {
   const params = useParams();
   const revalidator = useRevalidator();
   const toast: AlertContextType = useToast();
+  const fetcher = useFetcher<FetcherData>();
 
   const handleOpenModal = () => {
     modalRef.current?.showModal();
@@ -73,20 +124,30 @@ const Student = () => {
       toast.error("There was an error with the form");
       throw new Error("Invalid form data");
     }
-    updateStudent(
-      {
-        id: formState.id,
-        first_name: formState.first_name,
-        last_name: formState.last_name,
-        birthdate: formState.birthdate,
-        family_id: family,
-        teacher_id: teacher,
-      },
-      params.id
-    );
-    revalidator.revalidate();
-    toast.success("Student updated");
-    handleModalClose();
+
+    const updatedStudent = {
+      first_name: formState.first_name,
+      last_name: formState.last_name,
+      birthdate: formState.birthdate,
+      family_id: family,
+      teacher_id: teacher,
+    };
+
+    if (updatedStudent !== undefined && params.id !== undefined) {
+      fetcher.submit(
+        {
+          intent: "update",
+          update_data: JSON.stringify(updatedStudent),
+          id: params.id,
+        },
+        { method: "POST" }
+      );
+      revalidator.revalidate();
+      fetcher.data?.success
+        ? toast.success(fetcher?.data?.message || "Teacher updated")
+        : toast.error("Error updating student");
+      handleModalClose();
+    }
   };
 
   const handleChange = (

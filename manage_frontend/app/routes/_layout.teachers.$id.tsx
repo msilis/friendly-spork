@@ -13,7 +13,7 @@ import {
   useFetcher,
 } from "@remix-run/react";
 import { useRef, useState } from "react";
-import { TeacherRecord } from "~/types/types";
+import { TeacherRecord, FetcherData } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
 
 export const action: ActionFunction = async ({
@@ -69,7 +69,7 @@ const Teacher = () => {
   const teacherData = useLoaderData<typeof loader>();
   const modalRef = useRef<HTMLDialogElement>(null);
   const toast = useToast();
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<FetcherData>();
 
   const [formState, setFormState] = useState<TeacherRecord>({
     id: teacherData.id,
@@ -132,8 +132,11 @@ const Teacher = () => {
       );
       handleModalClose();
       revalidator.revalidate();
-      toast.success(fetcher?.data.message);
-    } else return toast.error("Error updating teacer information");
+
+      fetcher.data?.success
+        ? toast.success(fetcher?.data?.message || "Teacher updated")
+        : toast.error("Error updating teacer information");
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

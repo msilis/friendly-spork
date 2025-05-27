@@ -616,7 +616,9 @@ router.post("/classes/getstudent/:studentId", async (req, res) => {
     const findStudentInClass = await db
       .select()
       .from(classesTable)
-      .where(sql`${classesTable.class_students} LIKE ${`%${student}%`}`);
+      .where(
+        sql`CAST(${classesTable.class_students} AS TEXT) LIKE ${`%${student}%`}`,
+      );
     res.status(200).json(findStudentInClass);
   } catch (error) {
     console.error(
@@ -1085,7 +1087,7 @@ router.delete("/useradmin/delete", async (req, res) => {
       .where(eq(userTable.user_id, Number(userId)));
     if (checkIfUserExists.length === 0) {
       console.log(`User for this id: ${userId} was not found`);
-      res.status(404).json({ messasge: "User not found" });
+      res.status(404).json({ success: false, messasge: "User not found" });
     }
     await db.delete(userTable).where(eq(userTable.user_id, userId));
     res.status(200).json({ message: "User deleted successfully" });

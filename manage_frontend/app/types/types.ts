@@ -81,3 +81,8 @@ export type SaveDataType = {
   invoice: InvoiceRecord;
   transactions: TransactionRecord;
 };
+
+export interface FetcherData {
+  success: boolean;
+  message: string | undefined;
+}
