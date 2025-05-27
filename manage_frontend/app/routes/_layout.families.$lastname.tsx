@@ -1,5 +1,14 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, Link, useRevalidator } from "@remix-run/react";
+import {
+  LoaderFunctionArgs,
+  ActionFunction,
+  ActionFunctionArgs,
+} from "@remix-run/node";
+import {
+  useLoaderData,
+  Link,
+  useRevalidator,
+  useFetcher,
+} from "@remix-run/react";
 import {
   getClasses,
   getFamily,
@@ -7,8 +16,54 @@ import {
   updateFamily,
 } from "~/data/data.server";
 import React, { useRef, useState } from "react";
-import { FamilyRecord, StudentRecord, ClassRecord } from "~/types/types";
+import {
+  FamilyRecord,
+  StudentRecord,
+  ClassRecord,
+  FetcherData,
+} from "~/types/types";
 import { useToast } from "~/hooks/hooks";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (!intent)
+    return Response.json({
+      success: false,
+      message: "Server error updating family",
+    });
+  const id = formData.get("id");
+  const updateData = formData.get("update_data");
+
+  if (
+    typeof id === "string" &&
+    typeof updateData === "string" &&
+    id &&
+    updateData
+  ) {
+    const parsedData = JSON.parse(updateData);
+    try {
+      const result = await updateFamily(parsedData, id);
+      console.log(result, "result");
+      if (result?.success) {
+        return Response.json({
+          success: true,
+          message: "Family info updated",
+        });
+      } else
+        return Response.json({
+          success: false,
+          message: "Error updating family",
+        });
+    } catch (error) {
+      console.error("Error updating family: ", error);
+      Response.json({ success: false, message: "Error updating family" });
+    }
+  } else return Response.json({ success: false, message: "Invalid form data" });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [families, students, classes] = await Promise.all([
@@ -26,6 +81,7 @@ const Family = () => {
   const studentsInFamily = students.filter(
     (student: StudentRecord) => student.family_id === family.id
   );
+  const fetcher = useFetcher<FetcherData>();
   const toast = useToast();
   const revalidator = useRevalidator();
   const [formState, setFormState] = useState<FamilyRecord>({
@@ -67,11 +123,6 @@ const Family = () => {
     JSON.stringify(formState) !== JSON.stringify(family) ? true : false;
 
   const handleSave = () => {
-    let familyId = formState.id;
-    if (formState.id) {
-      familyId = Number(formState.id);
-    }
-
     if (
       typeof formState.id !== "number" ||
       typeof formState.family_last_name !== "string" ||
@@ -93,7 +144,6 @@ const Family = () => {
     //TODO Fix validation
 
     const updatedData: FamilyRecord = {
-      id: familyId,
       family_last_name: formState.family_last_name,
       parent1_first_name: formState.parent1_first_name,
       parent1_last_name: formState.parent1_last_name,
@@ -117,10 +167,25 @@ const Family = () => {
       updatedData.parent2_address = formState.parent2_address;
     }
 
-    updateFamily(updatedData, family.id?.toString());
-    revalidator.revalidate();
-    toast.success("Family info updated");
-    handleModalClose();
+    if (updatedData !== undefined && family.id !== undefined) {
+      fetcher.submit(
+        {
+          intent: "update",
+          update_data: JSON.stringify(updatedData),
+          id: family.id.toString(),
+        },
+        {
+          method: "POST",
+        }
+      );
+
+      revalidator.revalidate();
+      handleModalClose();
+    }
+    console.log(fetcher.data, "fetcher data");
+    fetcher.data?.success
+      ? toast.success(fetcher.data?.message || "Family info updated")
+      : toast.error("Error updating family");
   };
 
   const shouldShowSecondParent = showSecondParent || family.parent2_first_name;

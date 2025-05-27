@@ -333,7 +333,7 @@ router
           .update(familyTable)
           .set(filteredFamilyData)
           .where(eq(familyTable.id, Number(familyId)));
-        res.status(200).json({ sucess: true, message: "Family updated" });
+        res.status(200).json({ success: true, message: "Family updated" });
       }
     } catch (error) {
       console.error("There was an error updating the record: ", error);
