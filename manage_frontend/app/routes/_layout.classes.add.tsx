@@ -35,7 +35,11 @@ export const action: ActionFunction = async ({
       console.error("Error in adding class: ", error);
       return Response.json({ success: false, message: "Error adding class" });
     }
-  }
+  } else
+    return Response.json({
+      success: false,
+      message: "Server error adding class",
+    });
 };
 
 export const loader = async () => {

@@ -4,9 +4,14 @@ import {
   useRevalidator,
   useNavigate,
   useParams,
+  useFetcher,
 } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import {
   getClass,
   getStudents,
@@ -17,6 +22,38 @@ import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
 import Select, { MultiValue } from "react-select";
 import { useClassContext } from "~/contexts/classContext";
 import { useToast } from "~/hooks/hooks";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const updatedClass = formData.get("updated_class_data");
+  const id = formData.get("id");
+  if (!updatedClass)
+    return Response.json({ success: false, message: "No info to update" });
+  if (
+    typeof updatedClass === "string" &&
+    updatedClass &&
+    typeof id === "string" &&
+    id
+  ) {
+    try {
+      const parsedData = JSON.parse(updatedClass);
+      const result = await updateClass(parsedData, id);
+      if (result?.success) {
+        return Response.json({ success: true, message: "Class updated" });
+      } else
+        return Response.json({
+          success: false,
+          message: "Error updating class :/",
+        });
+    } catch (error) {
+      console.error("There was an error updating class: ", error);
+      return Response.json({ success: false, message: "Error updating class" });
+    }
+  } else
+    Response.json({ success: false, message: "Server error updating class" });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [classData, studentData, teacherData] = await Promise.all([
@@ -50,6 +87,7 @@ const LauderdaleClass = () => {
   const params = useParams();
   const revalidator = useRevalidator();
   const toast = useToast();
+  const fetcher = useFetcher();
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -183,26 +221,36 @@ const LauderdaleClass = () => {
       typeof formState.class_start_time !== "string" ||
       typeof formState.class_end_time !== "string" ||
       typeof formState.class_teacher !== "number" ||
-      typeof formState.class_accompanist !== "number"
+      !(
+        typeof formState.class_accompanist === "number" ||
+        formState.class_accompanist === null
+      )
     ) {
       throw new Error("Invalid form data");
     }
-    updateClass(
-      {
-        id: formState.id,
-        class_name: formState.class_name,
-        class_location: formState.class_location,
-        class_start_time: formState.class_start_time,
-        class_end_time: formState.class_end_time,
-        class_teacher: classTeacher,
-        class_accompanist: classAccompanist,
-        class_students: formState.class_students,
-      },
-      params.id
-    );
-    revalidator.revalidate();
-    handleCloseModal();
-    toast.success("Class has been updated");
+    const updatedClassInfo = {
+      class_name: formState.class_name,
+      class_location: formState.class_location,
+      class_start_time: formState.class_start_time,
+      class_end_time: formState.class_end_time,
+      class_teacher: classTeacher,
+      class_accompanist: classAccompanist,
+      class_students: formState.class_students,
+    };
+    if (updatedClassInfo !== undefined && params.id !== undefined) {
+      fetcher.submit(
+        {
+          updated_class_data: JSON.stringify(updatedClassInfo),
+          id: params.id,
+        },
+        {
+          method: "POST",
+        }
+      );
+      revalidator.revalidate();
+      handleCloseModal();
+      toast.success("Class has been updated");
+    } else toast.error("Error updating class info :/");
   };
 
   const handleRegisterClick = () => {
