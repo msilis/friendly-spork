@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { Link, useLoaderData, useNavigate, useFetcher } from "@remix-run/react";
 
 import {
   addClass,
@@ -9,6 +9,34 @@ import {
 } from "~/data/data.server";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { ClassRecord, StudentRecord, TeacherRecord } from "~/types/types";
+import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+import { useToast } from "~/hooks/hooks";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const newClass = formData.get("class_data");
+  if (!newClass) {
+    return Response.json({ success: false, message: "Error in form" });
+  }
+  if (typeof newClass === "string" && newClass) {
+    try {
+      const parsedData = JSON.parse(newClass);
+      const result = await addClass(parsedData);
+      if (result?.success) {
+        return Response.json({ success: true, message: "Class added" });
+      } else
+        return Response.json({
+          success: true,
+          message: "There was an error adding this class.",
+        });
+    } catch (error) {
+      console.error("Error in adding class: ", error);
+      return Response.json({ success: false, message: "Error adding class" });
+    }
+  }
+};
 
 export const loader = async () => {
   const [studentData, teacherData, accompanistData] = await Promise.all([
@@ -31,8 +59,9 @@ const AddClass = () => {
   });
   const { studentData, teacherData, accompanistData } =
     useLoaderData<typeof loader>();
-
+  const fetcher = useFetcher();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const studentOptions = studentData.map((student: StudentRecord) => ({
     value: student.id,
@@ -50,6 +79,10 @@ const AddClass = () => {
       label: `${accompanist.teacher_last_name}, ${accompanist.teacher_first_name}`,
     })
   );
+  const allAccompanistOptions = [
+    { value: "", label: "No accompanist" },
+    ...accompanistOptions,
+  ];
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,7 +92,10 @@ const AddClass = () => {
       typeof formState.class_start_time !== "string" ||
       typeof formState.class_end_time !== "string" ||
       typeof formState.class_teacher !== "number" ||
-      typeof formState.class_accompanist !== "number"
+      !(
+        typeof formState.class_accompanist === "number" ||
+        formState.class_accompanist === null
+      )
     ) {
       throw new Error("Invalid form data");
     }
@@ -69,7 +105,7 @@ const AddClass = () => {
       if (formState.class_teacher) {
         teacher = Number(formState.class_teacher);
       }
-      await addClass({
+      const classData = {
         class_name: formState.class_name,
         class_location: formState.class_location,
         class_start_time: formState.class_start_time,
@@ -77,9 +113,19 @@ const AddClass = () => {
         class_students: formState.class_students,
         class_teacher: teacher,
         class_accompanist: formState.class_accompanist,
-      });
+      };
+      if (classData !== undefined) {
+        fetcher.submit(
+          {
+            class_data: JSON.stringify(classData),
+          },
+          {
+            method: "POST",
+          }
+        );
+        navigate("/classes");
+      } else toast.error("There was an error adding this class :/");
     }
-    navigate("/classes");
   };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -99,7 +145,11 @@ const AddClass = () => {
   const handleSingleSelectChange =
     (name: string) =>
     (newValue: SingleValue<{ value: string; label: string }>) => {
-      setFormState({ ...formState, [name]: newValue?.value });
+      let valueToStore: string | number | undefined | null = null;
+      if (name === "class_accompanist" && newValue?.value === "") {
+        valueToStore = null;
+      } else valueToStore = newValue?.value;
+      return setFormState({ ...formState, [name]: valueToStore });
     };
 
   return (
@@ -163,7 +213,7 @@ const AddClass = () => {
         />
         <label htmlFor="class_accompanist">Accompanist</label>
         <Select
-          options={accompanistOptions}
+          options={allAccompanistOptions}
           name="class_accompanist"
           onChange={handleSingleSelectChange("class_accompanist")}
         />
