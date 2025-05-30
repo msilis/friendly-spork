@@ -4,9 +4,14 @@ import {
   useLoaderData,
   useParams,
   useRevalidator,
+  useFetcher,
 } from "@remix-run/react";
 import { useState, useRef } from "react";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import {
   deleteTransaction,
   getFamily,
@@ -18,6 +23,95 @@ import {
 } from "~/data/data.server";
 import { FamilyRecord, StudentRecord, TransactionRecord } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (intent === "add_transaction") {
+    const transactionData = formData.get("add_transaction_data");
+    if (!transactionData)
+      return Response.json({
+        success: false,
+        message: "No transaction data to add",
+      });
+    if (typeof transactionData === "string" && transactionData) {
+      const parsedData = JSON.parse(transactionData);
+      try {
+        const result = await saveTransaction(parsedData);
+        if (result?.success) {
+          return Response.json({ success: true, message: "Transaction saved" });
+        } else
+          return Response.json({
+            success: false,
+            message: "Error saving transactions",
+          });
+      } catch (error) {
+        console.error("Error saving transaction: ", error);
+        return Response.json({
+          success: false,
+          message: "Error saving transaction",
+        });
+      }
+    }
+  } else if (intent === "update_transaction") {
+    const updatedTransactionData = formData.get("updated_transaction_data");
+    if (!updatedTransactionData)
+      return Response.json({ success: false, message: "No info to update" });
+    if (typeof updatedTransactionData === "string" && updatedTransactionData) {
+      try {
+        const parsedData = JSON.parse(updatedTransactionData);
+        const result = await updateTransaction(parsedData);
+        if (result?.success) {
+          return Response.json({
+            success: true,
+            message: "Transaction updated",
+          });
+        } else
+          return Response.json({
+            success: false,
+            message: "Error updating transaction",
+          });
+      } catch (error) {
+        console.error("Error updating transaction info");
+        return Response.json({
+          success: false,
+          message: "Error updating transaction info",
+        });
+      }
+    }
+  } else if (intent === "delete_transaction") {
+    const transactionId = formData.get("id");
+    if (!transactionId)
+      return Response.json({
+        success: false,
+        message: "No transaction id given",
+      });
+    if (typeof transactionId === "string" && transactionId) {
+      try {
+        const result = await deleteTransaction(Number(transactionId));
+        if (result?.success) {
+          return Response.json({
+            success: true,
+            message: "Transaction deleted",
+          });
+        } else
+          return Response.json({
+            success: false,
+            message: "Error deleting transaction",
+          });
+      } catch (error) {
+        console.error("Error deleting transaction: ", error);
+        return Response.json({
+          success: false,
+          message: "Error deleting transaction",
+        });
+      }
+    }
+  } else
+    return Response.json({ success: false, message: "Missing form intent" });
+};
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
@@ -60,6 +154,9 @@ const FamilyAccount = () => {
   const params = useParams();
   const date = new Date();
   const param = searchParams.get("name");
+  const addFetcher = useFetcher();
+  const updateFetcher = useFetcher();
+  const deleteFetcher = useFetcher();
   const [transactionData, setTransactionData] = useState<TransactionRecord>({
     transaction_date: date.toISOString().split("T")[0].toString(),
     account_id: Number(params.id),
@@ -125,21 +222,33 @@ const FamilyAccount = () => {
     ) {
       throw new Error("Invalid data");
     }
-    saveTransaction({
+    const saveTransactionData = {
       account_id: transactionData.account_id,
       transaction_date: transactionData.transaction_date,
       transaction_type: transactionData.transaction_type,
       transaction_amount: convertAmount(transactionData.transaction_amount),
       transaction_description: transactionData?.transaction_description,
-    });
-    revalidator.revalidate();
-    setTransactionData({
-      transaction_date: date.toISOString().split("T")[0].toString(),
-      account_id: Number(params.id),
-      transaction_type: "payment",
-      transaction_amount: "",
-    });
-    toast.success("Transaction added");
+    };
+    if (saveTransactionData !== undefined) {
+      addFetcher.submit(
+        {
+          add_transaction_data: JSON.stringify(saveTransactionData),
+        },
+        {
+          method: "POST",
+        }
+      );
+      revalidator.revalidate();
+      setTransactionData({
+        transaction_date: date.toISOString().split("T")[0].toString(),
+        account_id: Number(params.id),
+        transaction_type: "payment",
+        transaction_amount: "",
+      });
+      toast.success("Transaction added");
+    } else {
+      toast.error("Error adding transaction");
+    }
   };
 
   const handleUpdate = () => {
@@ -151,16 +260,26 @@ const FamilyAccount = () => {
     ) {
       throw new Error("Invalid form data!");
     }
-    updateTransaction({
+    const updateTransactionData = {
       id: modalTransaction.id,
       transaction_date: modalTransaction.transaction_date,
       transaction_type: modalTransaction.transaction_type,
       transaction_amount: convertAmount(modalTransaction.transaction_amount),
       transaction_description: modalTransaction?.transaction_description,
-    });
-    revalidator.revalidate();
-    editRef.current?.close();
-    toast.success("Transaction updated");
+    };
+    if (updateTransactionData !== undefined) {
+      updateFetcher.submit(
+        {
+          updated_transaction_data: JSON.stringify(updateTransactionData),
+        },
+        { method: "POST" }
+      );
+      revalidator.revalidate();
+      editRef.current?.close();
+      toast.success("Transaction updated");
+    } else {
+      toast.error("Error updating transaction");
+    }
   };
 
   const calculatedTotal = convertToCurrency(calculateTotal(transactions));
@@ -208,10 +327,12 @@ const FamilyAccount = () => {
       : false;
 
   const handleDeleteConfirm = (id: number | undefined) => {
-    deleteTransaction(id);
-    revalidator.revalidate();
-    setShowDelete(false);
-    editRef.current?.close();
+    if (id !== undefined) {
+      deleteFetcher.submit({ id: id }, { method: "POST" });
+      revalidator.revalidate();
+      setShowDelete(false);
+      editRef.current?.close();
+    }
   };
 
   const theoryPrice = settings.find(
