@@ -41,7 +41,7 @@ const Register = () => {
     setTeacherInformation,
   } = useClassContext();
 
-  const hasSetTermDate = settings.some(
+  const hasSetTermDate = settings?.some(
     (setting: SettingsType) => setting.settings_key === "term1_start_date"
   );
 
@@ -56,30 +56,30 @@ const Register = () => {
 
   useEffect(() => {
     const getTermDates = (term: number | string) => {
-      const startDate = settings.filter(
+      const startDate = settings?.filter(
         (setting: SettingsType) =>
           setting.settings_key === `term${term.toString()}_start_date`
       );
-      const endDate = settings.filter(
+      const endDate = settings?.filter(
         (setting: SettingsType) =>
           setting.settings_key === `term${term.toString()}_end_date`
       );
 
-      return [startDate[0].settings_value, endDate[0].settings_value];
+      return [startDate[0]?.settings_value, endDate[0]?.settings_value];
     };
 
     const getHalfTermDates = (term: number | string) => {
-      const halfTermStartDate = settings.filter(
+      const halfTermStartDate = settings?.filter(
         (setting: SettingsType) =>
           setting.settings_key === `term${term.toString()}_halfterm_startdate`
       );
-      const halfTermEndDate = settings.filter(
+      const halfTermEndDate = settings?.filter(
         (setting: SettingsType) =>
           setting.settings_key === `term${term.toString()}_halfterm_enddate`
       );
       return [
-        halfTermStartDate[0].settings_value,
-        halfTermEndDate[0].settings_value,
+        halfTermStartDate[0]?.settings_value,
+        halfTermEndDate[0]?.settings_value,
       ];
     };
     const termDatesToSet = getTermDates(term);
