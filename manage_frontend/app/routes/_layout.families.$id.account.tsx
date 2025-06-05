@@ -29,6 +29,7 @@ export const action: ActionFunction = async ({
 }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
+
   if (intent === "add_transaction") {
     const transactionData = formData.get("add_transaction_data");
     if (!transactionData)
@@ -190,7 +191,6 @@ const FamilyAccount = () => {
   const studentsInFamily = students.filter(
     (student: StudentRecord) => student.family_id === familyAccount.id
   );
-
   const [quickAddStudent, setQuickAddStudent] = useState<number | undefined>(
     studentsInFamily[0]?.id
   );
@@ -232,6 +232,7 @@ const FamilyAccount = () => {
     if (saveTransactionData !== undefined) {
       addFetcher.submit(
         {
+          intent: "add_transaction",
           add_transaction_data: JSON.stringify(saveTransactionData),
         },
         {
@@ -328,7 +329,10 @@ const FamilyAccount = () => {
 
   const handleDeleteConfirm = (id: number | undefined) => {
     if (id !== undefined) {
-      deleteFetcher.submit({ id: id }, { method: "POST" });
+      deleteFetcher.submit(
+        { intent: "delete_transaction", id: id },
+        { method: "POST" }
+      );
       revalidator.revalidate();
       setShowDelete(false);
       editRef.current?.close();
@@ -378,9 +382,19 @@ const FamilyAccount = () => {
         } - theory`,
       };
 
-      saveTransaction(saveData);
-      revalidator.revalidate();
-      toast.success("Theory has been added");
+      if (saveData !== undefined) {
+        addFetcher.submit(
+          {
+            intent: "add_transaction",
+            add_transaction_data: JSON.stringify(saveData),
+          },
+          {
+            method: "POST",
+          }
+        );
+        revalidator.revalidate();
+        toast.success("Theory has been added");
+      }
     } else if (option === "class") {
       const saveAddClassData: TransactionRecord = {
         account_id: Number(params.id),
@@ -396,9 +410,19 @@ const FamilyAccount = () => {
         } - class`,
       };
 
-      saveTransaction(saveAddClassData);
-      revalidator.revalidate();
-      toast.success("Class has been added");
+      if (saveAddClassData !== undefined) {
+        addFetcher.submit(
+          {
+            intent: "add_transaction",
+            add_transaction_data: JSON.stringify(saveAddClassData),
+          },
+          {
+            method: "POST",
+          }
+        );
+        revalidator.revalidate();
+        toast.success("Class has been added");
+      }
     } else if (option === "sibling_discount") {
       const saveSiblingDiscountData: TransactionRecord = {
         account_id: Number(params.id),
@@ -417,9 +441,17 @@ const FamilyAccount = () => {
         } - sibling discount`,
       };
 
-      saveTransaction(saveSiblingDiscountData);
-      revalidator.revalidate();
-      toast.success("Sibling discount added");
+      if (saveSiblingDiscountData !== undefined) {
+        addFetcher.submit(
+          {
+            intent: "add_transaction",
+            add_transaction_data: JSON.stringify(saveSiblingDiscountData),
+          },
+          { method: "POST" }
+        );
+        revalidator.revalidate();
+        toast.success("Sibling discount added");
+      }
     }
   };
 

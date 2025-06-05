@@ -65,7 +65,7 @@ export const transactionTable = pgTable("transaction_table", {
   account_id: t.integer("account_id").references(() => familyTable.id),
   transaction_date: t.varchar("transaction_date"),
   transaction_amount: t.integer("transaction_amount"),
-  transaction_type: t.integer("transaction_type"),
+  transaction_type: t.varchar("transaction_type").notNull(),
   transaction_description: t.varchar("transaction_description"),
 });
 

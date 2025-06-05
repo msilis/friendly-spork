@@ -1,0 +1,662 @@
+{
+  "id": "06f834da-2fd8-48ab-93b5-25b453e5e6aa",
+  "prevId": "dcd4a444-2217-4e1a-805f-f14f9097f68d",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.classes_table": {
+      "name": "classes_table",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "classes_table_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "class_name": {
+          "name": "class_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "class_location": {
+          "name": "class_location",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "class_start_time": {
+          "name": "class_start_time",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "class_end_time": {
+          "name": "class_end_time",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "class_accompanist": {
+          "name": "class_accompanist",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "class_students": {
+          "name": "class_students",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "class_teacher": {
+          "name": "class_teacher",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "classes_table_class_accompanist_teacher_table_id_fk": {
+          "name": "classes_table_class_accompanist_teacher_table_id_fk",
+          "tableFrom": "classes_table",
+          "tableTo": "teacher_table",
+          "columnsFrom": [
+            "class_accompanist"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.family_table": {
+      "name": "family_table",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "family_table_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "family_last_name": {
+          "name": "family_last_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent1_first_name": {
+          "name": "parent1_first_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent1_last_name": {
+          "name": "parent1_last_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent1_email": {
+          "name": "parent1_email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent1_mobile_phone": {
+          "name": "parent1_mobile_phone",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent2_first_name": {
+          "name": "parent2_first_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent2_last_name": {
+          "name": "parent2_last_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent2_email": {
+          "name": "parent2_email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent2_mobile_phone": {
+          "name": "parent2_mobile_phone",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent1_address": {
+          "name": "parent1_address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent2_address": {
+          "name": "parent2_address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alternate_contact_name": {
+          "name": "alternate_contact_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alternate_contact_email": {
+          "name": "alternate_contact_email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alternate_contact_mobile_phone": {
+          "name": "alternate_contact_mobile_phone",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.invoice_item_table": {
+      "name": "invoice_item_table",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "invoice_item_table_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "invoice_number": {
+          "name": "invoice_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invoice_id": {
+          "name": "invoice_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item_type": {
+          "name": "item_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item_description": {
+          "name": "item_description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "item_amount": {
+          "name": "item_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "invoice_item_table_invoice_id_invoice_table_invoice_id_fk": {
+          "name": "invoice_item_table_invoice_id_invoice_table_invoice_id_fk",
+          "tableFrom": "invoice_item_table",
+          "tableTo": "invoice_table",
+          "columnsFrom": [
+            "invoice_id"
+          ],
+          "columnsTo": [
+            "invoice_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.invoice_table": {
+      "name": "invoice_table",
+      "schema": "",
+      "columns": {
+        "invoice_id": {
+          "name": "invoice_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "invoice_table_invoice_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "invoice_number": {
+          "name": "invoice_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_date": {
+          "name": "invoice_date",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_amount": {
+          "name": "total_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_status": {
+          "name": "invoice_status",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'unpaid'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "invoice_table_account_id_family_table_id_fk": {
+          "name": "invoice_table_account_id_family_table_id_fk",
+          "tableFrom": "invoice_table",
+          "tableTo": "family_table",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.settings_table": {
+      "name": "settings_table",
+      "schema": "",
+      "columns": {
+        "settings_key": {
+          "name": "settings_key",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "settings_value": {
+          "name": "settings_value",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.student_table": {
+      "name": "student_table",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "student_table_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "birthdate": {
+          "name": "birthdate",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "teacher_id": {
+          "name": "teacher_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "student_table_family_id_family_table_id_fk": {
+          "name": "student_table_family_id_family_table_id_fk",
+          "tableFrom": "student_table",
+          "tableTo": "family_table",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "student_table_teacher_id_teacher_table_id_fk": {
+          "name": "student_table_teacher_id_teacher_table_id_fk",
+          "tableFrom": "student_table",
+          "tableTo": "teacher_table",
+          "columnsFrom": [
+            "teacher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.teacher_table": {
+      "name": "teacher_table",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "teacher_table_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "teacher_first_name": {
+          "name": "teacher_first_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "teacher_last_name": {
+          "name": "teacher_last_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "teacher_email": {
+          "name": "teacher_email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "teacher_mobile_phone": {
+          "name": "teacher_mobile_phone",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "teacher_address": {
+          "name": "teacher_address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_teacher_accompanist": {
+          "name": "is_teacher_accompanist",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction_table": {
+      "name": "transaction_table",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "transaction_table_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transaction_date": {
+          "name": "transaction_date",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transaction_amount": {
+          "name": "transaction_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transaction_type": {
+          "name": "transaction_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transaction_description": {
+          "name": "transaction_description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transaction_table_account_id_family_table_id_fk": {
+          "name": "transaction_table_account_id_family_table_id_fk",
+          "tableFrom": "transaction_table",
+          "tableTo": "family_table",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_table": {
+      "name": "user_table",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "user_table_user_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hashedPassword": {
+          "name": "hashedPassword",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

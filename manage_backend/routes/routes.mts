@@ -717,7 +717,7 @@ router
     } catch (error) {
       console.error("There was an error updting the transaction: ", error);
       res.status(500).json({
-        sucess: false,
+        success: false,
         message: "There was an error updating the transaction",
       });
     }
@@ -764,19 +764,20 @@ router.post("/transactions/save", async (req, res) => {
   } = req.body;
   try {
     const transactionData = {
-      transaction_date,
       account_id,
-      transaction_type,
+      transaction_date,
       transaction_amount,
+      transaction_type,
       transaction_description,
     };
     await db.insert(transactionTable).values(transactionData);
-    res.status(200).json({ message: "Transaction saved" });
+    res.status(200).json({ success: true, message: "Transaction saved" });
   } catch (error) {
     console.error("Error saving the transaction: ", error);
-    res
-      .status(500)
-      .json({ message: "Thee was an error saving the transaction" });
+    res.status(500).json({
+      success: false,
+      message: "There was an error saving the transaction",
+    });
   }
 });
 
