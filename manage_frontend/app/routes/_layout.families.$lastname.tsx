@@ -47,7 +47,6 @@ export const action: ActionFunction = async ({
     const parsedData = JSON.parse(updateData);
     try {
       const result = await updateFamily(parsedData, id);
-      console.log(result, "result");
       if (result?.success) {
         return Response.json({
           success: true,

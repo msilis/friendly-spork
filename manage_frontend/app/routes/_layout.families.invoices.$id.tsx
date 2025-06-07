@@ -4,8 +4,13 @@ import {
   useSearchParams,
   useLoaderData,
   useRevalidator,
+  useFetcher,
 } from "@remix-run/react";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import {
+  LoaderFunctionArgs,
+  ActionFunction,
+  ActionFunctionArgs,
+} from "@remix-run/node";
 import { convertToCurrency, formatter, generatePdf } from "~/utils/pdf-utils";
 import {
   deleteInvoice,
@@ -21,6 +26,88 @@ import {
 import { FamilyRecord, TransactionRecord, InvoiceRecord } from "~/types/types";
 import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
+
+export const action: ActionFunction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (!intent) {
+    return Response.json({
+      success: false,
+      message: "Server error. No intent provided.",
+    });
+  }
+  if (intent === "save_invoice") {
+    const invoiceData = formData.get("save_invoice_data");
+    if (!invoiceData)
+      return Response.json({ success: false, message: "No data provided" });
+    if (typeof invoiceData === "string" && invoiceData) {
+      const parsedInvoiceData = JSON.parse(invoiceData);
+      try {
+        const result = await saveInvoice(parsedInvoiceData);
+        if (result?.success) {
+          return Response.json({ success: true, message: "Invoice saved" });
+        } else
+          return Response.json({
+            success: false,
+            message: "There was an error saving this invoice",
+          });
+      } catch (error) {
+        console.error("Error saving invoice: ", error);
+        return Response.json({
+          success: false,
+          message: "Error saving invoice",
+        });
+      }
+    }
+  } else if (intent === "update_invoice") {
+    const updateInvoiceData = formData.get("update_invoice_data");
+    if (!updateInvoiceData) {
+      return Response.json({
+        success: false,
+        message: "There was no data to save",
+      });
+    }
+    if (typeof updateInvoiceData === "string" && updateInvoiceData) {
+      const parsedUpdateInvoiceData = JSON.parse(updateInvoiceData);
+      try {
+        const result = await updateInvoice(parsedUpdateInvoiceData);
+        if (result?.success) {
+          return Response.json({ success: true, message: "Invoice updated." });
+        }
+      } catch (error) {
+        console.error("Error updaing invoice: ", error);
+        return Response.json({
+          success: false,
+          message: "Error updating invoice.",
+        });
+      }
+    }
+  } else if (intent === "delete") {
+    const idToDelete = formData.get("delete_invoice_id");
+    if (!idToDelete)
+      return Response.json({ success: false, message: "No id provided" });
+    if (typeof idToDelete === "number" && idToDelete) {
+      try {
+        const result = await deleteInvoice(idToDelete);
+        if (result?.success) {
+          return Response.json({ success: true, message: "Invoice deleted" });
+        } else
+          return Response.json({
+            success: false,
+            message: "Error deleting invoice",
+          });
+      } catch (error) {
+        console.error("Error deleting invoice: ", error);
+        return Response.json({
+          success: false,
+          message: "Error deleting this invoice",
+        });
+      }
+    }
+  }
+};
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
@@ -48,6 +135,7 @@ const Invoices = () => {
     invoice_end_date: "",
   });
   const revalidator = useRevalidator();
+  const fetcher = useFetcher();
   const { family, invoices, lastInvoice } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,10 +264,20 @@ const Invoices = () => {
       transactions: removeNullsArray,
     };
 
-    saveInvoice(saveData);
-    generatePdf(invoiceInputs);
-    revalidator.revalidate();
-    toast.success("Invoice created");
+    if (saveData !== undefined) {
+      fetcher.submit(
+        {
+          intent: "save_invoice",
+          save_invoice_data: JSON.stringify(saveData),
+        },
+        {
+          method: "POST",
+        }
+      );
+      generatePdf(invoiceInputs);
+      revalidator.revalidate();
+      toast.success("Invoice created");
+    } else return toast.error("There was a problem saving this invoice");
   };
 
   const filteredInvoices = invoices.filter(
@@ -188,10 +286,19 @@ const Invoices = () => {
 
   const handleInvoiceDelete = (invoiceId: number | undefined) => {
     if (invoiceId !== undefined) {
-      deleteInvoice(invoiceId);
+      fetcher.submit(
+        {
+          intent: "delete_invoice",
+          delete_invoice_id: invoiceId,
+        },
+        {
+          method: "POST",
+        }
+      );
       revalidator.revalidate();
       toast.success("Invoice deleted");
     } else {
+      toast.error("Unable to delete invoice");
       throw new Error("InvoiceId is not valid");
     }
   };
@@ -260,9 +367,19 @@ const Invoices = () => {
   };
 
   const handleModalSave = () => {
-    updateInvoice(invoiceStatus);
-    revalidator.revalidate();
-    statusDialogRef.current?.close();
+    if (invoiceStatus !== undefined) {
+      fetcher.submit(
+        {
+          intent: "update_invoice",
+          update_invoice_data: JSON.stringify(invoiceStatus),
+        },
+        { method: "POST" }
+      );
+
+      revalidator.revalidate();
+      statusDialogRef.current?.close();
+    } else
+      toast.error("There was a problem updating the status of this invoice");
   };
 
   // TODO - fix conditional icons based on theme
