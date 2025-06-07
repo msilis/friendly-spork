@@ -113,6 +113,7 @@ const Invoices = () => {
       account_id: params.id,
     };
     // const transactions = await getTransactionsForInvoice(transactionQueryData);
+    const transactions = [];
     if (!transactions.length)
       throw new Error(
         "No transactions for this family or no transactions for this date range"

@@ -3,6 +3,7 @@ import {
   updateInvoice,
   deleteInvoice,
   getTransactionsFromInvoice,
+  getTransactionsForInvoice,
 } from "~/data/data.server";
 
 export const handleSaveInvoice = async (formData: FormData) => {
@@ -93,6 +94,7 @@ export const handleGetTransactionsFromInvoice = async (formData: FormData) => {
         return Response.json({
           success: true,
           messsage: "Successfully retreived invoice info",
+          data: result.data,
         });
       } else
         return Response.json({
@@ -104,6 +106,48 @@ export const handleGetTransactionsFromInvoice = async (formData: FormData) => {
       return Response.json({
         success: false,
         message: "Error getting invoice info",
+      });
+    }
+  }
+};
+
+export const handleGetTransactionsForInvoice = async (formData: FormData) => {
+  const invoiceStartDate = formData?.get("invoice_start_date");
+  const invoiceEndDate = formData?.get("invoice_end_date");
+  const accountId = formData?.get("invoice_id");
+  if (!invoiceStartDate || !invoiceEndDate || !accountId) {
+    return Response.json({
+      success: false,
+      message: "Not enough info to get transactions",
+    });
+  }
+  if (
+    typeof accountId === "number" &&
+    typeof invoiceStartDate === "string" &&
+    typeof invoiceEndDate === "string" &&
+    accountId &&
+    invoiceStartDate &&
+    invoiceEndDate
+  ) {
+    try {
+      const transactionQueryData = {
+        invoice_start_date: invoiceStartDate,
+        invoice_end_date: invoiceEndDate,
+        account_id: accountId,
+      };
+      const result = await getTransactionsForInvoice(transactionQueryData);
+      if (result?.success) {
+        return Response.json({
+          success: true,
+          message: "Successfully retreived transactions for invoice",
+          data: result.data,
+        });
+      }
+    } catch (error) {
+      console.error("There was an error getting transactions: ", error);
+      return Response.json({
+        success: false,
+        message: "There was an error getting transactions",
       });
     }
   }
