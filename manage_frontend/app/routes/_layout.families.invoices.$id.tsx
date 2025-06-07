@@ -13,99 +13,55 @@ import {
 } from "@remix-run/node";
 import { convertToCurrency, formatter, generatePdf } from "~/utils/pdf-utils";
 import {
-  deleteInvoice,
   getFamily,
   getFamilyTransactions,
   getInvoiceForFamily,
   getLastInvoice,
   getTransactionsForInvoice,
-  getTransactionsFromInvoice,
-  saveInvoice,
-  updateInvoice,
 } from "~/data/data.server";
-import { FamilyRecord, TransactionRecord, InvoiceRecord } from "~/types/types";
+import {
+  FamilyRecord,
+  TransactionRecord,
+  InvoiceRecord,
+  IntentHandler,
+} from "~/types/types";
 import { useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
+import {
+  handleDeleteInvoice,
+  handleSaveInvoice,
+  handleUpdateInvoice,
+  handleGetTransactionsFromInvoice,
+} from "~/handlers/invoiceHandlers";
+
+const intentHandler: Record<string, IntentHandler> = {
+  save_invoice: handleSaveInvoice,
+  update_invoice: handleUpdateInvoice,
+  delete: handleDeleteInvoice,
+  get_transactions_for_invoice: handleGetTransactionsFromInvoice,
+};
 
 export const action: ActionFunction = async ({
   request,
 }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
-  if (!intent) {
+
+  if (!intent || typeof intent !== "string")
+    return Response.json({ success: false, message: "No intent provided" });
+
+  const handler = intentHandler[intent];
+  if (!handler)
+    return Response.json({ success: false, message: "Unknown intent" });
+  try {
+    return await handler(formData);
+  } catch (error) {
+    console.error("There was a server error: ", error);
     return Response.json({
       success: false,
-      message: "Server error. No intent provided.",
+      message:
+        "That was not supposed to happen! There was an unexpected error.",
     });
-  }
-  if (intent === "save_invoice") {
-    const invoiceData = formData.get("save_invoice_data");
-    if (!invoiceData)
-      return Response.json({ success: false, message: "No data provided" });
-    if (typeof invoiceData === "string" && invoiceData) {
-      const parsedInvoiceData = JSON.parse(invoiceData);
-      try {
-        const result = await saveInvoice(parsedInvoiceData);
-        if (result?.success) {
-          return Response.json({ success: true, message: "Invoice saved" });
-        } else
-          return Response.json({
-            success: false,
-            message: "There was an error saving this invoice",
-          });
-      } catch (error) {
-        console.error("Error saving invoice: ", error);
-        return Response.json({
-          success: false,
-          message: "Error saving invoice",
-        });
-      }
-    }
-  } else if (intent === "update_invoice") {
-    const updateInvoiceData = formData.get("update_invoice_data");
-    if (!updateInvoiceData) {
-      return Response.json({
-        success: false,
-        message: "There was no data to save",
-      });
-    }
-    if (typeof updateInvoiceData === "string" && updateInvoiceData) {
-      const parsedUpdateInvoiceData = JSON.parse(updateInvoiceData);
-      try {
-        const result = await updateInvoice(parsedUpdateInvoiceData);
-        if (result?.success) {
-          return Response.json({ success: true, message: "Invoice updated." });
-        }
-      } catch (error) {
-        console.error("Error updaing invoice: ", error);
-        return Response.json({
-          success: false,
-          message: "Error updating invoice.",
-        });
-      }
-    }
-  } else if (intent === "delete") {
-    const idToDelete = formData.get("delete_invoice_id");
-    if (!idToDelete)
-      return Response.json({ success: false, message: "No id provided" });
-    if (typeof idToDelete === "number" && idToDelete) {
-      try {
-        const result = await deleteInvoice(idToDelete);
-        if (result?.success) {
-          return Response.json({ success: true, message: "Invoice deleted" });
-        } else
-          return Response.json({
-            success: false,
-            message: "Error deleting invoice",
-          });
-      } catch (error) {
-        console.error("Error deleting invoice: ", error);
-        return Response.json({
-          success: false,
-          message: "Error deleting this invoice",
-        });
-      }
-    }
   }
 };
 
@@ -136,6 +92,9 @@ const Invoices = () => {
   });
   const revalidator = useRevalidator();
   const fetcher = useFetcher();
+  const getUpdateDeleteFetcher = useFetcher();
+  const getTransactionsFetcher = useFetcher();
+  const generateInvoiceFetcher = useFetcher();
   const { family, invoices, lastInvoice } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -265,7 +224,7 @@ const Invoices = () => {
     };
 
     if (saveData !== undefined) {
-      fetcher.submit(
+      getUpdateDeleteFetcher.submit(
         {
           intent: "save_invoice",
           save_invoice_data: JSON.stringify(saveData),
@@ -286,7 +245,7 @@ const Invoices = () => {
 
   const handleInvoiceDelete = (invoiceId: number | undefined) => {
     if (invoiceId !== undefined) {
-      fetcher.submit(
+      getUpdateDeleteFetcher.submit(
         {
           intent: "delete_invoice",
           delete_invoice_id: invoiceId,
@@ -303,9 +262,16 @@ const Invoices = () => {
     }
   };
 
-  const handleInvoiceView = async (invoice: InvoiceRecord) => {
-    const transactions = await getTransactionsFromInvoice(invoice.invoice_id);
-    const formattedTransactions = transactions.map(
+  const handleInvoiceView = (invoice: InvoiceRecord) => {
+    let transactions = [];
+    if (invoice.invoice_id !== undefined) {
+      transactions = getTransactionsFetcher.submit({
+        intent: "get_transactions_for_invoice",
+        invoice_id: invoice.invoice_id,
+      });
+    }
+
+    const formattedTransactions = transactions?.map(
       (transaction: Transaction) => {
         return {
           ...transaction,

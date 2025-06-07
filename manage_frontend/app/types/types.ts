@@ -86,3 +86,7 @@ export interface FetcherData {
   success: boolean;
   message: string | undefined;
 }
+
+export type IntentHandler = (
+  formData: FormData
+) => Promise<Response | undefined>;

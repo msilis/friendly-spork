@@ -1,4 +1,9 @@
-import { saveInvoice, updateInvoice } from "~/data/data.server";
+import {
+  saveInvoice,
+  updateInvoice,
+  deleteInvoice,
+  getTransactionsFromInvoice,
+} from "~/data/data.server";
 
 export const handleSaveInvoice = async (formData: FormData) => {
   const invoiceData = formData.get("save_invoice_data");
@@ -45,6 +50,60 @@ export const handleUpdateInvoice = async (formData: FormData) => {
       return Response.json({
         success: false,
         message: "Error updating invoice.",
+      });
+    }
+  }
+};
+
+export const handleDeleteInvoice = async (formData: FormData) => {
+  const idToDelete = formData.get("delete_invoice_id");
+  if (!idToDelete)
+    return Response.json({ success: false, message: "No id provided" });
+  if (typeof idToDelete === "number" && idToDelete) {
+    try {
+      const result = await deleteInvoice(idToDelete);
+      if (result?.success) {
+        return Response.json({ success: true, message: "Invoice deleted" });
+      } else
+        return Response.json({
+          success: false,
+          message: "Error deleting invoice",
+        });
+    } catch (error) {
+      console.error("Error deleting invoice: ", error);
+      return Response.json({
+        success: false,
+        message: "Error deleting this invoice",
+      });
+    }
+  }
+};
+
+export const handleGetTransactionsFromInvoice = async (formData: FormData) => {
+  const invoiceId = formData.get("invoice_id");
+  if (!invoiceId)
+    return Response.json({
+      success: false,
+      message: "No id provided for invoice",
+    });
+  if (typeof invoiceId === "number" && invoiceId) {
+    try {
+      const result = await getTransactionsFromInvoice(invoiceId);
+      if (result?.success) {
+        return Response.json({
+          success: true,
+          messsage: "Successfully retreived invoice info",
+        });
+      } else
+        return Response.json({
+          success: false,
+          message: "There was an issue getting the data for this invoice",
+        });
+    } catch (error) {
+      console.error("Error getting invoice info.");
+      return Response.json({
+        success: false,
+        message: "Error getting invoice info",
       });
     }
   }
