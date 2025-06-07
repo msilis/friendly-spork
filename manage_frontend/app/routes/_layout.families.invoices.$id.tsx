@@ -25,7 +25,7 @@ import {
   InvoiceRecord,
   IntentHandler,
 } from "~/types/types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "~/hooks/hooks";
 import {
   handleDeleteInvoice,
@@ -112,7 +112,7 @@ const Invoices = () => {
       invoice_end_date: dateState.invoice_end_date,
       account_id: params.id,
     };
-    const transactions = await getTransactionsForInvoice(transactionQueryData);
+    // const transactions = await getTransactionsForInvoice(transactionQueryData);
     if (!transactions.length)
       throw new Error(
         "No transactions for this family or no transactions for this date range"
@@ -261,6 +261,35 @@ const Invoices = () => {
       throw new Error("InvoiceId is not valid");
     }
   };
+
+  useEffect(() => {
+    if (
+      getTransactionsFetcher.state === "idle" &&
+      getTransactionsFetcher.data
+    ) {
+      const result = getTransactionsFetcher.data as {
+        success: boolean;
+        message: string;
+      };
+      console.log(result, "result");
+      const intent = (getTransactionsFetcher?.formData ?? new FormData()).get(
+        "intent"
+      );
+      if (result.success) {
+        toast.success(result.message);
+        revalidator.revalidate();
+        if (intent === "get_transactions") {
+          statusDialogRef.current?.close;
+        }
+      } else {
+        toast.error(result.message);
+      }
+    }
+  }, [
+    getTransactionsFetcher.state,
+    getTransactionsFetcher.data,
+    getTransactionsFetcher.formData,
+  ]);
 
   const handleInvoiceView = (invoice: InvoiceRecord) => {
     let transactions = [];
