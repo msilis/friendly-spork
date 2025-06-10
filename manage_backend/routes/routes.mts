@@ -745,7 +745,7 @@ router.post("/transactions/range", async (req, res) => {
           ),
         ),
       );
-    res.status(200).json(transactions);
+    res.status(200).json({ success: true, data: transactions });
   } catch (error) {
     console.error("There was an error getting those transactions: ", error);
     res

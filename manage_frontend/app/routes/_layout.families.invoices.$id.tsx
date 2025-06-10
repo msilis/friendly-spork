@@ -32,13 +32,14 @@ import {
   handleSaveInvoice,
   handleUpdateInvoice,
   handleGetTransactionsFromInvoice,
+  handleGetTransactionsForInvoice,
 } from "~/handlers/invoiceHandlers";
 
 const intentHandler: Record<string, IntentHandler> = {
   save_invoice: handleSaveInvoice,
   update_invoice: handleUpdateInvoice,
   delete: handleDeleteInvoice,
-  get_transactions_for_invoice: handleGetTransactionsFromInvoice,
+  get_transactions_for_invoice: handleGetTransactionsForInvoice,
 };
 
 export const action: ActionFunction = async ({
@@ -46,7 +47,6 @@ export const action: ActionFunction = async ({
 }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
-
   if (!intent || typeof intent !== "string")
     return Response.json({ success: false, message: "No intent provided" });
 
@@ -90,6 +90,9 @@ const Invoices = () => {
     invoice_start_date: "",
     invoice_end_date: "",
   });
+  const [transactions, setTransactions] = useState<
+    TransactionRecord[] | undefined
+  >();
   const revalidator = useRevalidator();
   const fetcher = useFetcher();
   const getUpdateDeleteFetcher = useFetcher();
@@ -113,20 +116,37 @@ const Invoices = () => {
       account_id: params.id,
     };
     // const transactions = await getTransactionsForInvoice(transactionQueryData);
-    const transactions = [];
-    if (!transactions.length)
-      throw new Error(
-        "No transactions for this family or no transactions for this date range"
+    if (transactionQueryData !== undefined) {
+      getTransactionsFetcher.submit(
+        {
+          intent: "get_transactions_for_invoice",
+          invoice_start_date: transactionQueryData.invoice_start_date,
+          invoice_end_date: transactionQueryData.invoice_end_date,
+          account_id: Number(transactionQueryData.account_id),
+        },
+        {
+          method: "POST",
+        }
       );
-    return transactions;
+    }
+    // const transactions = [];
+    // if (!transactions.length)get_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoice
+    //   throw new Error(
+    //     "No transactions for this family or no transactions for this date range"
+    //   );
+    // return transactions;
   };
   const generateInvoiceNumber = () => {
-    const lastInvoiceNumber = lastInvoice[0].invoice_id;
+    const lastInvoiceNumber = lastInvoice[0]?.invoice_id
+      ? lastInvoice[0].invoiceId
+      : "1234";
     const invoiceNumber = `${new Date().getMonth() + 1}${new Date().getDate()}${
       lastInvoiceNumber + 1
     }`;
     return String(invoiceNumber);
   };
+
+  useEffect(() => {}, []);
 
   const calculateTotal = (transactions: TransactionRecord[]) => {
     let total = 0;
@@ -148,10 +168,9 @@ const Invoices = () => {
     }
     return total;
   };
-
   const handleGenerateClick = async () => {
-    const transactionArray = await getTransactions();
-    const convertedAmountArray = transactionArray.map(
+    await getTransactions();
+    const convertedAmountArray = transactions?.map(
       (transaction: Transaction) => {
         return {
           ...transaction,
@@ -166,19 +185,20 @@ const Invoices = () => {
         };
       }
     );
+
     const keysForList = [
       "transaction_description",
       "transaction_type",
       "transaction_amount",
     ];
-    const transactionsToList = convertedAmountArray.map(
+    const transactionsToList = convertedAmountArray?.map(
       (transaction: Transaction) => {
         return keysForList
           .filter((key) => Object.hasOwn(transaction, key))
           .map((key) => transaction[key]);
       }
     );
-    const calculatedTotal = calculateTotal(transactionArray);
+    const calculatedTotal = calculateTotal(transactions);
     const invoiceTotal = convertToCurrency(calculatedTotal);
     const formattedTotal = formatter.format(invoiceTotal);
     const invoiceNumber = generateInvoiceNumber();
@@ -205,7 +225,7 @@ const Invoices = () => {
       invoice_date: invoiceDate,
     };
 
-    const removeNullsArray = transactionArray.map(
+    const removeNullsArray = transactions?.map(
       (transaction: TransactionRecord) => {
         return {
           ...transaction,
@@ -271,21 +291,20 @@ const Invoices = () => {
       const result = getTransactionsFetcher.data as {
         success: boolean;
         message: string;
+        data: TransactionRecord[];
       };
-      console.log(result, "result");
-      const intent = (getTransactionsFetcher?.formData ?? new FormData()).get(
-        "intent"
-      );
-      if (result.success) {
-        toast.success(result.message);
-        revalidator.revalidate();
-        if (intent === "get_transactions") {
-          statusDialogRef.current?.close;
-        }
-      } else {
-        toast.error(result.message);
-      }
+      setTransactions(result.data);
+
+      // if (result.success) {
+      //   toast.success(result.message);
+      //   revalidator.revalidate();
+      // } else {
+      //   toast.error(result.message);
+      // }
     }
+    // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
+    // doesn't need to run on revalidate.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     getTransactionsFetcher.state,
     getTransactionsFetcher.data,

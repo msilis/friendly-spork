@@ -14,6 +14,7 @@ export const handleSaveInvoice = async (formData: FormData) => {
     const parsedInvoiceData = JSON.parse(invoiceData);
     try {
       const result = await saveInvoice(parsedInvoiceData);
+      console.log(result, "result from handler");
       if (result?.success) {
         return Response.json({ success: true, message: "Invoice saved" });
       } else
@@ -114,7 +115,9 @@ export const handleGetTransactionsFromInvoice = async (formData: FormData) => {
 export const handleGetTransactionsForInvoice = async (formData: FormData) => {
   const invoiceStartDate = formData?.get("invoice_start_date");
   const invoiceEndDate = formData?.get("invoice_end_date");
-  const accountId = formData?.get("invoice_id");
+  const accountId = formData?.get("account_id");
+  console.log({ invoiceStartDate, invoiceEndDate, accountId });
+
   if (!invoiceStartDate || !invoiceEndDate || !accountId) {
     return Response.json({
       success: false,
@@ -122,7 +125,7 @@ export const handleGetTransactionsForInvoice = async (formData: FormData) => {
     });
   }
   if (
-    typeof accountId === "number" &&
+    typeof accountId === "string" &&
     typeof invoiceStartDate === "string" &&
     typeof invoiceEndDate === "string" &&
     accountId &&
@@ -136,13 +139,18 @@ export const handleGetTransactionsForInvoice = async (formData: FormData) => {
         account_id: accountId,
       };
       const result = await getTransactionsForInvoice(transactionQueryData);
+      console.log(result, "result");
       if (result?.success) {
         return Response.json({
           success: true,
           message: "Successfully retreived transactions for invoice",
           data: result.data,
         });
-      }
+      } else
+        return Response.json({
+          success: false,
+          message: "Error getting transactions",
+        });
     } catch (error) {
       console.error("There was an error getting transactions: ", error);
       return Response.json({
@@ -150,5 +158,5 @@ export const handleGetTransactionsForInvoice = async (formData: FormData) => {
         message: "There was an error getting transactions",
       });
     }
-  }
+  } else return Response.json({ success: false, message: "Invalid data" });
 };
