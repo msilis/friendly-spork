@@ -17,7 +17,6 @@ import {
   getFamilyTransactions,
   getInvoiceForFamily,
   getLastInvoice,
-  getTransactionsForInvoice,
 } from "~/data/data.server";
 import {
   FamilyRecord,
@@ -110,12 +109,13 @@ const Invoices = () => {
 
   const getTransactions = async () => {
     if (!params.id) throw new Error("Id is missing");
+
     const transactionQueryData = {
       invoice_start_date: dateState.invoice_start_date,
       invoice_end_date: dateState.invoice_end_date,
       account_id: params.id,
     };
-    // const transactions = await getTransactionsForInvoice(transactionQueryData);
+
     if (transactionQueryData !== undefined) {
       getTransactionsFetcher.submit(
         {
@@ -129,13 +129,30 @@ const Invoices = () => {
         }
       );
     }
-    // const transactions = [];
-    // if (!transactions.length)get_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoiceget_transactions_for_invoice
-    //   throw new Error(
-    //     "No transactions for this family or no transactions for this date range"
-    //   );
-    // return transactions;
   };
+
+  const generateInvoice = async () => {
+    if (!params.id) throw new Error("Id is missing");
+    const transactionQueryData = {
+      invoice_start_date: dateState.invoice_start_date,
+      invoice_end_date: dateState.invoice_end_date,
+      account_id: params.id,
+    };
+    if (transactionQueryData !== undefined) {
+      generateInvoiceFetcher.submit(
+        {
+          intent: "get_transactions_for_invoice",
+          invoice_start_date: transactionQueryData.invoice_start_date,
+          invoice_end_date: transactionQueryData.invoice_end_date,
+          account_id: Number(transactionQueryData.account_id),
+        },
+        {
+          method: "POST",
+        }
+      );
+    }
+  };
+
   const generateInvoiceNumber = () => {
     const lastInvoiceNumber = lastInvoice[0]?.invoice_id
       ? lastInvoice[0].invoiceId
@@ -149,6 +166,7 @@ const Invoices = () => {
   useEffect(() => {}, []);
 
   const calculateTotal = (transactions: TransactionRecord[]) => {
+    console.log(transactions, "transactionf form calculateTotal");
     let total = 0;
     for (const item of transactions) {
       const amount = Number(item.transaction_amount);
@@ -168,10 +186,49 @@ const Invoices = () => {
     }
     return total;
   };
-  const handleGenerateClick = async () => {
-    await getTransactions();
+
+  const filteredInvoices = invoices.filter(
+    (invoice: InvoiceRecord) => invoice.invoice_number !== null
+  );
+
+  const handleInvoiceDelete = (invoiceId: number | undefined) => {
+    if (invoiceId !== undefined) {
+      getUpdateDeleteFetcher.submit(
+        {
+          intent: "delete_invoice",
+          delete_invoice_id: invoiceId,
+        },
+        {
+          method: "POST",
+        }
+      );
+      revalidator.revalidate();
+      toast.success("Invoice deleted");
+    } else {
+      toast.error("Unable to delete invoice");
+      throw new Error("InvoiceId is not valid");
+    }
+  };
+
+  useEffect(() => {
+    console.log(getTransactionsFetcher.data);
+    if (
+      generateInvoiceFetcher.state === "idle" &&
+      generateInvoiceFetcher.data
+    ) {
+      const result = generateInvoiceFetcher.data as {
+        success: boolean;
+        message: string;
+        data: TransactionRecord[];
+      };
+      const submittedIntend = generateInvoiceFetcher?.formData?.get("intent");
+      if (result?.success) {
+        setTransactions(result.data);
+      } else toast.error(result.message);
+    }
+
     const convertedAmountArray = transactions?.map(
-      (transaction: Transaction) => {
+      (transaction: TransactionRecord) => {
         return {
           ...transaction,
           transaction_description: transaction?.transaction_description ?? "",
@@ -258,57 +315,14 @@ const Invoices = () => {
       revalidator.revalidate();
       toast.success("Invoice created");
     } else return toast.error("There was a problem saving this invoice");
-  };
 
-  const filteredInvoices = invoices.filter(
-    (invoice: InvoiceRecord) => invoice.invoice_number !== null
-  );
-
-  const handleInvoiceDelete = (invoiceId: number | undefined) => {
-    if (invoiceId !== undefined) {
-      getUpdateDeleteFetcher.submit(
-        {
-          intent: "delete_invoice",
-          delete_invoice_id: invoiceId,
-        },
-        {
-          method: "POST",
-        }
-      );
-      revalidator.revalidate();
-      toast.success("Invoice deleted");
-    } else {
-      toast.error("Unable to delete invoice");
-      throw new Error("InvoiceId is not valid");
-    }
-  };
-
-  useEffect(() => {
-    if (
-      getTransactionsFetcher.state === "idle" &&
-      getTransactionsFetcher.data
-    ) {
-      const result = getTransactionsFetcher.data as {
-        success: boolean;
-        message: string;
-        data: TransactionRecord[];
-      };
-      setTransactions(result.data);
-
-      // if (result.success) {
-      //   toast.success(result.message);
-      //   revalidator.revalidate();
-      // } else {
-      //   toast.error(result.message);
-      // }
-    }
     // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
     // doesn't need to run on revalidate.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    getTransactionsFetcher.state,
-    getTransactionsFetcher.data,
-    getTransactionsFetcher.formData,
+    generateInvoiceFetcher.state,
+    generateInvoiceFetcher.data,
+    generateInvoiceFetcher.formData,
   ]);
 
   const handleInvoiceView = (invoice: InvoiceRecord) => {
@@ -440,7 +454,10 @@ const Invoices = () => {
           className="input input-bordered"
           onChange={handleDateChange}
         />
-        <button className="btn btn-accent w-fit" onClick={handleGenerateClick}>
+        <button
+          className="btn btn-accent w-fit"
+          onClick={() => generateInvoice}
+        >
           Generate invoice
         </button>
       </section>

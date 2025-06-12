@@ -116,7 +116,6 @@ export const handleGetTransactionsForInvoice = async (formData: FormData) => {
   const invoiceStartDate = formData?.get("invoice_start_date");
   const invoiceEndDate = formData?.get("invoice_end_date");
   const accountId = formData?.get("account_id");
-  console.log({ invoiceStartDate, invoiceEndDate, accountId });
 
   if (!invoiceStartDate || !invoiceEndDate || !accountId) {
     return Response.json({
