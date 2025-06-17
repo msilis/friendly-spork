@@ -53,7 +53,9 @@ export const action: ActionFunction = async ({
   if (!handler)
     return Response.json({ success: false, message: "Unknown intent" });
   try {
-    return await handler(formData);
+    const result = await handler(formData);
+
+    return result;
   } catch (error) {
     console.error("There was a server error: ", error);
     return Response.json({
@@ -132,6 +134,7 @@ const Invoices = () => {
   };
 
   const generateInvoice = async () => {
+    console.log("generate clicked");
     if (!params.id) throw new Error("Id is missing");
     const transactionQueryData = {
       invoice_start_date: dateState.invoice_start_date,
@@ -139,6 +142,7 @@ const Invoices = () => {
       account_id: params.id,
     };
     if (transactionQueryData !== undefined) {
+      console.log(transactionQueryData, "transactionQueryData");
       generateInvoiceFetcher.submit(
         {
           intent: "get_transactions_for_invoice",
@@ -166,7 +170,8 @@ const Invoices = () => {
   useEffect(() => {}, []);
 
   const calculateTotal = (transactions: TransactionRecord[]) => {
-    console.log(transactions, "transactionf form calculateTotal");
+    if (!transactions) return;
+    console.log(transactions, "transactions form calculateTotal");
     let total = 0;
     for (const item of transactions) {
       const amount = Number(item.transaction_amount);
@@ -210,34 +215,135 @@ const Invoices = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(getTransactionsFetcher.data);
-    if (
-      generateInvoiceFetcher.state === "idle" &&
-      generateInvoiceFetcher.data
-    ) {
-      const result = generateInvoiceFetcher.data as {
-        success: boolean;
-        message: string;
-        data: TransactionRecord[];
-      };
-      const submittedIntend = generateInvoiceFetcher?.formData?.get("intent");
-      if (result?.success) {
-        setTransactions(result.data);
-      } else toast.error(result.message);
-    }
+  // useEffect(() => {
+  //   console.log(getTransactionsFetcher.data, "fetcher data");
+  //   if (
+  //     generateInvoiceFetcher.state === "idle" &&
+  //     generateInvoiceFetcher.data
+  //   ) {
+  //     const result = generateInvoiceFetcher.data as {
+  //       success: boolean;
+  //       message: string;
+  //       data: TransactionRecord[];
+  //     };
+  //     const submittedIntent = generateInvoiceFetcher?.formData?.get("intent");
+  //     if (result?.success && result?.data) {
+  //       setTransactions(result.data);
+  //     } else toast.error(result.message);
+  //   }
 
-    const convertedAmountArray = transactions?.map(
+  //   const convertedAmountArray = transactions?.map(
+  //     (transaction: TransactionRecord) => {
+  //       return {
+  //         ...transaction,
+  //         transaction_description: transaction?.transaction_description ?? "",
+  //         transaction_amount: formatter
+  //           .format(
+  //             convertToCurrency(
+  //               transaction.transaction_amount as number // TODO fix this casting
+  //             )
+  //           )
+  //           .toString(),
+  //       };
+  //     }
+  //   );
+
+  //   const keysForList = [
+  //     "transaction_description",
+  //     "transaction_type",
+  //     "transaction_amount",
+  //   ];
+  //   const transactionsToList = convertedAmountArray?.map(
+  //     (transaction: Transaction) => {
+  //       return keysForList
+  //         .filter((key) => Object.hasOwn(transaction, key))
+  //         .map((key) => transaction[key]);
+  //     }
+  //   );
+  //   const calculatedTotal = calculateTotal(transactions);
+  //   const invoiceTotal = convertToCurrency(calculatedTotal);
+  //   const formattedTotal = formatter.format(invoiceTotal);
+  //   const invoiceNumber = generateInvoiceNumber();
+  //   const invoiceDate = new Date().toLocaleString();
+
+  //   const invoiceInputs = {
+  //     head: "Lauderdale Invoice",
+  //     billedToInput: `${familyAccount.parent1_first_name} ${familyAccount.parent1_last_name} \n${familyAccount.parent1_address}`,
+  //     info: JSON.stringify({
+  //       InvoiceNo: invoiceNumber,
+  //       Date: invoiceDate,
+  //     }),
+  //     orders: transactionsToList,
+  //     total: formattedTotal,
+  //     thankyou: "Thank you",
+  //     paymentInfoInput:
+  //       "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
+  //   };
+
+  //   const invoiceToSave: InvoiceRecord = {
+  //     invoice_number: invoiceNumber,
+  //     total_amount: calculatedTotal,
+  //     account_id: Number(params.id),
+  //     invoice_date: invoiceDate,
+  //   };
+
+  //   const removeNullsArray = transactions?.map(
+  //     (transaction: TransactionRecord) => {
+  //       return {
+  //         ...transaction,
+  //         item_description:
+  //           transaction?.transaction_description ??
+  //           transaction.transaction_type,
+  //         item_type: transaction.transaction_type,
+  //         item_amount: transaction.transaction_amount,
+  //         invoice_number: invoiceNumber,
+  //       };
+  //     }
+  //   );
+
+  //   const saveData = {
+  //     invoice: invoiceToSave,
+  //     transactions: removeNullsArray,
+  //   };
+
+  //   if (saveData !== undefined) {
+  //     getUpdateDeleteFetcher.submit(
+  //       {
+  //         intent: "save_invoice",
+  //         save_invoice_data: JSON.stringify(saveData),
+  //       },
+  //       {
+  //         method: "POST",
+  //       }
+  //     );
+  //     generatePdf(invoiceInputs);
+  //     revalidator.revalidate();
+  //     toast.success("Invoice created");
+  //   } else return toast.error("There was a problem saving this invoice");
+
+  //   // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
+  //   // doesn't need to run on revalidate.
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [
+  //   generateInvoiceFetcher.state,
+  //   generateInvoiceFetcher.data,
+  //   generateInvoiceFetcher.formData,
+  // ]);
+
+  const prepareInvoiceInputs = (
+    familyAcc: FamilyRecord,
+    invoiceNumber: string,
+    invoiceDate: string,
+    transactionsArray: TransactionRecord[],
+    calculatedTotal: number
+  ) => {
+    const convertedAmountArray = transactionsArray.map(
       (transaction: TransactionRecord) => {
         return {
           ...transaction,
           transaction_description: transaction?.transaction_description ?? "",
           transaction_amount: formatter
-            .format(
-              convertToCurrency(
-                transaction.transaction_amount as number // TODO fix this casting
-              )
-            )
+            .format(convertToCurrency(Number(transaction.transaction_amount)))
             .toString(),
         };
       }
@@ -248,22 +354,17 @@ const Invoices = () => {
       "transaction_type",
       "transaction_amount",
     ];
-    const transactionsToList = convertedAmountArray?.map(
-      (transaction: Transaction) => {
-        return keysForList
-          .filter((key) => Object.hasOwn(transaction, key))
-          .map((key) => transaction[key]);
-      }
-    );
-    const calculatedTotal = calculateTotal(transactions);
-    const invoiceTotal = convertToCurrency(calculatedTotal);
-    const formattedTotal = formatter.format(invoiceTotal);
-    const invoiceNumber = generateInvoiceNumber();
-    const invoiceDate = new Date().toLocaleString();
+    const transactionsToList = convertedAmountArray.map((transaction: any) => {
+      return keysForList
+        .filter((key) => Object.hasOwn(transaction, key))
+        .map((key) => (transaction as any)[key]);
+    });
 
-    const invoiceInputs = {
+    const formattedTotal = formatter.format(convertToCurrency(calculatedTotal));
+
+    return {
       head: "Lauderdale Invoice",
-      billedToInput: `${familyAccount.parent1_first_name} ${familyAccount.parent1_last_name} \n${familyAccount.parent1_address}`,
+      billedToInput: `${familyAcc.parent1_first_name} ${familyAcc.parent1_last_name} \n${familyAcc.parent1_address}`,
       info: JSON.stringify({
         InvoiceNo: invoiceNumber,
         Date: invoiceDate,
@@ -274,48 +375,93 @@ const Invoices = () => {
       paymentInfoInput:
         "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
     };
+  };
 
-    const invoiceToSave: InvoiceRecord = {
-      invoice_number: invoiceNumber,
-      total_amount: calculatedTotal,
-      account_id: Number(params.id),
-      invoice_date: invoiceDate,
-    };
-
-    const removeNullsArray = transactions?.map(
-      (transaction: TransactionRecord) => {
-        return {
-          ...transaction,
-          item_description:
-            transaction?.transaction_description ??
-            transaction.transaction_type,
-          item_type: transaction.transaction_type,
-          item_amount: transaction.transaction_amount,
-          invoice_number: invoiceNumber,
-        };
+  // useEffect for `generateInvoiceFetcher` (handles the two-step invoice generation)
+  useEffect(() => {
+    if (
+      generateInvoiceFetcher.state === "idle" &&
+      generateInvoiceFetcher.data
+    ) {
+      const result = generateInvoiceFetcher.data as {
+        success: boolean;
+        transactions?: TransactionRecord[];
+        message?: string;
+      };
+      const submittedFormData = generateInvoiceFetcher.formData;
+      let submittedIntent: string | null = null;
+      console.log(submittedFormData, "submittedFormData");
+      if (submittedFormData) {
+        submittedIntent = submittedFormData.get("intent") as string | null;
       }
-    );
 
-    const saveData = {
-      invoice: invoiceToSave,
-      transactions: removeNullsArray,
-    };
+      console.log(result, "result from invoice file");
 
-    if (saveData !== undefined) {
-      getUpdateDeleteFetcher.submit(
-        {
-          intent: "save_invoice",
-          save_invoice_data: JSON.stringify(saveData),
-        },
-        {
-          method: "POST",
+      if (result.success) {
+        if (
+          // submittedIntent === "get_transactions_for_invoice" &&
+          result?.data
+        ) {
+          // toast.success(result.message || "Transactions retrieved.");
+
+          const invoiceNumber = generateInvoiceNumber();
+          const invoiceDate = new Date().toLocaleString();
+          const calculatedTotal = calculateTotal(result.data);
+          console.log(result.transactions, "result transactions");
+          const invoiceInputs = prepareInvoiceInputs(
+            familyAccount,
+            invoiceNumber,
+            invoiceDate,
+            result.data,
+            calculatedTotal
+          );
+          generatePdf(invoiceInputs); // Generate PDF immediately for download/preview
+
+          // 2. Prepare data for saving invoice to DB
+          const invoiceToSave: InvoiceRecord = {
+            invoice_number: invoiceNumber,
+            total_amount: calculatedTotal,
+            account_id: Number(params.id),
+            invoice_date: invoiceDate,
+          };
+
+          const transactionsToSave = result.data.map(
+            (transaction: TransactionRecord) => ({
+              ...transaction,
+              item_description:
+                transaction.transaction_description ??
+                transaction.transaction_type,
+              item_type: transaction.transaction_type,
+              item_amount: transaction.transaction_amount, // Ensure it's the numeric value here for saving
+              invoice_number: invoiceNumber,
+            })
+          );
+
+          const saveData = {
+            invoice: invoiceToSave,
+            transactions: transactionsToSave,
+          };
+
+          // Second step: Submit data to save invoice (this is handled by the `save_invoice` intent)
+          generateInvoiceFetcher.submit(
+            // Re-using the same fetcher for the next step
+            {
+              intent: "save_invoice", // Specific intent for saving
+              save_invoice_data: JSON.stringify(saveData),
+            },
+            { method: "POST" }
+          );
         }
-      );
-      generatePdf(invoiceInputs);
-      revalidator.revalidate();
-      toast.success("Invoice created");
-    } else return toast.error("There was a problem saving this invoice");
-
+        // Second step: Invoice successfully saved
+        else if (submittedIntent === "save_invoice") {
+          toast.success(result.message || "Invoice saved successfully!");
+          revalidator.revalidate(); // Revalidate after successful save
+        }
+      } else {
+        // Handle error for either step
+        toast.error(result.message || "Invoice generation process failed.");
+      }
+    }
     // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
     // doesn't need to run on revalidate.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -323,6 +469,9 @@ const Invoices = () => {
     generateInvoiceFetcher.state,
     generateInvoiceFetcher.data,
     generateInvoiceFetcher.formData,
+    familyAccount,
+    params.id,
+    lastInvoice,
   ]);
 
   const handleInvoiceView = (invoice: InvoiceRecord) => {
@@ -454,10 +603,7 @@ const Invoices = () => {
           className="input input-bordered"
           onChange={handleDateChange}
         />
-        <button
-          className="btn btn-accent w-fit"
-          onClick={() => generateInvoice}
-        >
+        <button className="btn btn-accent w-fit" onClick={generateInvoice}>
           Generate invoice
         </button>
       </section>

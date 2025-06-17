@@ -138,7 +138,7 @@ export const handleGetTransactionsForInvoice = async (formData: FormData) => {
         account_id: accountId,
       };
       const result = await getTransactionsForInvoice(transactionQueryData);
-      console.log(result, "result");
+      console.log(result, "result from handler");
       if (result?.success) {
         return Response.json({
           success: true,
