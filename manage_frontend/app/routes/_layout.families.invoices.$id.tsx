@@ -37,8 +37,9 @@ import {
 const intentHandler: Record<string, IntentHandler> = {
   save_invoice: handleSaveInvoice,
   update_invoice: handleUpdateInvoice,
-  delete: handleDeleteInvoice,
+  delete_invoice: handleDeleteInvoice,
   get_transactions_for_invoice: handleGetTransactionsForInvoice,
+  get_transactions_from_invoice: handleGetTransactionsFromInvoice,
 };
 
 export const action: ActionFunction = async ({
@@ -91,9 +92,7 @@ const Invoices = () => {
     invoice_start_date: "",
     invoice_end_date: "",
   });
-  const [transactions, setTransactions] = useState<
-    TransactionRecord[] | undefined
-  >();
+
   const revalidator = useRevalidator();
   const fetcher = useFetcher();
   const getUpdateDeleteFetcher = useFetcher();
@@ -109,32 +108,7 @@ const Invoices = () => {
   const [invoiceStatus, setInvoiceStatus] = useState<InvoiceRecord>();
   const toast = useToast();
 
-  const getTransactions = async () => {
-    if (!params.id) throw new Error("Id is missing");
-
-    const transactionQueryData = {
-      invoice_start_date: dateState.invoice_start_date,
-      invoice_end_date: dateState.invoice_end_date,
-      account_id: params.id,
-    };
-
-    if (transactionQueryData !== undefined) {
-      getTransactionsFetcher.submit(
-        {
-          intent: "get_transactions_for_invoice",
-          invoice_start_date: transactionQueryData.invoice_start_date,
-          invoice_end_date: transactionQueryData.invoice_end_date,
-          account_id: Number(transactionQueryData.account_id),
-        },
-        {
-          method: "POST",
-        }
-      );
-    }
-  };
-
   const generateInvoice = async () => {
-    console.log("generate clicked");
     if (!params.id) throw new Error("Id is missing");
     const transactionQueryData = {
       invoice_start_date: dateState.invoice_start_date,
@@ -158,12 +132,14 @@ const Invoices = () => {
   };
 
   const generateInvoiceNumber = () => {
-    const lastInvoiceNumber = lastInvoice[0]?.invoice_id
-      ? lastInvoice[0].invoiceId
-      : "1234";
-    const invoiceNumber = `${new Date().getMonth() + 1}${new Date().getDate()}${
-      lastInvoiceNumber + 1
-    }`;
+    const lastInvoiceNumber = lastInvoice[0].invoice_number
+      ? lastInvoice[0].invoice_number
+      : "001";
+    // const invoiceNumber = `${new Date().getMonth() + 1}${new Date().getDate()}${
+    //   lastInvoiceNumber + 1
+    // }`;
+    const invoiceNumber = lastInvoiceNumber + 1;
+
     return String(invoiceNumber);
   };
 
@@ -208,127 +184,11 @@ const Invoices = () => {
         }
       );
       revalidator.revalidate();
-      toast.success("Invoice deleted");
     } else {
       toast.error("Unable to delete invoice");
       throw new Error("InvoiceId is not valid");
     }
   };
-
-  // useEffect(() => {
-  //   console.log(getTransactionsFetcher.data, "fetcher data");
-  //   if (
-  //     generateInvoiceFetcher.state === "idle" &&
-  //     generateInvoiceFetcher.data
-  //   ) {
-  //     const result = generateInvoiceFetcher.data as {
-  //       success: boolean;
-  //       message: string;
-  //       data: TransactionRecord[];
-  //     };
-  //     const submittedIntent = generateInvoiceFetcher?.formData?.get("intent");
-  //     if (result?.success && result?.data) {
-  //       setTransactions(result.data);
-  //     } else toast.error(result.message);
-  //   }
-
-  //   const convertedAmountArray = transactions?.map(
-  //     (transaction: TransactionRecord) => {
-  //       return {
-  //         ...transaction,
-  //         transaction_description: transaction?.transaction_description ?? "",
-  //         transaction_amount: formatter
-  //           .format(
-  //             convertToCurrency(
-  //               transaction.transaction_amount as number // TODO fix this casting
-  //             )
-  //           )
-  //           .toString(),
-  //       };
-  //     }
-  //   );
-
-  //   const keysForList = [
-  //     "transaction_description",
-  //     "transaction_type",
-  //     "transaction_amount",
-  //   ];
-  //   const transactionsToList = convertedAmountArray?.map(
-  //     (transaction: Transaction) => {
-  //       return keysForList
-  //         .filter((key) => Object.hasOwn(transaction, key))
-  //         .map((key) => transaction[key]);
-  //     }
-  //   );
-  //   const calculatedTotal = calculateTotal(transactions);
-  //   const invoiceTotal = convertToCurrency(calculatedTotal);
-  //   const formattedTotal = formatter.format(invoiceTotal);
-  //   const invoiceNumber = generateInvoiceNumber();
-  //   const invoiceDate = new Date().toLocaleString();
-
-  //   const invoiceInputs = {
-  //     head: "Lauderdale Invoice",
-  //     billedToInput: `${familyAccount.parent1_first_name} ${familyAccount.parent1_last_name} \n${familyAccount.parent1_address}`,
-  //     info: JSON.stringify({
-  //       InvoiceNo: invoiceNumber,
-  //       Date: invoiceDate,
-  //     }),
-  //     orders: transactionsToList,
-  //     total: formattedTotal,
-  //     thankyou: "Thank you",
-  //     paymentInfoInput:
-  //       "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
-  //   };
-
-  //   const invoiceToSave: InvoiceRecord = {
-  //     invoice_number: invoiceNumber,
-  //     total_amount: calculatedTotal,
-  //     account_id: Number(params.id),
-  //     invoice_date: invoiceDate,
-  //   };
-
-  //   const removeNullsArray = transactions?.map(
-  //     (transaction: TransactionRecord) => {
-  //       return {
-  //         ...transaction,
-  //         item_description:
-  //           transaction?.transaction_description ??
-  //           transaction.transaction_type,
-  //         item_type: transaction.transaction_type,
-  //         item_amount: transaction.transaction_amount,
-  //         invoice_number: invoiceNumber,
-  //       };
-  //     }
-  //   );
-
-  //   const saveData = {
-  //     invoice: invoiceToSave,
-  //     transactions: removeNullsArray,
-  //   };
-
-  //   if (saveData !== undefined) {
-  //     getUpdateDeleteFetcher.submit(
-  //       {
-  //         intent: "save_invoice",
-  //         save_invoice_data: JSON.stringify(saveData),
-  //       },
-  //       {
-  //         method: "POST",
-  //       }
-  //     );
-  //     generatePdf(invoiceInputs);
-  //     revalidator.revalidate();
-  //     toast.success("Invoice created");
-  //   } else return toast.error("There was a problem saving this invoice");
-
-  //   // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
-  //   // doesn't need to run on revalidate.
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [
-  //   generateInvoiceFetcher.state,
-  //   generateInvoiceFetcher.data,
-  //   generateInvoiceFetcher.formData,
-  // ]);
 
   const prepareInvoiceInputs = (
     familyAcc: FamilyRecord,
@@ -377,7 +237,6 @@ const Invoices = () => {
     };
   };
 
-  // useEffect for `generateInvoiceFetcher` (handles the two-step invoice generation)
   useEffect(() => {
     if (
       generateInvoiceFetcher.state === "idle" &&
@@ -407,7 +266,6 @@ const Invoices = () => {
           const invoiceNumber = generateInvoiceNumber();
           const invoiceDate = new Date().toLocaleString();
           const calculatedTotal = calculateTotal(result.data);
-          console.log(result.transactions, "result transactions");
           const invoiceInputs = prepareInvoiceInputs(
             familyAccount,
             invoiceNumber,
@@ -415,9 +273,8 @@ const Invoices = () => {
             result.data,
             calculatedTotal
           );
-          generatePdf(invoiceInputs); // Generate PDF immediately for download/preview
+          generatePdf(invoiceInputs);
 
-          // 2. Prepare data for saving invoice to DB
           const invoiceToSave: InvoiceRecord = {
             invoice_number: invoiceNumber,
             total_amount: calculatedTotal,
@@ -432,7 +289,7 @@ const Invoices = () => {
                 transaction.transaction_description ??
                 transaction.transaction_type,
               item_type: transaction.transaction_type,
-              item_amount: transaction.transaction_amount, // Ensure it's the numeric value here for saving
+              item_amount: transaction.transaction_amount,
               invoice_number: invoiceNumber,
             })
           );
@@ -442,23 +299,18 @@ const Invoices = () => {
             transactions: transactionsToSave,
           };
 
-          // Second step: Submit data to save invoice (this is handled by the `save_invoice` intent)
           generateInvoiceFetcher.submit(
-            // Re-using the same fetcher for the next step
             {
-              intent: "save_invoice", // Specific intent for saving
+              intent: "save_invoice",
               save_invoice_data: JSON.stringify(saveData),
             },
             { method: "POST" }
           );
-        }
-        // Second step: Invoice successfully saved
-        else if (submittedIntent === "save_invoice") {
+        } else if (submittedIntent === "save_invoice") {
           toast.success(result.message || "Invoice saved successfully!");
-          revalidator.revalidate(); // Revalidate after successful save
+          revalidator.revalidate();
         }
       } else {
-        // Handle error for either step
         toast.error(result.message || "Invoice generation process failed.");
       }
     }

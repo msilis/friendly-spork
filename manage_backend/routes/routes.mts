@@ -854,12 +854,15 @@ router.post("/transactions/invoices/update/:invoiceId", async (req, res) => {
           (_, value) => value !== undefined,
         ),
       );
+
       const updatedData = await db
         .update(invoiceTable)
         .set(filteredInvoiceData)
         .where(eq(invoiceTable.invoice_id, Number(invoiceId)));
 
-      res.status(200).json({ success: true, message: "Invoice updated" });
+      res
+        .status(200)
+        .json({ success: true, message: "Invoice updated", data: updatedData });
     }
   } catch (error) {
     console.error("There was an error updting the invoice: ", error);

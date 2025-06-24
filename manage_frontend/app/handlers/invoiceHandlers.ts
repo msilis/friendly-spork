@@ -14,7 +14,6 @@ export const handleSaveInvoice = async (formData: FormData) => {
     const parsedInvoiceData = JSON.parse(invoiceData);
     try {
       const result = await saveInvoice(parsedInvoiceData);
-      console.log(result, "result from handler");
       if (result?.success) {
         return Response.json({ success: true, message: "Invoice saved" });
       } else
@@ -46,7 +45,11 @@ export const handleUpdateInvoice = async (formData: FormData) => {
       const result = await updateInvoice(parsedUpdateInvoiceData);
       if (result?.success) {
         return Response.json({ success: true, message: "Invoice updated." });
-      }
+      } else
+        return Response.json({
+          success: false,
+          message: "Error updating invoice",
+        });
     } catch (error) {
       console.error("Error updaing invoice: ", error);
       return Response.json({
@@ -54,30 +57,29 @@ export const handleUpdateInvoice = async (formData: FormData) => {
         message: "Error updating invoice.",
       });
     }
-  }
+  } else return Response.json({ success: false, message: "Invalid data type" });
 };
 
 export const handleDeleteInvoice = async (formData: FormData) => {
   const idToDelete = formData.get("delete_invoice_id");
   if (!idToDelete)
     return Response.json({ success: false, message: "No id provided" });
-  if (typeof idToDelete === "number" && idToDelete) {
-    try {
-      const result = await deleteInvoice(idToDelete);
-      if (result?.success) {
-        return Response.json({ success: true, message: "Invoice deleted" });
-      } else
-        return Response.json({
-          success: false,
-          message: "Error deleting invoice",
-        });
-    } catch (error) {
-      console.error("Error deleting invoice: ", error);
+
+  try {
+    const result = await deleteInvoice(Number(idToDelete));
+    if (result?.success) {
+      return Response.json({ success: true, message: "Invoice deleted" });
+    } else
       return Response.json({
         success: false,
-        message: "Error deleting this invoice",
+        message: "Error deleting invoice",
       });
-    }
+  } catch (error) {
+    console.error("Error deleting invoice: ", error);
+    return Response.json({
+      success: false,
+      message: "Error deleting this invoice",
+    });
   }
 };
 

@@ -493,6 +493,12 @@ export const saveInvoice = async (data: SaveDataType) => {
 
 export const updateInvoice = async (data: InvoiceRecord | undefined) => {
   const invoiceId = data?.invoice_id;
+  const updatedInvoiceData = {
+    account_id: data?.account_id,
+    invoice_date: data?.invoice_date,
+    invoice_status: data?.invoice_status,
+    invoice_number: data?.invoice_number,
+  };
   try {
     const updateInvoiceStatus = await fetch(
       `${BACKEND_URL}/transactions/invoices/update/${invoiceId}`,
@@ -501,7 +507,7 @@ export const updateInvoice = async (data: InvoiceRecord | undefined) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(updatedInvoiceData),
       }
     ).then((response) => response.json());
     return updateInvoiceStatus;
@@ -572,6 +578,7 @@ export const deleteInvoice = async (invoiceToDelete: number) => {
         },
       }
     ).then((response) => response.json());
+
     return deleteInvoice;
   } catch (error) {
     console.error("Error deleting invoice ", error);
