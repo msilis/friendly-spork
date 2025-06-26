@@ -107,6 +107,7 @@ const Invoices = () => {
   const statusDialogRef = useRef<HTMLDialogElement>(null);
   const [invoiceStatus, setInvoiceStatus] = useState<InvoiceRecord>();
   const toast = useToast();
+  const [invoiceToView, setInvoiceToView] = useState<InvoiceRecord>();
 
   const generateInvoice = async () => {
     if (!params.id) throw new Error("Id is missing");
@@ -116,7 +117,6 @@ const Invoices = () => {
       account_id: params.id,
     };
     if (transactionQueryData !== undefined) {
-      console.log(transactionQueryData, "transactionQueryData");
       generateInvoiceFetcher.submit(
         {
           intent: "get_transactions_for_invoice",
@@ -214,10 +214,10 @@ const Invoices = () => {
       "transaction_type",
       "transaction_amount",
     ];
-    const transactionsToList = convertedAmountArray.map((transaction: any) => {
+    const transactionsToList = convertedAmountArray.map((transaction) => {
       return keysForList
         .filter((key) => Object.hasOwn(transaction, key))
-        .map((key) => (transaction as any)[key]);
+        .map((key) => transaction[key]);
     });
 
     const formattedTotal = formatter.format(convertToCurrency(calculatedTotal));
@@ -244,18 +244,14 @@ const Invoices = () => {
     ) {
       const result = generateInvoiceFetcher.data as {
         success: boolean;
-        transactions?: TransactionRecord[];
+        data?: TransactionRecord[];
         message?: string;
       };
       const submittedFormData = generateInvoiceFetcher.formData;
       let submittedIntent: string | null = null;
-      console.log(submittedFormData, "submittedFormData");
       if (submittedFormData) {
-        submittedIntent = submittedFormData.get("intent") as string | null;
+        submittedIntent = submittedFormData?.get("intent") as string | null;
       }
-
-      console.log(result, "result from invoice file");
-
       if (result.success) {
         if (
           // submittedIntent === "get_transactions_for_invoice" &&
@@ -265,7 +261,7 @@ const Invoices = () => {
 
           const invoiceNumber = generateInvoiceNumber();
           const invoiceDate = new Date().toLocaleString();
-          const calculatedTotal = calculateTotal(result.data);
+          const calculatedTotal = Number(calculateTotal(result.data));
           const invoiceInputs = prepareInvoiceInputs(
             familyAccount,
             invoiceNumber,
@@ -277,7 +273,7 @@ const Invoices = () => {
 
           const invoiceToSave: InvoiceRecord = {
             invoice_number: invoiceNumber,
-            total_amount: calculatedTotal,
+            total_amount: Number(calculatedTotal),
             account_id: Number(params.id),
             invoice_date: invoiceDate,
           };
@@ -327,57 +323,82 @@ const Invoices = () => {
   ]);
 
   const handleInvoiceView = (invoice: InvoiceRecord) => {
-    let transactions = [];
     if (invoice.invoice_id !== undefined) {
-      transactions = getTransactionsFetcher.submit({
+      getTransactionsFetcher.submit({
         intent: "get_transactions_for_invoice",
         invoice_id: invoice.invoice_id,
       });
+      setInvoiceToView(invoice);
     }
-
-    const formattedTransactions = transactions?.map(
-      (transaction: Transaction) => {
-        return {
-          ...transaction,
-          transaction_description: transaction?.transaction_description ?? "",
-          item_amount: formatter
-            .format(
-              convertToCurrency(
-                transaction.item_amount as number // TODO fix this casting
-              )
-            )
-            .toString(),
-        };
-      }
-    );
-
-    const keysForList = ["item_description", "item_type", "item_amount"];
-
-    const transactionsToList = formattedTransactions.map(
-      (transaction: Transaction) => {
-        return keysForList
-          .filter((key) => Object.hasOwn(transaction, key))
-          .map((key) => transaction[key]);
-      }
-    );
-
-    const viewTotal = convertToCurrency(Number(invoice.total_amount));
-    const formattedTotal = formatter.format(viewTotal);
-    const invoiceViewInputs = {
-      head: "Lauderdale Invoice",
-      billedToInput: `${familyAccount.parent1_first_name} ${familyAccount.parent1_last_name} \n${familyAccount.parent1_address}`,
-      info: JSON.stringify({
-        InvoiceNo: invoice.invoice_number,
-        Date: invoice.invoice_date,
-      }),
-      orders: transactionsToList,
-      total: formattedTotal,
-      thankyou: "Thank you",
-      paymentInfoInput:
-        "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
-    };
-    generatePdf(invoiceViewInputs);
   };
+  type InvoiceType = {
+    family: FamilyRecord[];
+    invoices: string[];
+    lastInvoice: string[];
+    transactions: TransactionRecord[];
+  };
+  useEffect(() => {
+    if (
+      getTransactionsFetcher.state === "idle" &&
+      getTransactionsFetcher.data
+    ) {
+      const invoices = getTransactionsFetcher.data as InvoiceType;
+      const transactions = invoices.transactions;
+      const formattedTransactions = transactions?.map(
+        (transaction: Transaction) => {
+          console.log(transaction, "transaction from formatter");
+          return {
+            ...transaction,
+            item_description: transaction?.transaction_description ?? "",
+            item_type: transaction?.transaction_type,
+            item_amount: formatter
+              .format(
+                convertToCurrency(
+                  transaction.transaction_amount as number // TODO fix this casting
+                )
+              )
+              .toString(),
+          };
+        }
+      );
+      const keysForList = ["item_description", "item_type", "item_amount"];
+
+      const transactionsToList = formattedTransactions?.map(
+        (transaction: Transaction) => {
+          return keysForList
+            .filter((key) => Object.hasOwn(transaction, key))
+            .map((key) => transaction[key]);
+        }
+      );
+      const viewTotal = convertToCurrency(Number(invoiceToView?.total_amount));
+      const formattedTotal = formatter.format(viewTotal);
+      const invoiceViewInputs = {
+        head: "Lauderdale Invoice",
+        billedToInput: `${familyAccount.parent1_first_name} ${familyAccount.parent1_last_name} \n${familyAccount.parent1_address}`,
+        info: JSON.stringify({
+          InvoiceNo: invoiceToView?.invoice_number,
+          Date: invoiceToView?.invoice_date,
+        }),
+        orders: transactionsToList,
+        total: formattedTotal,
+        thankyou: "Thank you",
+        paymentInfoInput:
+          "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
+      };
+      console.log(invoiceViewInputs, "invoiceViewInputs");
+      generatePdf(invoiceViewInputs);
+    }
+    // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
+    // doesn't need to run on revalidate.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    getTransactionsFetcher.state,
+    getTransactionsFetcher.data,
+    getTransactionsFetcher.formData,
+    familyAccount,
+    params.id,
+    lastInvoice,
+  ]);
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
