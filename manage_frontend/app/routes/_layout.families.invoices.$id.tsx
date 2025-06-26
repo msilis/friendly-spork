@@ -83,6 +83,12 @@ type Transaction = {
   [key: string]: string | number;
 };
 
+interface GenerateInvoiceType {
+  success: boolean;
+  data: string[];
+  intent: string;
+}
+
 const Invoices = () => {
   const params = useParams();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -96,7 +102,7 @@ const Invoices = () => {
   const revalidator = useRevalidator();
   const fetcher = useFetcher();
   const getUpdateDeleteFetcher = useFetcher();
-  const getTransactionsFetcher = useFetcher();
+  const getTransactionsFetcher = useFetcher<GenerateInvoiceType>();
   const generateInvoiceFetcher = useFetcher();
   const { family, invoices, lastInvoice } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
@@ -107,7 +113,9 @@ const Invoices = () => {
   const statusDialogRef = useRef<HTMLDialogElement>(null);
   const [invoiceStatus, setInvoiceStatus] = useState<InvoiceRecord>();
   const toast = useToast();
-  const [invoiceToView, setInvoiceToView] = useState<InvoiceRecord>();
+  const [invoiceToView, setInvoiceToView] = useState<InvoiceRecord | null>(
+    null
+  );
 
   const generateInvoice = async () => {
     if (!params.id) throw new Error("Id is missing");
@@ -248,9 +256,9 @@ const Invoices = () => {
         message?: string;
       };
       const submittedFormData = generateInvoiceFetcher.formData;
-      let submittedIntent: string | null = null;
+      let submittedIntent: FormDataEntryValue | null = null;
       if (submittedFormData) {
-        submittedIntent = submittedFormData?.get("intent") as string | null;
+        submittedIntent = (submittedFormData as FormData)?.get("intent");
       }
       if (result.success) {
         if (
@@ -342,11 +350,10 @@ const Invoices = () => {
       getTransactionsFetcher.state === "idle" &&
       getTransactionsFetcher.data
     ) {
-      const invoices = getTransactionsFetcher.data as InvoiceType;
+      const invoices = getTransactionsFetcher.data;
       const transactions = invoices.transactions;
       const formattedTransactions = transactions?.map(
-        (transaction: Transaction) => {
-          console.log(transaction, "transaction from formatter");
+        (transaction: TransactionRecord) => {
           return {
             ...transaction,
             item_description: transaction?.transaction_description ?? "",
@@ -385,8 +392,8 @@ const Invoices = () => {
         paymentInfoInput:
           "Lloyds Bank\nAccount Name: Lauderdale Groups\nAccount Number: 123456",
       };
-      console.log(invoiceViewInputs, "invoiceViewInputs");
       generatePdf(invoiceViewInputs);
+      setInvoiceToView(null);
     }
     // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
     // doesn't need to run on revalidate.
