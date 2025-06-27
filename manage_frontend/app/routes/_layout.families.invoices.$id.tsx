@@ -83,10 +83,11 @@ type Transaction = {
   [key: string]: string | number;
 };
 
-interface GenerateInvoiceType {
-  success: boolean;
-  data: string[];
-  intent: string;
+interface InvoiceRecreationPayload {
+  family: FamilyRecord[];
+  transactions: TransactionRecord[];
+  invoices: InvoiceRecord[];
+  lastInvoice: InvoiceRecord[];
 }
 
 const Invoices = () => {
@@ -102,7 +103,7 @@ const Invoices = () => {
   const revalidator = useRevalidator();
   const fetcher = useFetcher();
   const getUpdateDeleteFetcher = useFetcher();
-  const getTransactionsFetcher = useFetcher<GenerateInvoiceType>();
+  const getTransactionsFetcher = useFetcher<InvoiceRecreationPayload>();
   const generateInvoiceFetcher = useFetcher();
   const { family, invoices, lastInvoice } = useLoaderData<typeof loader>();
   const familyAccount: FamilyRecord = family[0];
@@ -155,7 +156,6 @@ const Invoices = () => {
 
   const calculateTotal = (transactions: TransactionRecord[]) => {
     if (!transactions) return;
-    console.log(transactions, "transactions form calculateTotal");
     let total = 0;
     for (const item of transactions) {
       const amount = Number(item.transaction_amount);
@@ -225,7 +225,7 @@ const Invoices = () => {
     const transactionsToList = convertedAmountArray.map((transaction) => {
       return keysForList
         .filter((key) => Object.hasOwn(transaction, key))
-        .map((key) => transaction[key]);
+        .map((key) => transaction[key as keyof typeof transaction]);
     });
 
     const formattedTotal = formatter.format(convertToCurrency(calculatedTotal));
@@ -339,19 +339,14 @@ const Invoices = () => {
       setInvoiceToView(invoice);
     }
   };
-  type InvoiceType = {
-    family: FamilyRecord[];
-    invoices: string[];
-    lastInvoice: string[];
-    transactions: TransactionRecord[];
-  };
+
   useEffect(() => {
     if (
       getTransactionsFetcher.state === "idle" &&
       getTransactionsFetcher.data
     ) {
-      const invoices = getTransactionsFetcher.data;
-      const transactions = invoices.transactions;
+      const invoiceData = getTransactionsFetcher.data;
+      const transactions = invoiceData.transactions;
       const formattedTransactions = transactions?.map(
         (transaction: TransactionRecord) => {
           return {
