@@ -108,7 +108,6 @@ const LauderdaleClass = () => {
 
     setFormState({ ...formState, [name]: newValue });
   };
-
   const handleSelectChange =
     (name: string) =>
     (newValue: MultiValue<{ value: number; label: string }>) => {
@@ -260,7 +259,6 @@ const LauderdaleClass = () => {
   const handleContactSheetClick = () => {
     navigate(`/classes/contact/${lauderdaleClass.id}`);
   };
-
   return (
     <>
       <Link to={"/classes"}>
@@ -399,30 +397,30 @@ const LauderdaleClass = () => {
               className="select select-bordered w-full max-w-xs"
               onChange={handleChange}
             >
-              <option>
-                {
-                  teacherData.filter(
-                    (teacher: TeacherRecord) =>
-                      teacher.id === formState.class_accompanist
-                  )[0]?.teacher_last_name
-                }
-              </option>
-              {lauderdaleClass.class_accompanist ? (
-                teacherData
-                  .filter(
-                    (teacher: TeacherRecord) =>
-                      teacher.id !== lauderdaleClass.class_accompanist
-                  )
-                  .map((teacher: TeacherRecord) => {
-                    return (
-                      <option value={teacher.id} key={teacher.id}>
-                        {teacher.teacher_last_name}
-                      </option>
-                    );
-                  })
+              {formState.class_accompanist ? (
+                <option>
+                  {
+                    teacherData.filter(
+                      (teacher: TeacherRecord) =>
+                        teacher.id === formState.class_accompanist
+                    )[0]?.teacher_last_name
+                  }
+                </option>
               ) : (
                 <option value="">Choose an accompanist</option>
               )}
+              {teacherData
+                .filter(
+                  (teacher: TeacherRecord) =>
+                    teacher.id !== lauderdaleClass.class_accompanist
+                )
+                .map((teacher: TeacherRecord) => {
+                  return (
+                    <option value={teacher.id} key={teacher.id}>
+                      {teacher.teacher_last_name}
+                    </option>
+                  );
+                })}
             </select>
             <label htmlFor="class_students">Class Students</label>
             <Select
