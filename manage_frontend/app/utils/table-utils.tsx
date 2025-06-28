@@ -151,7 +151,6 @@ export const generateFamilyTable = (
   );
 };
 
-// TODO - this is still WIP
 export const generateClassTable = (
   classData: ClassRecord[],
   teacherData: TeacherRecord[],
@@ -195,7 +194,7 @@ export const generateClassTable = (
               <h2>{`${classItem.class_name} - Report`}</h2>
               <table className="table table-xs border border-1 border-gray-800">
                 <thead>
-                  <tr className="border border-1 border-gray-800 bg-gray-300">
+                  <tr className="border border-1 border-gray-800 ">
                     <th className="border border-1 border-gray-800">
                       First Name
                     </th>
@@ -217,7 +216,7 @@ export const generateClassTable = (
                           key={student.id}
                           className=" border border-1 border-gray-800"
                         >
-                          <td className="border text-left border-1 border-gray-800 bg-gray-100">
+                          <td className="border text-left border-1 border-gray-800 ">
                             {student?.first_name || ""}
                           </td>
                           <td className="border text-left border-1 border-gray-800">

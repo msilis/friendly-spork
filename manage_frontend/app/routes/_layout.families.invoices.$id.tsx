@@ -152,8 +152,6 @@ const Invoices = () => {
     return String(invoiceNumber);
   };
 
-  useEffect(() => {}, []);
-
   const calculateTotal = (transactions: TransactionRecord[]) => {
     if (!transactions) return;
     let total = 0;

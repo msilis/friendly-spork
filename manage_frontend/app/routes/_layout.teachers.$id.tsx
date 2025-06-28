@@ -12,7 +12,7 @@ import {
   useRevalidator,
   useFetcher,
 } from "@remix-run/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TeacherRecord, FetcherData } from "~/types/types";
 import { useToast } from "~/hooks/hooks";
 
@@ -132,12 +132,19 @@ const Teacher = () => {
       );
       handleModalClose();
       revalidator.revalidate();
+    }
+  };
 
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
       fetcher.data?.success
         ? toast.success(fetcher?.data?.message || "Teacher updated")
         : toast.error("Error updating teacer information");
     }
-  };
+    // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
+    // doesn't need to run on revalidate.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
