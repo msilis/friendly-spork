@@ -11,6 +11,7 @@ import {
 const BACKEND_URL = process.env.MANAGE_BACKEND;
 
 export const login = async (data: { email: string; password: string }) => {
+  console.log(`Using backend: ${BACKEND_URL}`);
   try {
     const performLogin = await fetch(`${BACKEND_URL}/login`, {
       method: "POST",
@@ -19,7 +20,7 @@ export const login = async (data: { email: string; password: string }) => {
       },
       body: JSON.stringify(data),
     });
-
+    console.log(data, "data from login");
     const loginData = await performLogin.json();
     if (performLogin.ok) {
       return loginData;
