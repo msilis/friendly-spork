@@ -1,26 +1,55 @@
-import { Form, Link } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { createUser } from "~/data/data.server";
+import { useToast } from "~/hooks/hooks";
+import { useEffect } from "react";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const body = await request.formData();
   const email = body.get("email");
   const password = body.get("password");
-
-  if (typeof email !== "string" || typeof password !== "string") {
-    throw new Error("Invalid form data");
+  const passwordCheck = body.get("password-check");
+  const errors: { password?: FormDataEntryValue; email?: FormDataEntryValue } =
+    {};
+  if (typeof email !== "string" || email === null || email.length == 0) {
+    errors.email = "Invalid email or missing email";
+  }
+  if (
+    typeof password !== "string" ||
+    password === null ||
+    password.length == 0
+  ) {
+    errors.password = "Password missing or invalid";
+  }
+  if (password !== passwordCheck) {
+    errors.password = "Passwords do not match!";
   }
 
+  if (Object.keys(errors).length > 0) {
+    return Response.json({ errors });
+  }
+
+  const emailString = email as string;
+  const passwordString = password as string;
+
   await createUser({
-    email: email,
-    password: password,
+    email: emailString,
+    password: passwordString,
   });
 
   return redirect("/useradmin");
 };
 
 const CreateUser = () => {
+  const actionData = useActionData<typeof action>();
+  const toast = useToast();
+
+  useEffect(() => {
+    actionData?.errors?.email && toast.error(actionData.errors.email);
+    actionData?.errors?.password && toast.error(actionData.errors.password);
+  }, [actionData]);
+
   return (
     <div>
       <Link to={"/useradmin"}>
@@ -37,6 +66,12 @@ const CreateUser = () => {
         <input
           name="password"
           placeholder="Password"
+          type="password"
+          className="input input-bordered w-full max-w-xs"
+        />
+        <input
+          name="password-check"
+          placeholder="Retype password"
           type="password"
           className="input input-bordered w-full max-w-xs"
         />
