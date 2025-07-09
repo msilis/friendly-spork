@@ -5,7 +5,6 @@ import {
 } from "@remix-run/node";
 import { getTeacher, updateTeacher } from "~/data/data.server";
 import {
-  json,
   useLoaderData,
   useParams,
   Link,
@@ -62,7 +61,7 @@ export const action: ActionFunction = async ({
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [teacherData] = await getTeacher(params.id);
-  return json(teacherData);
+  return Response.json(teacherData);
 };
 
 const Teacher = () => {

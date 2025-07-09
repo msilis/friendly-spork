@@ -48,6 +48,9 @@ const CreateUser = () => {
   useEffect(() => {
     actionData?.errors?.email && toast.error(actionData.errors.email);
     actionData?.errors?.password && toast.error(actionData.errors.password);
+    // Disabling dependencies for next line because adding in toast would cause endless re-renders, it handleShowStatusModal
+    // doesn't need to run on revalidate.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionData]);
 
   return (
