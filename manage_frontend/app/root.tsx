@@ -25,15 +25,6 @@ export const links: LinksFunction = () => [
   { rel: "link", href: "favicon.ico", type: "image/x-icon" },
 ];
 
-export const loader = async () => {
-  return Response.json({
-    ENV: {
-      MANAGE_BACKEND: process.env.MANAGE_BACKEND,
-      PLAYWRIGHT_TEST_EMAIL: process.env.PLAYWRIGHT_TEST_EMAIL,
-      PLAYWRIGHT_TEST_PASSWORD: process.env.PLAYWRIGHT_TEST_PASSWORD,
-    },
-  });
-};
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme data-testid="main-page">

@@ -20,7 +20,6 @@ export const login = async (data: { email: string; password: string }) => {
       },
       body: JSON.stringify(data),
     });
-    console.log(data, "data from login");
     const loginData = await performLogin.json();
     if (performLogin.ok) {
       return loginData;
