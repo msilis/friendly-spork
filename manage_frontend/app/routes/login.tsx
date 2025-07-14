@@ -12,6 +12,8 @@ export const action: ActionFunction = async ({ request }) => {
       );
       session.set("user", user);
       const cookieHeader = await sessionStorage.commitSession(session);
+      console.log(cookieHeader, "cookieHeader");
+      console.log(session.data, "session data");
       return redirect("/dashboard", {
         headers: { "Set-Cookie": cookieHeader },
       });
@@ -28,6 +30,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     request.headers.get("cookie")
   );
   const user = session.get("user");
+  console.log(user, "user from loader");
   if (user) throw redirect("/dashboard");
   return null;
 };

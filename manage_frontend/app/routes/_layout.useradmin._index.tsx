@@ -1,4 +1,5 @@
 import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+import { sessionStorage } from "~/utils/models/user.server";
 import {
   useLoaderData,
   Link,
@@ -81,13 +82,18 @@ export const action: ActionFunction = async ({
   }
 };
 
-export const loader = async () => {
+export const loader = async ({ request }) => {
+  const session = await sessionStorage.getSession(
+    request.headers.get("cookie")
+  );
+  const user = session.get("user");
+  const userEmail = user.email;
   try {
     const users = await getUsers();
     const mappedUsers = users.map((user: UserType) => {
       return { user_id: user.user_id, email: user.email };
     });
-    return Response.json({ mappedUsers });
+    return Response.json({ mappedUsers, userEmail });
   } catch (error) {
     console.error("Error fetching users: ", error);
     return Response.json(
@@ -104,9 +110,11 @@ const UserAdmin = () => {
   const loaderData = useLoaderData<{
     message?: string;
     mappedUsers?: { email: string; user_id: number }[];
+    userEmail: string;
   }>();
   const users: { email: string; user_id: number }[] | undefined =
     loaderData.mappedUsers;
+  const currentUser = loaderData.userEmail;
   const errorMessage = loaderData.message;
   const confirmationRef = useRef<HTMLDialogElement>(null);
   const passwordRef = useRef<HTMLDialogElement>(null);
@@ -121,6 +129,7 @@ const UserAdmin = () => {
     passwordRef.current?.show();
     userToUpdate = id;
   };
+
   const confirmUpdatePassword = () => {
     if (
       passwordInputRef.current?.value !== confirmPasswordInputRef.current?.value
@@ -147,7 +156,14 @@ const UserAdmin = () => {
       } else toast.error("There was an error updating the password");
     }
   };
-  const handleDeleteUser = (id: number | string | undefined) => {
+  const handleDeleteUser = (
+    id: number | undefined,
+    email: string | undefined
+  ) => {
+    if (email === currentUser) {
+      toast.error("Cannot delete currently logged-in user");
+      return;
+    }
     confirmationRef.current?.showModal();
     userToDelete = id;
   };
@@ -221,7 +237,7 @@ const UserAdmin = () => {
                     </button>
                     <button
                       className="btn btn-soft btn-error btn-sm"
-                      onClick={() => handleDeleteUser(user.user_id)}
+                      onClick={() => handleDeleteUser(user.user_id, user.email)}
                     >
                       Delete user
                     </button>

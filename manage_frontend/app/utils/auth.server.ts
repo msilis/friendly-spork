@@ -11,7 +11,7 @@ authenticator.use(
 
     const userLogin = await login({ email, password });
     if (userLogin?.token) {
-      return userLogin;
+      return { ...userLogin, email: email };
     } else {
       throw new Error(
         `Invalid credentials: ${email} - email, ${password} - password`
