@@ -14,6 +14,12 @@ interface ActionResponse {
   message: string;
 }
 
+type UserType = {
+  user_id: number;
+  email: string;
+  hashedPassword: string;
+};
+
 export const action: ActionFunction = async ({
   request,
 }: ActionFunctionArgs) => {
@@ -78,7 +84,10 @@ export const action: ActionFunction = async ({
 export const loader = async () => {
   try {
     const users = await getUsers();
-    return Response.json({ users });
+    const mappedUsers = users.map((user: UserType) => {
+      return { user_id: user.user_id, email: user.email };
+    });
+    return Response.json({ mappedUsers });
   } catch (error) {
     console.error("Error fetching users: ", error);
     return Response.json(
@@ -94,10 +103,10 @@ export const loader = async () => {
 const UserAdmin = () => {
   const loaderData = useLoaderData<{
     message?: string;
-    users?: { email: string; user_id: number }[];
+    mappedUsers?: { email: string; user_id: number }[];
   }>();
   const users: { email: string; user_id: number }[] | undefined =
-    loaderData.users;
+    loaderData.mappedUsers;
   const errorMessage = loaderData.message;
   const confirmationRef = useRef<HTMLDialogElement>(null);
   const passwordRef = useRef<HTMLDialogElement>(null);
