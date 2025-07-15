@@ -1,4 +1,8 @@
-import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import { sessionStorage } from "~/utils/models/user.server";
 import {
   useLoaderData,
@@ -82,7 +86,7 @@ export const action: ActionFunction = async ({
   }
 };
 
-export const loader = async ({ request }) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await sessionStorage.getSession(
     request.headers.get("cookie")
   );
@@ -162,6 +166,10 @@ const UserAdmin = () => {
   ) => {
     if (email === currentUser) {
       toast.error("Cannot delete currently logged-in user");
+      return;
+    }
+    if (users && users?.length <= 1) {
+      toast.error("Cannot delete last user");
       return;
     }
     confirmationRef.current?.showModal();
