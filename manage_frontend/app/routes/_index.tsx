@@ -6,8 +6,8 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div className="flex content-center p-4 bg-black h-dvh flex-col ">
-      <h1 className="mt-4 font-bold text-4xl text-white ml-auto mr-auto w-fit">
+    <div className="flex content-center p-4 h-dvh flex-col ">
+      <h1 className="mt-4 font-bold text-4xl text-black ml-auto mr-auto w-fit">
         /Manage
       </h1>
       <img
